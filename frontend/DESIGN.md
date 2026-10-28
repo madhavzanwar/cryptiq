@@ -269,7 +269,7 @@ The green appears once per screen as the primary action. On the check page that 
 - **Inline Pill (statement):** a Sticker Yellow pill that grows from nothing between two words of a large statement and holds the logo mark.
 
 ### Logo
-A black sticker: Carbon rounded square (14px radius at 48px) holding a white shield outline with a three-node white link graph, one Cotton Pink "flagged" node, and a small Sticker Yellow dot peeking off the top-right corner like a confetti sticker. Wordmark: **cryptiq**, lowercase, Inter Tight 600, tight tracking left at normal, 25px, 9px gap from the mark. Mark minimum 24px. Monochrome only apart from the pink and yellow accents; no shadow, no outline, no rotation.
+**Verdict Dial**, mark only. There is no wordmark and no lettering anywhere in the logo, and the product name never appears next to it. A Carbon rounded-square sticker tile (56 of 64 units, radius 18) holds a semicircle gauge of three arcs in the verdict tones (sage, butter, rose) with a white needle and hub, so ALLOW, WARN and BLOCK read at a glance. One Sticker Yellow confetti dot peeks off the top-right corner. On load the needle swings once (about 900ms, ease-out, from -72 degrees to rest at 25 degrees); the animation lives inside the SVG so it also plays in an `<img>` and is disabled under `prefers-reduced-motion`. Minimum size 24px; place it at the top-left of the top bar at 44px. Do not crop (the dot sits outside the tile), recolour, rotate or add shadows. Files: `public/brand/logo-mark.svg` (final) and `public/brand/concept-*.svg` with the review gallery in `logo-options.html` (Hop Path, Watcher Eye, Sonar Shield and Sticker Orbit are kept as alternates).
 
 ## Quick Start
 

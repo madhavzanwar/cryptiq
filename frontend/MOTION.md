@@ -44,3 +44,8 @@ Button hover fill + press `scale(.97)` + arrow nudge; chip hover lift; card lift
 - Words, stickers, wheel rows, toggles: map over arrays with per-index offsets (see `story.js`).
 - Micro-interactions: `whileHover`, `whileTap={{ scale: .97 }}`, `<motion.div layout>` for the accordion; or keep the CSS in `motion.css`.
 - Reduced motion: `useReducedMotion()` to render the static layout.
+
+## Navigation dock and logo
+- **Side dock:** one 53px Carbon launcher on the left edge (bitcoin glyph). Opening scales the Bone panel out from the launcher over 320ms, the four items (Check, Benchmark, Credits, About) stagger in 60ms apart with a 12px slide, and the glyph turns a quarter-turn into a cross. Closing takes 160ms. Below 1340px the closed dock becomes a flush 44px edge tab. Esc, outside click or choosing an item closes it and returns focus to the launcher; arrow keys, Home and End move between items. In the scroll story, Check, Benchmark and Credits jump to story progress 0.30, 0.50 and 0.93. API: `window.CryptiqNav = { open, close, toggle, isOpen, setCurrent }` in `src/motion/nav.js`; styles in `src/styles/nav.css`. Reduced motion: fade only.
+- **Stacked layout breakpoint:** the story switches to its stacked layout below 1180px so the dock never covers the left cards.
+- **Logo:** the needle of the Verdict Dial swings once on load (900ms, inside the SVG).
