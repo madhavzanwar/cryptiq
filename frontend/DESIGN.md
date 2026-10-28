@@ -233,7 +233,11 @@ Graph nodes (shape plus color): illicit = BLOCK solid diamond; licit = ALLOW sol
 Column gap equals the gutter. Check page desktop split: input and verdict 5 columns, graph and tabs 7. Three-card rows span 4 / 4 / 4. On mobile every block spans the full width in reading order. Tap targets are at least 44px.
 
 ### Focus and motion
-Focus-visible: 2px solid `#0f0f0f` outline, 2px offset (a border, not a glow). Motion: 150–250ms ease-out, color/opacity/transform only; the mic ring pulse and graph particles stop under `prefers-reduced-motion`.
+Focus-visible: 2px solid `#0f0f0f` outline, 2px offset (a border, not a glow). Motion has two layers, both flat (no shadows, no glows) and both animating only `transform`, `opacity` and `filter: blur`:
+
+- **Micro-interactions (90–320ms):** buttons fill on hover and press to `scale(.97)`; cards lift 6px (position, never shadow); links draw an underline; accordions open on a `grid-template-rows` transition and the plus turns into a cross; credit count ticks down with a short slide; meters fill and numbers count up when scrolled into view. Tokens: `--duration-fast 120ms`, `--duration-default 200ms`, `--duration-slow 320ms`, easings `--ease-out`, `--ease-in-out`, `--ease-emphasized`. Never `transition: all`.
+- **Scroll story (scrubbed):** the landing page is one pinned stage whose elements are pure functions of scroll progress (hero hands off to a rising device frame, sticker burst, cards that collapse into chips, blur-morphing device screens, a rolling list, a word-by-word statement with an inline pill, rising cards, loop back to the hero). Full scene table in `MOTION.md`.
+- **Reduced motion:** `prefers-reduced-motion` removes every movement, scale and blur. Elements keep their layout positions and only fade; the sticker burst, rolling list and idle loops stop.
 
 ### One saturated green per viewport
 The green appears once per screen as the primary action. On the check page that is the **mic button** (the product's headline action); "Check wallet" becomes a Black Nav Button style (Carbon fill, white text). On other pages it is the Green CTA Pill.
@@ -258,6 +262,11 @@ The green appears once per screen as the primary action. On the check page that 
 - **Stepper (attest flow):** four numbered steps, 35px circles: done = Carbon fill + white check; current = Sticker Yellow fill + Carbon border; upcoming = Plaster. Vertical on mobile.
 - **Mock-Data Ribbon:** fixed top-left, 26px tall, Cotton Pink fill, 1px Carbon border, 13px/600 "MOCK DATA", bottom-right radius 14px.
 - **Footer:** Pure White, 1px Carbon top border, 70px vertical padding, 12-column grid (pitch, "Built with", "Thanks"), honesty line at the bottom in 13px Ash Gray. Sponsor names are plain text wordmarks.
+
+- **Device Frame:** the stage for the scroll story. Pure White, 1px Carbon border, 17.5px radius, `overflow: hidden`, width = 0.56 × height (height `min(58svh, 540px)`, `min(38svh, 330px)` on mobile). Inner type scales with the frame (`font-size: clamp(9px, 4.2% of width, 13px)`) so the same screens work at any size. Every screen inside is labelled "Example · mock data".
+- **Sticker (confetti chip):** flat Sticker Yellow / Cotton Pink / Powder Blue / verdict-tint shapes (note, circle, pill, coin) with Carbon 500/600 text, no border or shadow, 14–17.5px radii or full pill for tags. They burst out of the frame centre, never more than 3 saturated colours at once.
+- **Collapsing Card:** a 280px confetti card (headline 25px/600, tag bottom-left, bolt/icon top-right) that shrinks to a 190 × 40px chip (tag + icon) and stacks at the top-left under the logo; one per story scene.
+- **Inline Pill (statement):** a Sticker Yellow pill that grows from nothing between two words of a large statement and holds the logo mark.
 
 ### Logo
 A black sticker: Carbon rounded square (14px radius at 48px) holding a white shield outline with a three-node white link graph, one Cotton Pink "flagged" node, and a small Sticker Yellow dot peeking off the top-right corner like a confetti sticker. Wordmark: **cryptiq**, lowercase, Inter Tight 600, tight tracking left at normal, 25px, 9px gap from the mark. Mark minimum 24px. Monochrome only apart from the pink and yellow accents; no shadow, no outline, no rotation.

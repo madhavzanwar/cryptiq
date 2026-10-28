@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cryptiq Scroll Story</title>
+<link rel="icon" href="public/brand/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+Devanagari:wght@500;600&display=swap">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/motion.css">
+<style>
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:auto}
+body{background:var(--surface-canvas);color:var(--color-carbon);font:500 var(--text-body-lg)/var(--leading-body-lg) var(--font-inter-tight);-webkit-font-smoothing:antialiased}
+:lang(hi){font-family:var(--font-devanagari)}
+b,strong,h1,h2,h3{font-weight:600}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--color-carbon);outline-offset:2px}
+.mono{font-family:var(--font-mono);font-weight:500}
+
+/* ---------- story track + pinned stage ---------- */
+.track{height:1000vh;position:relative}
+.stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;
+  --bgt:0;--dh:min(58svh,540px);--dw:calc(var(--dh)*.56);--dtop:54%;
+  background:color-mix(in srgb,var(--color-bone) calc(var(--bgt)*100%),var(--surface-canvas))}
+.layer{position:absolute;will-change:transform,opacity,filter}
+
+.banner{position:absolute;inset:0 0 auto 0;height:44px;background:var(--status-allow-tint);color:var(--status-allow-ink);display:flex;align-items:center;justify-content:center;gap:var(--spacing-13);font-size:var(--text-small);padding:0 var(--spacing-18);text-align:center;z-index:6}
+.banner .mini{background:var(--color-carbon);color:#fff;border-radius:var(--radius-buttons);padding:var(--spacing-4) var(--spacing-13);font-size:var(--text-caption);text-decoration:none;white-space:nowrap}
+.banner span.t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.nav{position:absolute;inset:44px 0 auto 0;height:70px;z-index:6}
+.nav .in{max-width:var(--page-max-width);margin:0 auto;padding:0 var(--page-gutter);height:100%;display:flex;align-items:center;gap:var(--spacing-18)}
+.brand{display:flex;align-items:center;gap:var(--spacing-9);text-decoration:none;font-weight:600;font-size:var(--text-subheading)}
+.brand img{width:40px;height:40px}
+.pill{display:none;margin:0 auto;background:var(--color-bone);border-radius:var(--radius-nav);padding:var(--spacing-7) var(--spacing-18);list-style:none}
+.pill li{display:flex;align-items:center}
+.pill li+li::before{content:"";width:1px;height:18px;background:var(--color-carbon);margin:0 var(--spacing-18)}
+.pill a{text-decoration:none;font-size:var(--text-body);min-height:var(--tap-target);display:inline-flex;align-items:center}
+@media(min-width:1024px){.pill{display:flex}}
+.nav .right{margin-left:auto}
+.btn-black{display:inline-flex;align-items:center;min-height:var(--tap-target);background:var(--color-carbon);color:#fff;border-radius:var(--radius-buttons);padding:var(--spacing-13) var(--spacing-18);font:500 var(--text-body)/1 var(--font-inter-tight);text-decoration:none;border:0;cursor:pointer}
+.btn-black:hover{background:var(--color-obsidian)}
+.btn{transition:background-color var(--duration-fast) var(--ease-out),color var(--duration-fast) var(--ease-out),transform 90ms var(--ease-out)}
+
+/* hero */
+.hero{left:0;right:0;top:calc(114px + (100svh - 114px)*.40);text-align:center;transform:translateY(-50%);padding:0 var(--page-gutter);z-index:2}
+.eyebrow{font-size:var(--text-body-lg);color:var(--color-ash-gray)}
+.display{font-weight:600;font-size:clamp(50px,11vw,176px);line-height:.82;margin-top:var(--spacing-26)}
+.display:lang(hi){line-height:1.05}
+.scrollhint{left:50%;bottom:var(--spacing-26);transform:translateX(-50%);font-size:var(--text-small);color:var(--color-ash-gray);display:flex;flex-direction:column;align-items:center;gap:var(--spacing-9);z-index:2}
+.scrollhint i{display:block;width:1px;height:35px;background:var(--color-carbon);transform-origin:top;animation:hint 1.8s var(--ease-in-out) infinite}
+@keyframes hint{0%{transform:scaleY(0)}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* CTA (single saturated green) */
+.cta{left:50%;top:0;z-index:7;display:inline-flex;align-items:center;height:53px;background:var(--color-acid-lime);color:var(--color-carbon);border-radius:var(--radius-buttons);border:1px solid transparent;font:500 var(--text-body-lg)/1 var(--font-inter-tight);cursor:pointer;text-decoration:none;white-space:nowrap;padding:0 var(--cp,26px)}
+.cta .lbl{display:inline-block;overflow:hidden;max-width:var(--lw,200px);margin-right:var(--lm,9px);opacity:var(--lo,1)}
+.cta svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.cta:hover{background:var(--color-carbon);color:#fff}
+.cta:active{filter:brightness(.95)}
+
+/* device */
+.device{left:50%;top:var(--dtop);width:var(--dw);height:var(--dh);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);background:#fff;overflow:hidden;font-size:clamp(9px,calc(var(--dw)*.042),13px);z-index:3}
+.screen{position:absolute;inset:0;padding:1.4em 1.3em;display:flex;flex-direction:column;gap:.9em}
+.tag{display:inline-flex;align-items:center;gap:.45em;align-self:flex-start;background:var(--color-bone);border-radius:var(--radius-tags);padding:.4em .95em;font-size:.95em;line-height:1.2}
+.s0{align-items:center;justify-content:center}
+.s0 .tile{width:4.6em;height:4.6em}
+.stk{position:absolute;left:50%;top:50%;display:flex;align-items:center;justify-content:center;font-weight:600;line-height:1.05;text-align:center;color:var(--color-carbon);white-space:nowrap}
+.stk svg{width:60%;height:60%;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.y{background:var(--color-sticker-yellow)}.pk{background:var(--color-cotton-pink)}.bl{background:var(--color-powder-blue)}.al{background:var(--status-allow-tint);color:var(--status-allow-ink)}.bk{background:var(--status-block-tint);color:var(--status-block-ink)}.wn{background:var(--status-warn-tint);color:var(--status-warn-ink)}
+
+.s-title{font-weight:600;font-size:1.25em}
+.micwrap{display:flex;align-items:center;gap:1em;margin-top:.4em}
+.dmic{position:relative;width:4.8em;height:4.8em;border-radius:50%;background:var(--color-carbon);display:grid;place-items:center;flex:none}
+.dmic svg{width:1.9em;height:1.9em;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.dmic::before{content:"";position:absolute;inset:-.5em;border-radius:50%;border:2px solid var(--color-carbon);animation:ring 2s var(--ease-out) infinite}
+@keyframes ring{0%{transform:scale(.92);opacity:.7}100%{transform:scale(1.25);opacity:0}}
+.bars{display:flex;gap:.28em;align-items:center;height:2.4em}.bars i{display:block;width:.34em;height:100%;background:var(--color-carbon);border-radius:.2em}
+.field{background:var(--color-plaster);border:1px solid var(--color-carbon);border-radius:var(--radius-inputs);padding:.85em 1.1em;font-family:var(--font-mono);font-weight:500;font-size:1em;min-height:3em;white-space:nowrap;overflow:hidden}
+.caret{display:inline-block;width:1px;height:1.1em;background:var(--color-carbon);vertical-align:-.15em;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.dbtn{background:var(--color-carbon);color:#fff;border-radius:var(--radius-buttons);padding:.9em 1.2em;text-align:center;font-size:1em}
+.chips{display:flex;flex-wrap:wrap;gap:.5em}
+.chip{border:1px solid var(--color-carbon);border-radius:var(--radius-tags);padding:.3em .8em;font-size:.9em}
+.tap{position:absolute;width:3.4em;height:3.4em;margin:-1.7em 0 0 -1.7em;border-radius:50%;background:color-mix(in srgb,var(--color-carbon) 14%,transparent);border:1px solid color-mix(in srgb,var(--color-carbon) 35%,transparent);pointer-events:none}
+
+.s2 .inner{display:flex;flex-direction:column;gap:.9em}
+.vchip{display:inline-flex;align-items:center;gap:.6em;align-self:flex-start;background:var(--status-block-tint);color:var(--status-block-ink);border-radius:var(--radius-cards);padding:.35em 1em .35em .8em;font-weight:600;font-size:2em;line-height:1.05}
+.vchip svg{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.meter{display:flex;align-items:center;gap:.8em}.meter .n{font-weight:600;font-size:2em;line-height:1;min-width:1.5em}
+.mtrack{position:relative;flex:1;height:.8em;border-radius:99px;background:var(--color-plaster)}
+.mtrack b{position:absolute;left:0;top:0;bottom:0;border-radius:99px;background:var(--status-block-solid);border:1px solid var(--color-carbon)}
+.tg{background:var(--color-powder-blue);border-radius:var(--radius-tags);padding:.6em .9em;font-size:.95em;line-height:1.35}
+.graph{width:100%;height:auto;background:var(--color-paper-white);border:1px solid var(--color-slate-gray);border-radius:var(--radius-cards)}
+.reasons{display:grid;gap:.6em;font-size:1em}.reasons div{display:flex;gap:.6em}.reasons i{flex:none;width:.7em;height:.7em;margin-top:.4em;background:var(--status-block-solid);transform:rotate(45deg)}
+.help{font-size:.85em;color:var(--color-ash-gray)}
+
+.steps{display:grid;gap:1em;margin-top:.4em}
+.step{display:flex;align-items:center;gap:.8em;font-size:1.05em}
+.step .c{width:1.9em;height:1.9em;border-radius:50%;border:1px solid var(--color-carbon);display:grid;place-items:center;background:var(--color-plaster);flex:none}
+.step .c svg{width:1.1em;height:1.1em;stroke:#fff;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.step.on .c{background:var(--color-carbon)}.step.on .c svg{opacity:1}
+.attest{margin-top:.6em;background:var(--status-allow-tint);color:var(--status-allow-ink);border-radius:var(--radius-cards);padding:1em 1.1em;display:flex;flex-direction:column;gap:.3em}
+
+/* left cards, right texts */
+.lcard{--c:0;top:0;left:calc(50% - var(--dw)/2 - 53px - 280px);width:calc(280px - (280px - 190px)*var(--c));height:calc(200px - (200px - 40px)*var(--c));border-radius:var(--radius-cards);overflow:hidden;z-index:4}
+.lc-full,.lc-chip{position:absolute;inset:0}
+.lc-full{padding:var(--spacing-26);display:flex;flex-direction:column;justify-content:space-between;opacity:calc(1 - var(--c)*2.4);min-width:280px}
+.lc-full h3{font-size:var(--text-subheading);line-height:var(--leading-subheading);max-width:11em}
+.lc-full .bolt{position:absolute;right:var(--spacing-18);top:var(--spacing-18)}
+.lc-chip{display:flex;align-items:center;justify-content:space-between;padding:0 var(--spacing-13) 0 var(--spacing-18);font-size:var(--text-small);opacity:calc((var(--c) - .4)*2.4)}
+.bolt{width:18px;height:18px;stroke:var(--color-carbon);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tag.w{background:var(--color-pure-white)}
+.cA{background:var(--color-powder-blue)}.cB{background:var(--color-sticker-yellow)}.cC{background:var(--color-cotton-pink)}
+.rtext{top:0;left:calc(50% + var(--dw)/2 + 53px);width:260px;padding:var(--spacing-26);border-radius:var(--radius-cards);background:color-mix(in srgb,var(--color-pure-white) 65%,transparent);font-size:var(--text-body-lg);line-height:1.25;z-index:4;display:flex;flex-direction:column;gap:var(--spacing-18)}
+.rtext .row{display:flex;gap:var(--spacing-9);flex-wrap:wrap}
+.rt{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 var(--spacing-11);border-radius:var(--radius-tags);font-size:var(--text-small);background:var(--color-pure-white);border:1px solid var(--color-carbon)}
+.rt.y{background:var(--color-sticker-yellow);border-color:transparent}.rt.pk{background:var(--color-cotton-pink);border-color:transparent}.rt.bl{background:var(--color-powder-blue);border-color:transparent}
+@media(max-width:899px){
+  .stage{--dh:min(38svh,330px)}
+  .lcard{left:7vw;width:calc(min(86vw,330px) - (min(86vw,330px) - 190px)*var(--c));height:calc(150px - (150px - 40px)*var(--c))}
+  .lc-full{min-width:min(86vw,330px);padding:var(--spacing-18) var(--spacing-26)}
+  .lc-full h3{font-size:21px}
+  .rtext{left:7vw;width:86vw;top:auto;bottom:100px;padding:var(--spacing-18) var(--spacing-26);font-size:var(--text-body-lg)}
+}
+
+/* wheel scene */
+.wheelscene{inset:0;z-index:4;pointer-events:none}
+.wl{left:max(var(--page-gutter),calc(50% - 600px + var(--page-gutter)));top:50%;width:min(420px,42vw)}
+.wl h2{font-size:clamp(34px,4.4vw,53px);line-height:1.02}
+.wl p{font-size:var(--text-body);color:var(--color-ash-gray);margin-top:var(--spacing-18);max-width:30ch;line-height:1.45}
+.search{display:flex;align-items:center;gap:var(--spacing-9);margin-top:var(--spacing-26);width:min(330px,100%);height:44px;border:1px solid var(--color-carbon);border-radius:var(--radius-inputs);padding:0 var(--spacing-18);font-size:var(--text-body);color:var(--color-ash-gray);background:var(--color-pure-white)}
+.search svg{margin-left:auto;width:16px;height:16px;stroke:var(--color-carbon);fill:none;stroke-width:2}
+.wheel{left:50%;top:50%;width:min(480px,50vw);height:0}
+.wrow{position:absolute;left:0;top:0;display:flex;align-items:center;gap:var(--spacing-13);height:56px;font-size:clamp(20px,2.3vw,30px);white-space:nowrap;will-change:transform,opacity}
+.wrow .ic{width:30px;height:30px;display:grid;place-items:center;flex:none}
+.wrow .vt{font-size:var(--text-small);border-radius:var(--radius-tags);padding:var(--spacing-4) var(--spacing-11);font-family:var(--font-inter-tight)}
+@media(max-width:899px){.wl{top:30%;width:86vw}.wl h2{font-size:34px}.wl p{display:none}.search{margin-top:var(--spacing-13)}.wheel{left:7vw;top:68%;width:86vw}.wrow{font-size:20px}}
+
+/* statement */
+.statement{left:0;right:0;top:calc(114px + (100svh - 114px)*.45);transform:translateY(-50%);z-index:3}
+.statement .in{max-width:var(--page-max-width);margin:0 auto;padding:0 var(--page-gutter);position:relative}
+.statement h2{font-size:clamp(38px,6.4vw,96px);line-height:1.02;max-width:11.5em;font-weight:600}
+.statement .w{display:inline-block;margin-right:.22em;opacity:.16;will-change:opacity}
+.statement .label{position:absolute;right:var(--page-gutter);top:-26px;font-size:var(--text-small)}
+.blob{display:inline-block;vertical-align:-.04em;height:.6em;width:0;border-radius:99px;background:var(--color-sticker-yellow);margin-right:.2em;overflow:hidden;position:relative}
+.blob img{position:absolute;left:50%;top:50%;width:.46em;height:.46em;margin:-.23em 0 0 -.23em}
+
+/* end cards */
+.ecard{left:50%;top:calc(114px + (100svh - 114px)*.34);width:min(780px,90vw);min-height:300px;border-radius:var(--radius-cards);background:var(--color-pure-white);padding:var(--spacing-42);display:flex;align-items:center;justify-content:space-between;gap:var(--spacing-35);z-index:4}
+.ecard h3{font-size:clamp(28px,3.4vw,44px);line-height:1.04;max-width:9em}
+.ecard p{font-size:var(--text-body);color:var(--color-ash-gray);margin-top:var(--spacing-18);max-width:32ch;line-height:1.45}
+.cluster{width:min(190px,28vw);flex:none}
+.cluster g{transform-box:fill-box;transform-origin:center;animation:floaty 5s var(--ease-in-out) infinite alternate;animation-delay:calc(var(--i,0)*-.8s)}
+@keyframes floaty{from{transform:translateY(-4px) rotate(-5deg)}to{transform:translateY(5px) rotate(6deg)}}
+.togs{display:grid;gap:var(--spacing-13);flex:none;position:relative}
+.tog{display:flex;align-items:center;gap:var(--spacing-13);font-size:var(--text-small)}
+.tog .tr{width:52px;height:28px;border-radius:99px;background:var(--color-plaster);border:1px solid var(--color-carbon);position:relative;transition:background-color var(--duration-default) var(--ease-out)}
+.tog .tr::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid var(--color-carbon);transition:transform var(--duration-default) var(--ease-emphasized)}
+.tog.on .tr{background:var(--color-carbon)}.tog.on .tr::after{transform:translateX(24px)}
+.tile{width:56px;height:56px}
+@media(max-width:899px){.ecard{flex-direction:column;align-items:flex-start;padding:var(--spacing-26);min-height:0}.cluster{align-self:flex-end;width:120px}}
+
+footer{background:var(--color-pure-white);border-top:1px solid var(--color-carbon);padding:var(--spacing-70) var(--page-gutter);text-align:center}
+footer p{font-size:var(--text-small);color:var(--color-ash-gray);max-width:60ch;margin:0 auto}
+.ribbon{position:fixed;left:0;top:44px;z-index:20;height:26px;padding:0 var(--spacing-13);display:flex;align-items:center;background:var(--color-cotton-pink);border:1px solid var(--color-carbon);border-left:0;font-size:var(--text-small);font-weight:600;border-radius:0 var(--radius-tags) var(--radius-tags) 0}
+.dev{position:fixed;right:12px;bottom:12px;z-index:30;font:500 11px var(--font-mono);background:var(--color-carbon);color:#fff;padding:4px 8px;border-radius:8px;opacity:.0}
+</style>
+</head>
+<body>
+<div class="ribbon">MOCK DATA</div>
+
+<section class="track" id="story" aria-label="How Cryptiq works">
+<div class="stage" id="stage">
+
+  <div class="banner"><span class="t">Cryptiq is a demo build: results use mock data until the backend connects.</span><a class="mini" href="#limits">Read the limits</a></div>
+
+  <header class="nav" id="nav">
+    <div class="in">
+      <a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a>
+      <ul class="pill" id="navpill">
+        <li><a href="#check">Check</a></li><li><a href="#benchmark">Benchmark</a></li><li><a href="#credits">Credits</a></li><li><a href="#about">About</a></li>
+      </ul>
+      <div class="right"><a class="btn-black btn" href="#">Connect wallet</a></div>
+    </div>
+  </header>
+
+  <!-- 1. HERO -->
+  <div class="layer hero" id="hero">
+    <p class="eyebrow">Check before you pay</p>
+    <h1 class="display"><span class="load-line"><span style="--d:60ms">Say a wallet.</span></span><span class="load-line"><span style="--d:180ms">Get a verdict.</span></span></h1>
+  </div>
+  <div class="layer scrollhint" id="hint"><span>Scroll</span><i></i></div>
+
+  <!-- 2. DEVICE -->
+  <div class="layer device" id="device" aria-hidden="true">
+    <div class="screen s0" id="s0">
+      <img class="tile" src="public/brand/logo-mark.svg" alt="" id="tile">
+      <div id="stickers"></div>
+    </div>
+
+    <div class="screen s1" id="s1">
+      <span class="tag">Example · mock data</span>
+      <div class="s-title">Check a wallet</div>
+      <div class="micwrap"><div class="dmic" id="dmic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
+        <div class="bars" id="bars"><i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i><i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i></div></div>
+      <div class="field"><span id="typed"></span><span class="caret"></span></div>
+      <div class="chips"><span class="chip">Known illicit (demo)</span><span class="chip">Clean (demo)</span></div>
+      <div class="dbtn">Check wallet (1 credit)</div>
+      <div class="tap" id="tap" style="left:78%;top:86%;opacity:0"></div>
+    </div>
+
+    <div class="screen s2" id="s2" style="padding:0">
+      <div class="inner" id="s2in" style="padding:1.4em 1.3em">
+        <span class="tag">Example · mock data</span>
+        <span class="vchip"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM10 10l4 4M14 10l-4 4"/></svg>BLOCK</span>
+        <div class="meter"><span class="n" id="score">0</span><div class="mtrack"><b id="mfill" style="width:0"></b></div></div>
+        <div class="tg">Graph query answered by TigerGraph in <b>41 ms</b></div>
+        <svg class="graph" viewBox="0 0 220 130" id="graph">
+          <g stroke="#6e726e" stroke-width="1.2"><line x1="110" y1="65" x2="170" y2="30"/><line x1="110" y1="65" x2="170" y2="100"/><line x1="110" y1="65" x2="50" y2="30"/><line x1="110" y1="65" x2="50" y2="100"/><line x1="110" y1="65" x2="110" y2="115"/></g>
+          <line x1="110" y1="65" x2="170" y2="30" stroke="#000" stroke-width="2.4"/>
+          <g class="gn"><path d="M170 18l12 12-12 12-12-12z" fill="#c8574f"/></g>
+          <g class="gn"><circle cx="170" cy="100" r="8" fill="#4b9a6a"/></g>
+          <g class="gn"><circle cx="50" cy="30" r="8" fill="#fff" stroke="#6e726e" stroke-width="2"/></g>
+          <g class="gn"><circle cx="50" cy="100" r="8" fill="#4b9a6a"/></g>
+          <g class="gn"><circle cx="110" cy="115" r="8" fill="#fff" stroke="#6e726e" stroke-width="2"/></g>
+          <g class="gn"><circle cx="110" cy="65" r="15" fill="#000"/><circle cx="110" cy="65" r="5" fill="#fcea59"/></g>
+        </svg>
+        <div class="reasons"><div><i></i><span>1 illicit wallet within 1 hop</span></div><div><i></i><span>Sits in a large connected cluster</span></div><div><i></i><span>OFAC list: match</span></div></div>
+        <div class="help">Risk signal, not an accusation. Research dataset, not the live blockchain.</div>
+      </div>
+    </div>
+
+    <div class="screen s3" id="s3">
+      <span class="tag">Example · mock data</span>
+      <div class="s-title">Keep proof on-chain</div>
+      <div class="steps">
+        <div class="step" data-i="0"><span class="c"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Connect wallet</div>
+        <div class="step" data-i="1"><span class="c"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Switch to Base Sepolia</div>
+        <div class="step" data-i="2"><span class="c"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 9-10"/></svg></span>Sign the attestation</div>
+      </div>
+      <div class="attest" id="attest"><b>Attested · test network</b><span class="mono" style="font-size:.9em">0x4f…a1c9 (example)</span></div>
+      <div class="help">Attestations are public and permanent. Test network, no real money.</div>
+    </div>
+  </div>
+
+  <!-- left cards + right text (3 scenes) -->
+  <div class="layer lcard cA" id="lcA"><div class="lc-full"><svg class="bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg><h3>Say it or paste it.</h3><span class="tag w">Simple</span></div><div class="lc-chip"><span class="tag w">Simple</span><svg class="bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></div></div>
+  <div class="layer lcard cB" id="lcB"><div class="lc-full"><svg class="bolt" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 11l7.4-4M8.3 13l7.4 4"/></svg><h3>See the evidence, not just a score.</h3><span class="tag w">Graph</span></div><div class="lc-chip"><span class="tag w">Graph</span><svg class="bolt" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 11l7.4-4M8.3 13l7.4 4"/></svg></div></div>
+  <div class="layer lcard cC" id="lcC"><div class="lc-full"><svg class="bolt" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></svg><h3>Keep the proof on-chain.</h3><span class="tag w">Proof</span></div><div class="lc-chip"><span class="tag w">Proof</span><svg class="bolt" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></svg></div></div>
+
+  <div class="layer rtext" id="rtA"><span>Hindi or English. You confirm what we heard.</span><div class="row"><span class="rt">EN</span><span class="rt" lang="hi">हिं</span></div></div>
+  <div class="layer rtext" id="rtB"><span>TigerGraph measures how many hops to the nearest flagged wallet.</span><div class="row"><span class="rt pk">Hops</span><span class="rt bl">Example: 41 ms</span></div></div>
+  <div class="layer rtext" id="rtC"><span>One tap writes an attestation anyone can open on easscan.</span><div class="row"><span class="rt y">Base Sepolia · test</span></div></div>
+
+  <!-- wheel scene -->
+  <div class="layer wheelscene" id="wheelscene">
+    <div class="layer wl" id="wl" style="transform:translateY(-50%)"><h2>822,942 wallets. One graph.</h2><p>Cryptiq checks the Elliptic++ research dataset of Bitcoin wallets. It is not the live blockchain.</p><div class="search" id="search">Search a wallet<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></div></div>
+    <div class="layer wheel" id="wheel"></div>
+  </div>
+
+  <!-- statement -->
+  <div class="layer statement" id="statement"><div class="in"><span class="label" id="slabel">Stay sharp</span>
+    <h2 id="sh"><span class="w">Catch</span> <span class="w">every</span> <span class="w">risk</span> <span class="blob" id="blob"><img src="public/brand/logo-mark.svg" alt=""></span><span class="w">before</span> <span class="w">every</span> <span class="w">payment.</span></h2></div></div>
+
+  <!-- end cards -->
+  <div class="layer ecard" id="ec1"><div><h3>Wallets are dots. Transfers are links.</h3><p>Illicit, licit and unknown labels come from the Elliptic++ research dataset.</p></div>
+    <svg class="cluster" viewBox="0 0 190 170" aria-hidden="true">
+      <g style="--i:0"><ellipse cx="62" cy="108" rx="42" ry="30" fill="#a7cbf6" stroke="#0f0f0f" stroke-width="1.5"/></g>
+      <g style="--i:1"><ellipse cx="120" cy="52" rx="34" ry="42" fill="#ffd0e2" stroke="#0f0f0f" stroke-width="1.5"/></g>
+      <g style="--i:2"><ellipse cx="42" cy="56" rx="28" ry="28" fill="#fcea59" stroke="#0f0f0f" stroke-width="1.5"/></g>
+      <g style="--i:3"><ellipse cx="136" cy="122" rx="36" ry="30" fill="#dcf7e1" stroke="#0f0f0f" stroke-width="1.5"/></g>
+      <g style="--i:4"><ellipse cx="92" cy="78" rx="16" ry="16" fill="#fbe9e7" stroke="#0f0f0f" stroke-width="1.5"/></g>
+    </svg></div>
+  <div class="layer ecard" id="ec2"><div><h3>Proof you can share.</h3><p>One tap writes your verdict as an attestation on a test network.</p></div>
+    <div class="togs" id="togs"><div class="tog" data-t="0"><span class="tr"></span>Connect wallet</div><div class="tog" data-t="1"><span class="tr"></span>Base Sepolia</div><div class="tog" data-t="2"><span class="tr"></span>Sign</div><div class="tog" data-t="3"><span class="tr"></span>Done</div></div></div>
+
+  <!-- CTA: the only saturated green -->
+  <a class="layer cta" id="cta" href="#check"><span class="lbl" id="lbl">Get started</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+</div>
+</section>
+
+<footer id="limits"><h2 style="font-size:var(--text-heading-sm);margin-bottom:var(--spacing-18)">Honest limits</h2><p>Risk signal, not an accusation. Based on a research dataset of Bitcoin activity (Elliptic++), not the live blockchain. Everything on this page is example data.</p></footer>
+<div class="dev" id="dev"></div>
+<script src="src/motion/story.js"></script>
+</body>
+</html>

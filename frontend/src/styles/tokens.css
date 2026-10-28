@@ -70,6 +70,18 @@
   --radius-buttons: 35px;
   --radius-largeelements: 53px;
 
+  /* Motion (see ../../MOTION.md) */
+  --duration-fast: 120ms;
+  --duration-default: 200ms;
+  --duration-slow: 320ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --motion-distance-sm: 4px;
+  --motion-distance-md: 9px;
+  --motion-distance-lg: 18px;
+
   /* Surfaces */
   --surface-canvas: #f9faf9;
   --surface-card: #ffffff;
@@ -82,4 +94,8 @@
 }
 @media (min-width: 1024px) {
   :root { --page-gutter: 35px; --grid-columns: 12; --grid-gap: 35px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration-fast: 0ms; --duration-default: 0ms; --duration-slow: 100ms; --motion-distance-sm: 0px; --motion-distance-md: 0px; --motion-distance-lg: 0px; }
 }
