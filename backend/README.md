@@ -58,3 +58,13 @@ make install-queries   # khop_exposure, wallet_summary, graph_stats
 make verify-graph      # counts per label vs Parquet; exits 1 on mismatch
 make test-tg           # NetworkX vs TigerGraph parity on 5 random wallets
 ```
+
+## Model
+
+```bash
+make train     # trains baseline + graph models, writes artifacts/model.joblib, model_card.json, demo_wallets.json
+```
+
+`artifacts/model_card.json` holds every reported number (test split, illicit class), the split, the
+feature lists, thresholds (chosen on validation), library versions and dataset counts. Nothing in the
+API hard-codes a metric.

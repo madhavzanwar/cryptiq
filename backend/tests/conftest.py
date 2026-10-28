@@ -34,3 +34,11 @@ def client(settings: Settings) -> Iterator[TestClient]:
     app = create_app(settings, build_state(settings))
     with TestClient(app) as c:
         yield c
+
+
+@pytest.fixture(scope="session")
+def trained(tmp_path_factory: pytest.TempPathFactory) -> tuple[Path, Path]:
+    """(processed_dir, artifacts_dir) for a synthetic dataset with trained models."""
+    from tests.helpers import build_trained_fixture
+
+    return build_trained_fixture(tmp_path_factory.mktemp("trained"))

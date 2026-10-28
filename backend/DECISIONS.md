@@ -99,6 +99,33 @@ bottom of each heading.
   The **model features** use the precomputed train-label-only features, so served scores match the
   measured test metrics.
 
+## Model
+
+- Two XGBoost models on labelled wallets only (illicit = 1, licit = 0): `baseline` (55 wallet
+  features) and `with_graph_features` (+ 9 graph features). `scale_pos_weight` = neg/pos on train.
+- Tiny grid (max_depth 4/6 x n_estimators 200/400) picked by **validation** PR-AUC. The serving model
+  is the one with the better validation PR-AUC, **never** chosen on test.
+- Monotone constraints on `nb1_illicit_train` (+), `walk2_illicit_train` (+), `hops_to_illicit_train`
+  (-): more flagged neighbours can never lower the risk. Tested.
+- Isotonic calibration fitted on validation; `riskScore = round(100 * p_calibrated)`.
+- Thresholds per model chosen on validation: BLOCK = lowest score with precision >= 0.90, WARN =
+  lowest score with precision >= 0.50 (below BLOCK), with floors WARN >= 10, BLOCK >= 50 (a calibrated
+  probability under 50% never blocks). Calibration and thresholds share the validation split (small
+  optimism, documented; the test split is untouched).
+- Reported metrics (`model_card.json`, test split, illicit class): precision / recall / F1 where
+  "predicted illicit" = score >= WARN (verdict WARN or BLOCK), the same mapping as the benchmark;
+  also F1 at the BLOCK threshold, PR-AUC and confusion counts. `graphFeaturesImprovedTestF1` records
+  plainly whether graph features helped; nothing is re-tuned after looking at test.
+- Metrics measured on the synthetic fixture are never shown (`illicitF1Test: null`, `/api/benchmark`
+  omits them); only `dataSource: "elliptic++"` cards surface numbers.
+- Policy: an OFAC hit forces BLOCK, **including for addresses outside the dataset**. Such a response
+  keeps `status: "not_in_dataset"`, `riskScore: null`, `labelHits.ofac: true` and is not charged.
+- Demo wallets come only from the test split. `expected` is the verdict the trained system actually
+  gives; wallets are picked where it agrees with the dataset label so the demo is predictable (a demo
+  choice, not a metric).
+- `model.joblib` is a local trusted artifact produced by `scripts/train.py`; never load one from an
+  untrusted source (pickle).
+
 ## TigerGraph
 
 - pyTigerGraph **2.0.5** (installed version; connection args read from its source):

@@ -29,10 +29,10 @@ def make_fixture(out: Path, n_wallets: int = 2400, seed: int = 7) -> dict[str, i
         n_steps = int(rng.integers(1, 4))
         steps = np.clip(first_step[i] + np.arange(n_steps) * rng.integers(0, 3), 1, 49)
         illicit = classes[i] == 1
-        base = {
-            c: float(abs(rng.normal(2.0 if illicit else 1.0, 1.0)) * (3 if "btc" in c and illicit else 1))
-            for c in FEATURE_COLUMNS
-        }
+        # weak, overlapping signal in a few columns; the graph (homophily) carries the rest
+        base = {c: float(abs(rng.normal(1.0, 1.0))) for c in FEATURE_COLUMNS}
+        for c in ("btc_received_max", "fees_as_share_total", "transacted_w_address_total"):
+            base[c] = float(abs(rng.normal(1.6 if illicit else 1.0, 1.0)))
         base["num_timesteps_appeared_in"] = float(n_steps)
         for t in steps:
             rows.append({"address": addrs[i], "Time step": int(t), **base})
