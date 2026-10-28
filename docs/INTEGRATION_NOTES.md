@@ -243,3 +243,41 @@ Not decided: the FAQ could not be read. Procedure for the real run: try `make lo
 3. The Dodo CLI (or a `cloudflared` tunnel) for webhooks; a testnet wallet with test coins.
 Then, in this order: `make load-graph install-queries smoke-queries verify-graph compare-engines`, the
 integration checks, `make record-replays`, then the benchmark (N=10, then N=25).
+
+## 11. Docker image and deployment (everything free; NOTHING deployed)
+
+**Not deployed.** No account or token exists for any host and the hosting APIs are blocked from the sandbox.
+No paid resource was created. Details and the free procedure: `docs/DEPLOY_NOTES.md`; demo procedure:
+`docs/DEMO_RUNBOOK.md`.
+
+### Measured here (local Docker 29.9, synthetic fixture)
+| Item | Result |
+|---|---|
+| Image build | first successful build ever; 36.8 s warm, 1 m 47 s cold |
+| Image size | 952 MB, down from 4.05 GB |
+| `APP_ENV=prod` container + `scripts/smoke.py` | 11/11 PASS; Docker HEALTHCHECK `healthy` |
+| `/api/health` in the container | `engine=networkx`, `engineOk`, `modelLoaded`, `ofacLoaded: true`, `dataSource: synthetic_fixture`, `mocks: true` |
+| `/api/check` latency (80 calls, synthetic, NetworkX) | median 8 ms, p95 21 ms (not representative of TigerGraph + LLM) |
+
+### Problems found by actually building, and fixes
+1. **Image 4.05 GB.** (a) XGBoost's default Linux wheel pulled ~470 MB of NVIDIA CUDA libraries a CPU host never
+   uses: now `xgboost-cpu` on Linux via an environment marker (same module; venv 1,201 MB to 524 MB).
+   (b) `chown -R /app` after installing copied the whole virtualenv into a second layer: the user is now
+   created first and files are copied with `--chown`.
+2. **`libgomp1` is not needed:** measured, the XGBoost wheel imports in `python:3.11-slim` without it. Removed.
+3. **Healthcheck depended on `curl`** (an apt package): replaced with a Python one-liner.
+4. **Hard-coded port 8000:** the image now listens on `$PORT` (free hosts such as Hugging Face Spaces choose it).
+5. **No way to get the git-ignored data into a free host without a volume:** `scripts/fetch_artifacts.py`
+   (+ `docker-entrypoint.sh`) downloads `data/` and `artifacts/` from a PRIVATE Hugging Face repo at start-up
+   (allowlisted paths, path-traversal safe, size cap, token never logged). 9 tests with a mocked transport; not
+   exercised against the real service.
+6. **Base image / apt:** `BASE_IMAGE` and `INSTALL_FFMPEG` build arguments. In the sandbox Docker Hub returned
+   429 (anonymous rate limit) so the base came from `mirror.gcr.io`, and Debian mirrors were unreachable, so the
+   `ffmpeg` apt step was **not** exercised.
+7. Free LLM tiers (Groq / Gemini / OpenRouter use an OpenAI-compatible base URL with a path): a regression test
+   confirms `.../openai/v1` + `/chat/completions` is joined correctly.
+
+### Not done (needs you)
+Create the Hugging Face Space and private artifact repo (steps in `docs/DEPLOY_NOTES.md` 3.1 to 3.2), set the
+Dodo webhook URL, then run `scripts/smoke.py` against the deployed URL. The deployed smoke test, the webhook
+setting and the cost confirmation are therefore **not done**; the cost of this route is $0 by design.
