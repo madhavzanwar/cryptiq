@@ -9,6 +9,7 @@ licit = ALLOW. Input tokens are the provider's REPORTED usage. Latency is end-to
 
 from __future__ import annotations
 
+import asyncio
 import json
 import random
 import re
@@ -22,6 +23,7 @@ from typing import Any
 
 import pandas as pd
 
+from app.errors import UpstreamError
 from app.services.datasets.schema import FEATURE_COLUMNS
 from app.services.explain.llm import LLMClient
 from app.services.graph.base import GraphEngine
@@ -43,6 +45,8 @@ class BenchConfig:
     seed: int = 1234
     max_hop: int = 2
     max_nodes: int = 60
+    llm_attempts: int = 4  # a transient 503 / 429 must not discard a long run
+    retry_delay_s: float = 5.0
 
 
 def sample_wallets(scorer: Scorer, n: int, seed: int) -> list[str]:
@@ -121,25 +125,39 @@ async def run_benchmark(cfg: BenchConfig, scorer: Scorer, engine: GraphEngine, e
                 payload = await anyio.to_thread.run_sync(raw_dump, addr, scorer, edges)
             else:
                 payload = await anyio.to_thread.run_sync(graph_evidence, addr, engine, cfg)
-            res = await llm.complete(INSTRUCTIONS, payload, max_tokens=200)
+            error: str | None = None
+            res = None
+            for attempt in range(cfg.llm_attempts):
+                try:
+                    res = await llm.complete(INSTRUCTIONS, payload, max_tokens=200)
+                    break
+                except UpstreamError as exc:
+                    error = exc.detail
+                    await asyncio.sleep(cfg.retry_delay_s * 2**attempt)
             latency = (time.perf_counter() - start) * 1000
-            verdict = parse_verdict(res.text)
-            rec[method] = {"verdict": verdict, "inputTokens": res.input_tokens, "outputTokens": res.output_tokens,
-                           "latencyMs": round(latency, 1),
-                           "correct": verdict is not None and MAPPING[verdict] == truth}
+            if res is None:  # still failing after the retries: recorded as failed, never dropped or invented
+                rec[method] = {"verdict": None, "inputTokens": None, "outputTokens": None,
+                               "latencyMs": round(latency, 1), "correct": False, "error": error}
+            else:
+                verdict = parse_verdict(res.text)
+                rec[method] = {"verdict": verdict, "inputTokens": res.input_tokens, "outputTokens": res.output_tokens,
+                               "latencyMs": round(latency, 1),
+                               "correct": verdict is not None and MAPPING[verdict] == truth}
         records.append(rec)
         if progress:
             progress((i + 1) / len(wallets))
 
     rows = []
     for method in ("raw_dump", "graph_evidence"):
+        ok_latencies = [r[method]["latencyMs"] for r in records if "error" not in r[method]]
         toks = [r[method]["inputTokens"] for r in records if r[method]["inputTokens"] is not None]
         rows.append({
             "method": method,
             "inputTokens": round(statistics.mean(toks), 1) if toks else None,
-            "latencyMs": round(statistics.median(r[method]["latencyMs"] for r in records), 1),
+            "latencyMs": round(statistics.median(ok_latencies), 1) if ok_latencies else None,
             "accuracyPct": round(100 * sum(r[method]["correct"] for r in records) / len(records), 1),
-            "unparseable": sum(r[method]["verdict"] is None for r in records),
+            "unparseable": sum(r[method]["verdict"] is None and "error" not in r[method] for r in records),
+            "failed": sum("error" in r[method] for r in records),
         })
     result = {
         "measuredAt": datetime.now(UTC).isoformat(timespec="seconds"), "dataSource": data_source,
@@ -147,7 +165,9 @@ async def run_benchmark(cfg: BenchConfig, scorer: Scorer, engine: GraphEngine, e
         "engine": engine.name,
         "mapping": "predicted illicit = WARN or BLOCK; predicted licit = ALLOW; truth = dataset label (test split)",
         "aggregates": "inputTokens = mean of provider-reported input tokens; latencyMs = median end-to-end; "
-                      "accuracyPct = share of wallets whose mapped verdict matches the dataset label",
+                      "accuracyPct = share of ALL sampled wallets whose mapped verdict matches the dataset label "
+                      "(failed calls count as wrong); "
+                      "failed = calls that still errored after the retries",
         "hidden": "the wallet's own label, the model score and the verdict are hidden from both methods",
         "rawEdgeCap": RAW_EDGE_CAP, "graphMaxHop": cfg.max_hop, "rows": rows, "records": records,
     }

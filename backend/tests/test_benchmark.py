@@ -129,3 +129,40 @@ def test_run_endpoint(settings: Any, trained: tuple[Path, Path], tmp_path: Path,
     assert res["dataSource"] == "synthetic_fixture" and res["sampleSize"] == 6
     assert c.get("/api/benchmark").json() == {"status": "not_measured"}  # fixture results never surface
     assert c.get("/api/benchmark/job/nope").status_code == 404
+
+
+class FlakyLLM(CountingLLM):
+    """Fails twice with a 503 before every successful answer, and never answers for one specific input."""
+
+    def __init__(self, always_fail_on: str | None = None) -> None:
+        super().__init__()
+        self.attempts = 0
+        self.always_fail_on = always_fail_on
+
+    async def complete(self, system: str, user: str, max_tokens: int = 400, temperature: float = 0.0) -> LLMResult:
+        from app.errors import UpstreamError
+
+        self.attempts += 1
+        if (self.always_fail_on and self.always_fail_on in user) or self.attempts % 3 != 0:
+            raise UpstreamError("fake", "http 503")
+        return await super().complete(system, user, max_tokens, temperature)
+
+
+async def test_benchmark_survives_transient_upstream_errors(parts: Any, tmp_path: Path) -> None:
+    scorer, engine, edges = parts
+    llm = FlakyLLM()
+    res = await run_benchmark(BenchConfig(sample_size=4, retry_delay_s=0.0), scorer, engine, edges, llm, 10_000_000,
+                              tmp_path / "b.json", "synthetic_fixture")
+    assert all(r["failed"] == 0 for r in res["rows"])  # every call succeeded on a retry
+    assert all(rec[m]["inputTokens"] is not None for rec in res["records"] for m in ("raw_dump", "graph_evidence"))
+
+
+async def test_benchmark_records_persistent_failures_instead_of_dropping_them(parts: Any, tmp_path: Path) -> None:
+    scorer, engine, edges = parts
+    llm = FlakyLLM(always_fail_on="wallet:")  # every raw_dump payload starts with "wallet:"
+    res = await run_benchmark(BenchConfig(sample_size=4, llm_attempts=2, retry_delay_s=0.0), scorer, engine, edges,
+                              llm, 10_000_000, tmp_path / "b.json", "synthetic_fixture")
+    rows = {r["method"]: r for r in res["rows"]}
+    assert rows["raw_dump"]["failed"] == 4 and rows["raw_dump"]["accuracyPct"] == 0.0
+    assert rows["raw_dump"]["inputTokens"] is None and rows["raw_dump"]["latencyMs"] is None
+    assert all(rec["raw_dump"]["error"] == "http 503" for rec in res["records"])

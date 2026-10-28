@@ -394,8 +394,9 @@ supplied through the environment and are not in the repository.
 | Free-tier limit that matters | measured | Groq response headers reported 1,000 requests and 8,000 tokens as the limits (window not read). One check spends about 0.5 to 0.9 k tokens, so a burst of checks hits 429 and gets templates |
 | Weak local model, for the record | measured | Qwen2.5-1.5B Q4 on CPU: output was not JSON (8/8 attempts unparseable) until `LLM_JSON_MODE=true`; its Hindi looped to the token limit; 15 to 48 s per call, far above the 8 s deadline, so it fell back to templates in production settings |
 | Benchmark N=10, local Qwen2.5-1.5B Q4 (CPU) | measured, **not a quality result** | `raw_dump`: 9,251 mean input tokens, median 60,617 ms, 50.0 % accurate (it answered illicit for 10/10 wallets, so 50 % is the sample's base rate); `graph_evidence`: 198.9 tokens, median 6,607 ms, 20.0 % accurate; unparseable 0 in both. Same model, same wallets. Only the token and latency gap is informative |
-| Benchmark N=25 | **not measured** | the local run was killed at 24 % when a stray `pkill` ended the shell. Not rerun |
-| Benchmark on Groq free tier | **not run** | the raw dumps average 9,251 tokens (up to 19,820 measured on N=10) and the free limit is 8,000 tokens per minute, so the raw method cannot be sent. Shrinking the raw dump would change the experiment; a provider with a larger limit is needed |
+| Benchmark N=10 and N=25, Gemini `gemini-3.1-flash-lite` (via the OpenAI-compatible endpoint, JSON mode) | **measured** | see the table below. 0 failed, 0 unparseable calls in both runs. Provider-reported input tokens; real data, NetworkX engine, same 25 wallets (12 illicit, 13 licit, test split, seed 1234) for both methods |
+| Benchmark N=25 on the local 1.5B model | not measured | that run was killed at 24 % by a stray `pkill`; superseded by the Gemini run |
+| Benchmark on Groq free tier | not run | 8,000 tokens per minute is below the raw dumps (mean 10,931, max 19,264 tokens at N=25); Gemini was used instead |
 | TigerGraph Community Edition (local Docker, v4.2.5) | **FAIL (environment)** | schema created on the engine; data upsert failed with `SYS-0001` because GSE could not start: `System hard limit of file descriptors is 20000. The expected is no less than 65535`. The sandbox cannot raise it, and it was not bypassed. GSQL queries therefore remain **never compiled**; no TigerGraph counts, comparison or latency |
 | TigerGraph Savanna | not tested | needs an account (credits only, no free instance per its FAQ) |
 | Sarvam STT / TTS (`saaras:v4`, `bulbul:v4-flash`) | **PASS** | first call: SDK `text_to_speech.convert` (hi-IN) returned a valid 22,050 Hz mono WAV (2.00 s, 88,244 B); `speech_to_text.transcribe` of that file returned the identical sentence. The app's own `TTS.synthesize` produced MP3s (en 98,220 B, hi 96,966 B) and `sarvam_transcribe` recovered the text (en exact; hi exact); a bad key gives `UpstreamError(sarvam, http 403)`. Quirk: Hindi audio sent with `language_code=en-IN` comes back translated to English, and English audio sent as `hi-IN` comes back in Devanagari transliteration. Free-credit balance and rate limits not read |
@@ -413,3 +414,28 @@ supplied through the environment and are not in the repository.
 ### Still open
 TigerGraph (needs Savanna or a machine where the Community Edition can start), Sarvam, Dodo, Wispr, testnet invoice,
 Base Sepolia attestation, a provider with a large enough token limit for the benchmark, benchmark N=25, deployment.
+
+
+### Benchmark results (real, `artifacts/benchmark_results.json`, measured 2026-10-28)
+Question: does a compact graph summary (`graph_evidence`) give the LLM what it needs, at a fraction of the input, compared with
+dumping the raw features and up to 300 labelled edges (`raw_dump`)? The wallet's own label, the model score and the verdict are
+hidden from both methods. Predicted illicit = WARN or BLOCK; truth = dataset label.
+
+| N | Method | Mean input tokens | Median latency | Accuracy | Confusion (illicit as positive) |
+|---|---|---|---|---|---|
+| 10 | raw_dump | 9,032.7 | 3,614 ms | 100.0 % | not computed |
+| 10 | graph_evidence | 186.9 | 2,647 ms | 90.0 % | not computed |
+| 25 | raw_dump | 10,931.0 | 2,215 ms | 96.0 % | TP 12, FN 0, FP 1, TN 12 |
+| 25 | graph_evidence | 187.2 | 2,211 ms | 72.0 % | TP 12, FN 0, FP 7, TN 6 |
+
+What this does and does not support:
+- **Supported:** `graph_evidence` used about 58 times fewer input tokens (187.2 vs 10,931.0 mean at N=25) and found every illicit
+  wallet (0 false negatives in both methods). Latency is about equal (median 2,211 vs 2,215 ms), so the saving is cost and context
+  size, not speed.
+- **Not supported:** that the compact method is as accurate. At N=25 it flagged 7 of 13 licit wallets (accuracy 72 % vs 96 %).
+  The raw dump includes the wallet's own 182 features, which the compact summary does not, so this compares two different
+  information sets, not "graph vs no graph".
+- One model, one seed, 25 wallets: the accuracy gap has wide uncertainty and was not tested for significance.
+- The earlier local 1.5B model result (N=10: 50 % vs 20 %) is not comparable and should not be quoted.
+- Code change from this run: the benchmark now retries transient upstream errors (4 attempts, backoff) and records a call that
+  still fails as `failed` instead of aborting (a Gemini 503 had crashed the first attempt).
