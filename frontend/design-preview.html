@@ -53,18 +53,11 @@ a{color:inherit}
 /* nav */
 .nav{background:var(--surface-canvas);height:var(--nav-height);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--color-carbon)}
 .nav .container{display:flex;align-items:center;gap:var(--spacing-18);height:100%}
-.brand{display:flex;align-items:center;gap:var(--spacing-9);text-decoration:none;font-weight:600;font-size:var(--text-subheading);letter-spacing:normal}
+.brand{display:flex;align-items:center;text-decoration:none}
 .brand img{width:44px;height:44px}
-.pill{display:none;margin:0 auto;background:var(--color-bone);border-radius:var(--radius-nav);padding:var(--spacing-7) var(--spacing-18);list-style:none}
-.pill li{display:flex;align-items:center}
-.pill li+li::before{content:"";width:1px;height:18px;background:var(--color-carbon);margin:0 var(--spacing-18)}
-.pill a{text-decoration:none;font-size:var(--text-body);min-height:var(--tap-target);display:inline-flex;align-items:center}
-.pill a:hover,.pill a[aria-current]{text-decoration:underline;text-underline-offset:7px;text-decoration-thickness:2px}
-@media(min-width:1024px){.pill{display:flex}}
 .nav .right{margin-left:auto;display:flex;align-items:center;gap:var(--spacing-9)}
 .nav .hide-m{display:none}
 @media(min-width:640px){.nav .hide-m{display:inline-flex}}
-@media(min-width:1024px){.nav .right{margin-left:0}}
 
 /* cards & chips */
 .card{background:var(--surface-card);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--card-padding)}
@@ -150,34 +143,44 @@ td{padding:var(--spacing-18);border-top:1px solid var(--color-bone);font-size:va
 @media(min-width:1024px){.swatches{grid-template-columns:repeat(6,1fr)}}
 .sw{border:1px solid var(--color-carbon);border-radius:var(--radius-tags);overflow:hidden;background:#fff}
 .sw div{height:53px;border-bottom:1px solid var(--color-carbon)}.sw p{padding:var(--spacing-9);font-size:var(--text-small);line-height:1.3}
-.ribbon{position:fixed;left:0;top:0;z-index:10;height:26px;padding:0 var(--spacing-13);display:flex;align-items:center;background:var(--color-cotton-pink);border:1px solid var(--color-carbon);border-left:0;border-top:0;font-size:var(--text-small);font-weight:600;border-radius:0 0 var(--radius-tags) 0}
+.ribbon{position:fixed;left:0;bottom:0;z-index:10;height:26px;padding:0 var(--spacing-13);display:flex;align-items:center;background:var(--color-cotton-pink);border:1px solid var(--color-carbon);border-left:0;border-bottom:0;font-size:var(--text-small);font-weight:600;border-radius:0 var(--radius-tags) 0 0}
 footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-white);padding:var(--spacing-70) 0}
 </style>
+<link rel="stylesheet" href="src/styles/motion.css">
+<link rel="stylesheet" href="src/styles/nav.css">
 </head>
 <body>
 <div class="ribbon">MOCK DATA</div>
 
 <header class="nav">
   <div class="container">
-    <a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a>
-    <ul class="pill">
-      <li><a href="#check" aria-current="page">Check</a></li>
-      <li><a href="#benchmark">Benchmark</a></li>
-      <li><a href="#credits">Credits</a></li>
-      <li><a href="#about">About</a></li>
-    </ul>
+    <a class="brand" href="#" aria-label="Cryptiq home"><picture><source media="(prefers-reduced-motion: reduce)" srcset="public/brand/logo-mark-static.svg"><img src="public/brand/logo-mark.svg" alt="Cryptiq home"></picture></a>
     <div class="right">
-      <div class="seg hide-m" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
-      <span class="credit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 12h6"/></svg>12</span>
+      <div class="seg" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
+      <span class="credit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 12h6"/></svg><span class="n">12</span></span>
       <a class="btn btn-black hide-m" href="#">Connect wallet</a>
     </div>
   </div>
 </header>
 
+<nav class="dock" id="dock" aria-label="Main">
+  <button class="dock-launch" id="dockLaunch" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="dockMenu">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><g class="g-btc"><path d="M8 5.5h5.2a2.75 2.75 0 0 1 0 5.5H8m0 0h5.8a2.75 2.75 0 0 1 0 5.5H8M8 5.5v11M10.5 3.5v2M13.5 3.5v2M10.5 16.5v2M13.5 16.5v2"/></g><g class="g-x"><path d="M6 6l12 12M18 6L6 18"/></g></svg>
+    <span class="dock-tip">Menu</span>
+  </button>
+  <ul class="dock-menu" id="dockMenu" aria-hidden="true" inert>
+    <li><a href="#check" aria-current="page"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Check</a></li>
+    <li><a href="#benchmark"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Benchmark</a></li>
+    <li><a href="#credits"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10.5h5M9.5 13.5h5"/></svg>Credits</a></li>
+    <li><a href="#about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></svg>About</a></li>
+  </ul>
+</nav>
+
+
 <section class="section center">
   <div class="container stack" style="--x:0">
     <p class="eyebrow">Check before you pay</p>
-    <h1 class="display" style="margin-top:var(--spacing-26)">Say a wallet.<br>Get a verdict.</h1>
+    <h1 class="display" style="margin-top:var(--spacing-26)"><span class="load-line"><span style="--d:60ms">Say a wallet.</span></span><span class="load-line"><span style="--d:180ms">Get a verdict.</span></span></h1>
     <div class="row" style="justify-content:center;margin-top:var(--spacing-53)"><a class="btn btn-green" href="#check">Get started</a><a class="btn btn-ghost" href="#how">See how it works</a></div>
     <p class="help" style="margin-top:var(--spacing-26)">Risk signal, not an accusation.</p>
   </div>
@@ -185,9 +188,9 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
 
 <section class="section" id="how" style="padding-top:0">
   <div class="container grid" style="align-items:start">
-    <div class="s4 t4 d4 stagger a"><div class="confetti" style="background:var(--color-sticker-yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><p class="sub">Say or paste any Bitcoin wallet.</p><span class="tag">Simple</span></div></div>
-    <div class="s4 t4 d4 stagger b"><div class="confetti" style="background:var(--color-cotton-pink)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg><p class="sub">See how close it sits to flagged wallets.</p><span class="tag">Graph</span></div></div>
-    <div class="s4 t8 d4 stagger c"><div class="confetti" style="background:var(--color-powder-blue)"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></svg><p class="sub">Keep the proof on-chain, in Hindi or English.</p><span class="tag">Proof</span></div></div>
+    <div class="s4 t4 d4 stagger a" data-reveal style="--d:0ms"><div class="confetti" style="background:var(--color-sticker-yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><p class="sub">Say or paste any Bitcoin wallet.</p><span class="tag">Simple</span></div></div>
+    <div class="s4 t4 d4 stagger b" data-reveal style="--d:120ms"><div class="confetti" style="background:var(--color-cotton-pink)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg><p class="sub">See how close it sits to flagged wallets.</p><span class="tag">Graph</span></div></div>
+    <div class="s4 t8 d4 stagger c" data-reveal style="--d:240ms"><div class="confetti" style="background:var(--color-powder-blue)"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></svg><p class="sub">Keep the proof on-chain, in Hindi or English.</p><span class="tag">Proof</span></div></div>
   </div>
 </section>
 
@@ -196,23 +199,23 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
     <p class="eyebrow">Check a wallet</p>
     <h2 class="h-lg" style="margin:var(--spacing-18) 0 var(--spacing-42)">Verdict, evidence, reasons.</h2>
     <div class="grid" style="align-items:start">
-      <div class="s4 t8 d5 stack">
+      <div class="s4 t8 d5 stack" data-reveal="left">
         <div class="card stack">
           <div class="row" style="justify-content:space-between"><h3 class="sub">Check a wallet</h3><div class="seg" role="group" aria-label="Voice language"><button aria-pressed="true">English</button><button aria-pressed="false" lang="hi">हिन्दी</button></div></div>
           <div class="row" style="gap:var(--spacing-26);padding:var(--spacing-13) var(--spacing-9)"><button class="mic" aria-label="Hold to talk"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div><b>Hold to talk</b><div class="help" style="margin:0">Space · or paste below</div></div></div>
           <div><label for="a">Wallet address</label><input id="a" class="input" value="DEMO-ILLICIT-01"><p class="help">Enter only a public address. Never share your seed phrase.</p></div>
           <div class="row9"><span class="tag demo sel" style="background:var(--color-carbon);color:#fff">Known illicit (demo)</span><span class="tag demo">Borderline (demo)</span><span class="tag demo">Clean (demo)</span></div>
-          <div class="row"><button class="btn btn-black lg">Check wallet (1 credit)</button><button class="btn btn-ghost">Clear</button></div>
+          <div class="row"><button class="btn btn-black lg" data-credit-tick>Check wallet (1 credit)</button><button class="btn btn-ghost">Clear</button></div>
           <div><label for="b">Invalid state</label><input id="b" class="input err" value="1abc"><p class="help err">Address format looks invalid.</p></div>
         </div>
         <div class="alert err"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3L12 3zM12 10v4M12 17v.5"/></svg><span><b>That looks like a secret key or seed phrase.</b> Never share it. Cryptiq only needs a public address.</span></div>
       </div>
 
-      <div class="s4 t8 d7 stack">
+      <div class="s4 t8 d7 stack" data-reveal style="--d:120ms">
         <div class="card stack">
           <div><span class="vchip" style="background:var(--status-block-tint);color:var(--status-block-ink)"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM10 10l4 4M14 10l-4 4"/></svg>BLOCK</span></div>
           <p>Strong risk signals found in the dataset.</p>
-          <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="86" aria-label="Risk score"><span class="score">86</span><div class="track" style="--fill:var(--status-block-solid)"><b style="width:86%"></b><i style="left:30%"></i><i style="left:70%"></i></div></div>
+          <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="86" aria-label="Risk score"><span class="score" data-count="86">86</span><div class="track" data-meter="86" style="--fill:var(--status-block-solid)"><b style="width:86%"></b><i style="left:30%"></i><i style="left:70%"></i></div></div>
           <div class="mono">DEMO-ILLICIT-01</div>
           <div class="row9"><span class="tag bone">Dataset label: illicit</span><span class="tag block">Nearest flagged: 1 hop</span><span class="tag block">OFAC: match</span><span class="tag unknown">Ransomwhere: no match</span></div>
           <div class="tg"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Graph query answered by TigerGraph in <b>41 ms</b> <span class="mono">walletRisk_khop</span> <a href="#">View GSQL</a></div>
@@ -271,11 +274,11 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
   <div class="container">
     <p class="eyebrow center">Any questions?</p>
     <h2 class="display d153" style="margin:var(--spacing-18) 0 var(--spacing-53)">FAQ</h2>
-    <div style="max-width:800px">
-      <div class="faq">What is a credit?<span class="plus"></span></div>
-      <div class="faq">Is this real money?<span class="plus"></span></div>
-      <div class="faq">Why pay privately with crypto?<span class="plus"></span></div>
-      <div class="faq">क्या यह पैसा असली है?<span class="plus"></span></div>
+    <div style="max-width:800px" data-reveal>
+      <div class="faq" aria-expanded="false">What is a credit?<span class="plus"></span></div><div class="faq-wrap"><div><p class="muted" style="padding:var(--spacing-13) var(--spacing-26) var(--spacing-18);max-width:65ch">A credit pays for one wallet check. Each check uses one credit.</p></div></div>
+      <div class="faq" aria-expanded="false">Is this real money?<span class="plus"></span></div><div class="faq-wrap"><div><p class="muted" style="padding:var(--spacing-13) var(--spacing-26) var(--spacing-18);max-width:65ch">No. Credits are in test mode, so no real money moves.</p></div></div>
+      <div class="faq" aria-expanded="false">Why pay privately with crypto?<span class="plus"></span></div><div class="faq-wrap"><div><p class="muted" style="padding:var(--spacing-13) var(--spacing-26) var(--spacing-18);max-width:65ch">Paying with crypto through a wallet such as Cake Wallet keeps your payment private.</p></div></div>
+      <div class="faq" aria-expanded="false">क्या यह पैसा असली है?<span class="plus"></span></div><div class="faq-wrap"><div><p class="muted" lang="hi" style="padding:var(--spacing-13) var(--spacing-26) var(--spacing-18);max-width:65ch">नहीं। यह टेस्ट मोड है, कोई असली पैसा नहीं लगता।</p></div></div>
     </div>
   </div>
 </section>
@@ -310,11 +313,13 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
 
 <footer>
   <div class="container grid">
-    <div class="s4 t8 d4 stack"><a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a><p class="muted small">Say a wallet. Get ALLOW, WARN or BLOCK. See why on a graph. Keep proof on-chain.</p></div>
+    <div class="s4 t8 d4 stack"><a class="brand" href="#" aria-label="Cryptiq home"><picture><source media="(prefers-reduced-motion: reduce)" srcset="public/brand/logo-mark-static.svg"><img src="public/brand/logo-mark.svg" alt="Cryptiq home"></picture></a><p class="muted small">Say a wallet. Get ALLOW, WARN or BLOCK. See why on a graph. Keep proof on-chain.</p></div>
     <div class="s4 t4 d4 stack"><b>Built with</b><p class="muted small">TigerGraph · Dodo Payments · Cake Wallet (payment links) · Base Sepolia + EAS</p></div>
     <div class="s4 t4 d4 stack"><b>Thanks</b><p class="muted small">AI Grants India · Socket Security · Edge City</p></div>
     <p class="help s4 t8 d12" style="border-top:1px solid var(--color-carbon);padding-top:var(--spacing-26)">Risk signal, not an accusation. Research dataset, not the live blockchain.</p>
   </div>
 </footer>
+<script src="src/motion/reveal.js"></script>
+<script src="src/motion/nav.js"></script>
 </body>
 </html>

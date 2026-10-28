@@ -21,7 +21,7 @@ Cryptiq uses a stark-white-canvas minimalism interrupted by playful chromatic co
 | Slate Gray | `#6e726e` | `--color-slate-gray` | Helper text, low-emphasis borders, tertiary metadata |
 | Paper White | `#f9faf9` | `--color-paper-white` | Page canvas, primary background, FAQ item surfaces |
 | Pure White | `#ffffff` | `--color-pure-white` | Card surfaces, input fields, elevated content panels |
-| Bone | `#ecefec` | `--color-bone` | Nav pill background, FAQ accordion rows, soft card surfaces, muted chips |
+| Bone | `#ecefec` | `--color-bone` | Side dock menu panel, FAQ accordion rows, soft card surfaces, muted chips |
 | Plaster | `#eeeeee` | `--color-plaster` | Input field backgrounds, subtle disabled surfaces |
 
 ## Tokens — Typography
@@ -102,10 +102,10 @@ Vivid green (#05c92f) pill with Carbon (#0f0f0f) text (white on this green is on
 
 Solid black (#0f0f0f) pill, 35px radius, white text at 14px weight 500, 14px vertical / 18px horizontal padding, label 'Connect wallet'. Sits in the top-right of the header. Lighter weight than the green pill — use as a supporting action when green is already present on the page.
 
-### Ghost Nav Pill
-**Role:** Navigation container with secondary links
+### Side Dock (toggle navigation)
+**Role:** Primary navigation, collapsed by default
 
-Bone-colored (#ecefec) rounded container, ~9px radius, 18px vertical / 18px+ horizontal padding, holding the Check | Benchmark | Credits | About links separated by thin vertical dividers in #0f0f0f. Links are 13–14px Inter Tight 500 in #0f0f0f.
+Navigation lives on the left edge, vertically centred, as a single 53px launcher button (Carbon fill, white bitcoin glyph, 35px radius). Pressing it opens a vertical Bone (#ecefec) menu with four items: **Check, Benchmark, Credits, About**, each at least 44px tall with a 20px line icon and a 13–14px/500 label. The panel grows out of the launcher (transform-origin left), items stagger in at 60ms steps with a 12px slide and fade, and the glyph turns a quarter-turn from bitcoin to a close cross. The active item is Carbon with white text. Closes on Esc, outside click or selection, and focus returns to the launcher; arrow keys move between items. Reduced motion: fade only. The top bar keeps only the logo (left) and the language toggle, credit pill and Connect wallet (right).
 
 ### Confetti Accent Card
 **Role:** Decorative feature cards with chromatic fills
@@ -158,7 +158,7 @@ Circular button, 1px #0f0f0f border, ~24px diameter, containing a thin plus glyp
 |-------|------|-------|---------|
 | 0 | Canvas | `#f9faf9` | Page background — warm off-white that softens the stark contrast of pure white |
 | 1 | Card | `#ffffff` | Content cards, feature panels, and elevated content blocks |
-| 2 | Bone Surface | `#ecefec` | Nav pill, FAQ accordion rows, muted interactive surfaces |
+| 2 | Bone Surface | `#ecefec` | Side dock menu, FAQ accordion rows, muted interactive surfaces |
 | 3 | Input | `#eeeeee` | Form field backgrounds, disabled states |
 
 ## Elevation
@@ -171,7 +171,7 @@ Product screenshots presented inside framed UI containers with scattered chromat
 
 ## Layout
 
-Full-width sections with max-width ~1200px centered content. Hero is centered: eyebrow text → massive display headline → green CTA pill, all stacked vertically with generous vertical breathing room. Feature sections alternate between left-text/right-visual and centered compositions. FAQ section is left-aligned with a centered eyebrow above the display heading. Navigation is a top bar with logo left, nav pill centered, nav button right. Vertical rhythm uses 80px section gaps; cards within sections use 26px padding. The overall feel is spacious but compact in type — wide whitespace surrounding dense, tightly-led text blocks.
+Full-width sections with max-width ~1200px centered content. Hero is centered: eyebrow text → massive display headline → green CTA pill, all stacked vertically with generous vertical breathing room. Feature sections alternate between left-text/right-visual and centered compositions. FAQ section is left-aligned with a centered eyebrow above the display heading. Navigation is a slim top bar (logo left; language toggle, credit pill and Connect wallet right) plus a collapsed side dock on the left edge that opens the four sections. Vertical rhythm uses 80px section gaps; cards within sections use 26px padding. The overall feel is spacious but compact in type — wide whitespace surrounding dense, tightly-led text blocks.
 
 ## Agent Prompt Guide
 
@@ -192,7 +192,7 @@ Full-width sections with max-width ~1200px centered content. Hero is centered: e
 
 3. **FAQ Accordion Row**: #ecefec fill, 17.5px radius, 26px vertical padding. Question text in Inter Tight 500, 18px, #0f0f0f. Right-aligned circular plus toggle: 1px #0f0f0f border, 24px diameter, thin plus glyph.
 
-4. **Ghost Nav Pill**: #ecefec background, 9px radius, 7px 18px padding. Four links ('Check', 'Benchmark', 'Credits', 'About') at 13px weight 500, #0f0f0f, separated by 1px vertical dividers in #0f0f0f.
+4. **Side Dock**: 53px Carbon launcher, 35px radius, white bitcoin glyph, fixed left and vertically centred. On press a #ecefec panel (9px radius, 1px #0f0f0f border, 9px padding) opens with four 44px rows ('Check', 'Benchmark', 'Credits', 'About'), 20px line icons, labels 14px weight 500; items stagger in 60ms apart; active row #0f0f0f with white text.
 
 5. **Display FAQ Heading**: Section eyebrow 'Any questions?' in 18px weight 500, #0f0f0f, centered. Below: 'FAQ' in Inter Tight 600, 153px, line-height 0.80, #0f0f0f, left-aligned.
 
@@ -233,7 +233,11 @@ Graph nodes (shape plus color): illicit = BLOCK solid diamond; licit = ALLOW sol
 Column gap equals the gutter. Check page desktop split: input and verdict 5 columns, graph and tabs 7. Three-card rows span 4 / 4 / 4. On mobile every block spans the full width in reading order. Tap targets are at least 44px.
 
 ### Focus and motion
-Focus-visible: 2px solid `#0f0f0f` outline, 2px offset (a border, not a glow). Motion: 150–250ms ease-out, color/opacity/transform only; the mic ring pulse and graph particles stop under `prefers-reduced-motion`.
+Focus-visible: 2px solid `#0f0f0f` outline, 2px offset (a border, not a glow). Motion has two layers, both flat (no shadows, no glows) and both animating only `transform`, `opacity` and `filter: blur`:
+
+- **Micro-interactions (90–320ms):** buttons fill on hover and press to `scale(.97)`; cards lift 6px (position, never shadow); links draw an underline; accordions open on a `grid-template-rows` transition and the plus turns into a cross; credit count ticks down with a short slide; meters fill and numbers count up when scrolled into view. Tokens: `--duration-fast 120ms`, `--duration-default 200ms`, `--duration-slow 320ms`, easings `--ease-out`, `--ease-in-out`, `--ease-emphasized`. Never `transition: all`.
+- **Scroll story (scrubbed):** the landing page is one pinned stage whose elements are pure functions of scroll progress (hero hands off to a rising device frame, sticker burst, cards that collapse into chips, blur-morphing device screens, a rolling list, a word-by-word statement with an inline pill, rising cards, loop back to the hero). Full scene table in `MOTION.md`.
+- **Reduced motion:** `prefers-reduced-motion` removes every movement, scale and blur. Elements keep their layout positions and only fade; the sticker burst, rolling list and idle loops stop.
 
 ### One saturated green per viewport
 The green appears once per screen as the primary action. On the check page that is the **mic button** (the product's headline action); "Check wallet" becomes a Black Nav Button style (Carbon fill, white text). On other pages it is the Green CTA Pill.
@@ -259,8 +263,13 @@ The green appears once per screen as the primary action. On the check page that 
 - **Mock-Data Ribbon:** fixed top-left, 26px tall, Cotton Pink fill, 1px Carbon border, 13px/600 "MOCK DATA", bottom-right radius 14px.
 - **Footer:** Pure White, 1px Carbon top border, 70px vertical padding, 12-column grid (pitch, "Built with", "Thanks"), honesty line at the bottom in 13px Ash Gray. Sponsor names are plain text wordmarks.
 
+- **Device Frame:** the stage for the scroll story. Pure White, 1px Carbon border, 17.5px radius, `overflow: hidden`, width = 0.56 × height (height `min(58svh, 540px)`, `min(38svh, 330px)` on mobile). Inner type scales with the frame (`font-size: clamp(9px, 4.2% of width, 13px)`) so the same screens work at any size. Every screen inside is labelled "Example · mock data".
+- **Sticker (confetti chip):** flat Sticker Yellow / Cotton Pink / Powder Blue / verdict-tint shapes (note, circle, pill, coin) with Carbon 500/600 text, no border or shadow, 14–17.5px radii or full pill for tags. They burst out of the frame centre, never more than 3 saturated colours at once.
+- **Collapsing Card:** a 280px confetti card (headline 25px/600, tag bottom-left, bolt/icon top-right) that shrinks to a 190 × 40px chip (tag + icon) and stacks at the top-left under the logo; one per story scene.
+- **Inline Pill (statement):** a Sticker Yellow pill that grows from nothing between two words of a large statement and holds the logo mark.
+
 ### Logo
-A black sticker: Carbon rounded square (14px radius at 48px) holding a white shield outline with a three-node white link graph, one Cotton Pink "flagged" node, and a small Sticker Yellow dot peeking off the top-right corner like a confetti sticker. Wordmark: **cryptiq**, lowercase, Inter Tight 600, tight tracking left at normal, 25px, 9px gap from the mark. Mark minimum 24px. Monochrome only apart from the pink and yellow accents; no shadow, no outline, no rotation.
+**Hop Path**, mark only. There is no wordmark and no lettering anywhere in the logo, and the product name never appears next to it. A Carbon rounded-square sticker tile (56 of 64 units, radius 18) holds a Slate Gray ring and a white three-hop route that ends on a flagged wallet: a Cotton Pink node inside a white ring. It is the product in one gesture: how many hops from a flagged wallet. One Sticker Yellow confetti dot peeks off the top-right corner. On load the route draws hop by hop (about 620ms, ease-out), the three white nodes pop in 170ms apart and the pink flagged node pops last with a small overshoot; the animation lives inside the SVG so it also plays in an `<img>`, and it is disabled under `prefers-reduced-motion`. Minimum size 24px; place it at the top-left of the top bar at 44px. Do not crop (the dot sits outside the tile), recolour, rotate or add shadows. Files: `public/brand/logo-mark.svg` (final) and `public/brand/concept-*.svg` with the review gallery in `logo-options.html` (Verdict Dial, Watcher Eye, Sonar Shield and Sticker Orbit are kept as alternates).
 
 ## Quick Start
 
