@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cryptiq Design Preview</title>
+<link rel="icon" href="public/brand/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+Devanagari:wght@500;600&display=swap">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:var(--surface-canvas);color:var(--color-carbon);font:500 var(--text-body-lg)/var(--leading-body-lg) var(--font-inter-tight);-webkit-font-smoothing:antialiased}
+:lang(hi){font-family:var(--font-devanagari)}
+b,strong,th,h1,h2,h3{font-weight:600}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--color-carbon);outline-offset:2px}
+.container{max-width:var(--page-max-width);margin:0 auto;padding:0 var(--page-gutter)}
+.section{padding:var(--section-gap) 0}
+.grid{display:grid;grid-template-columns:repeat(var(--grid-columns),1fr);gap:var(--grid-gap)}
+.s4{grid-column:span 4}
+@media(min-width:640px){.t4{grid-column:span 4}.t8{grid-column:span 8}}
+@media(min-width:1024px){.d4{grid-column:span 4}.d5{grid-column:span 5}.d6{grid-column:span 6}.d7{grid-column:span 7}.d12{grid-column:span 12}.d3{grid-column:span 3}}
+.mono{font-family:var(--font-mono);font-weight:500;font-size:var(--text-small);line-height:1.5;word-break:break-all}
+.muted{color:var(--color-ash-gray)}
+.small{font-size:var(--text-small);line-height:var(--leading-small)}
+.stack>*+*{margin-top:var(--spacing-18)}
+.row{display:flex;flex-wrap:wrap;gap:var(--spacing-18);align-items:center}
+.row9{display:flex;flex-wrap:wrap;gap:var(--spacing-9);align-items:center}
+.center{text-align:center}
+
+/* type scale (responsive per DESIGN.md) */
+.display{font-weight:600;font-size:56px;line-height:.9}
+.h-lg{font-weight:600;font-size:40px;line-height:.95}
+.h{font-weight:600;font-size:var(--text-heading-sm);line-height:var(--leading-heading-sm)}
+.sub{font-weight:600;font-size:var(--text-subheading);line-height:var(--leading-subheading)}
+@media(min-width:640px){.display{font-size:105px;line-height:.85}.h-lg{font-size:70px;line-height:.9}}
+@media(min-width:1024px){.display{font-size:var(--text-display-xl);line-height:var(--leading-display-xl)}.display.d153{font-size:var(--text-display);line-height:var(--leading-display)}.h-lg{font-size:var(--text-heading-lg);line-height:var(--leading-heading-lg)}}
+:lang(hi).display,:lang(hi).h-lg{line-height:1.05}
+.eyebrow{font-size:var(--text-body-lg);color:var(--color-ash-gray)}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--spacing-9);min-height:var(--tap-target);border-radius:var(--radius-buttons);font:500 var(--text-body-lg)/1 var(--font-inter-tight);cursor:pointer;border:1px solid transparent;text-decoration:none;transition:background 150ms ease-out,color 150ms ease-out,border-color 150ms ease-out}
+.btn-green{background:var(--color-acid-lime);color:var(--color-carbon);padding:var(--spacing-18) var(--spacing-26)}
+.btn-green:hover{background:var(--color-carbon);color:var(--color-pure-white)}
+.btn-black{background:var(--color-carbon);color:var(--color-pure-white);padding:var(--spacing-13) var(--spacing-18);font-size:var(--text-body)}
+.btn-black:hover{background:var(--color-obsidian)}
+.btn-black.lg{padding:var(--spacing-18) var(--spacing-26);font-size:var(--text-body-lg)}
+.btn-ghost{background:transparent;border-color:var(--color-carbon);color:var(--color-carbon);padding:var(--spacing-13) var(--spacing-26)}
+.btn-ghost:hover{background:var(--color-carbon);color:var(--color-pure-white)}
+.btn:disabled{background:var(--color-plaster);color:var(--color-slate-gray);border-color:transparent;cursor:not-allowed}
+
+/* nav */
+.nav{background:var(--surface-canvas);height:var(--nav-height);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--color-carbon)}
+.nav .container{display:flex;align-items:center;gap:var(--spacing-18);height:100%}
+.brand{display:flex;align-items:center;gap:var(--spacing-9);text-decoration:none;font-weight:600;font-size:var(--text-subheading);letter-spacing:normal}
+.brand img{width:44px;height:44px}
+.pill{display:none;margin:0 auto;background:var(--color-bone);border-radius:var(--radius-nav);padding:var(--spacing-7) var(--spacing-18);list-style:none}
+.pill li{display:flex;align-items:center}
+.pill li+li::before{content:"";width:1px;height:18px;background:var(--color-carbon);margin:0 var(--spacing-18)}
+.pill a{text-decoration:none;font-size:var(--text-body);min-height:var(--tap-target);display:inline-flex;align-items:center}
+.pill a:hover,.pill a[aria-current]{text-decoration:underline;text-underline-offset:7px;text-decoration-thickness:2px}
+@media(min-width:1024px){.pill{display:flex}}
+.nav .right{margin-left:auto;display:flex;align-items:center;gap:var(--spacing-9)}
+.nav .hide-m{display:none}
+@media(min-width:640px){.nav .hide-m{display:inline-flex}}
+@media(min-width:1024px){.nav .right{margin-left:0}}
+
+/* cards & chips */
+.card{background:var(--surface-card);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--card-padding)}
+.confetti{border-radius:var(--radius-cards);padding:var(--card-padding);min-height:231px;display:flex;flex-direction:column;justify-content:space-between;gap:var(--spacing-26);color:var(--color-carbon)}
+.confetti svg{width:26px;height:26px;stroke:var(--color-carbon);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.tag{display:inline-flex;align-items:center;gap:var(--spacing-7);align-self:flex-start;background:var(--color-pure-white);border-radius:var(--radius-tags);padding:var(--spacing-7) var(--spacing-13);font-size:var(--text-small);font-weight:500;line-height:1.2}
+.tag svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tag.allow{background:var(--status-allow-tint);color:var(--status-allow-ink)}
+.tag.warn{background:var(--status-warn-tint);color:var(--status-warn-ink)}
+.tag.block{background:var(--status-block-tint);color:var(--status-block-ink)}
+.tag.unknown{background:var(--status-unknown-tint);color:var(--status-unknown-ink)}
+.tag.bone{background:var(--color-bone)}
+.tag.demo{border:1px solid var(--color-carbon);cursor:pointer}
+.tag.demo.sel{background:var(--color-carbon);color:var(--color-pure-white)}
+.stagger{margin-top:0}
+@media(min-width:1024px){.stagger.a{margin-top:0}.stagger.b{margin-top:var(--spacing-42)}.stagger.c{margin-top:var(--spacing-18)}}
+
+/* forms */
+label{display:block;font-size:var(--text-body);font-weight:500;margin-bottom:var(--spacing-9)}
+.input{width:100%;height:53px;padding:0 var(--spacing-26);background:var(--color-plaster);border:1px solid var(--color-carbon);border-radius:var(--radius-inputs);font:500 var(--text-body-lg) var(--font-mono);color:var(--color-carbon)}
+.input:hover{border-color:var(--color-obsidian)}
+.input.err{border-color:var(--status-block-solid)}
+.help{font-size:var(--text-small);color:var(--color-ash-gray);margin-top:var(--spacing-9)}
+.help.err{color:var(--status-block-ink)}
+.seg{display:inline-flex;border:1px solid var(--color-carbon);border-radius:var(--radius-inputs);overflow:hidden;background:var(--color-pure-white)}
+.seg button{min-height:var(--tap-target);min-width:var(--tap-target);padding:0 var(--spacing-18);border:0;background:transparent;font:500 var(--text-body) var(--font-inter-tight);color:var(--color-carbon);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--color-carbon);color:var(--color-pure-white)}
+
+/* mic */
+.mic{width:88px;height:88px;border-radius:50%;background:var(--color-acid-lime);border:1px solid var(--color-carbon);display:grid;place-items:center;position:relative;cursor:pointer;flex:none}
+@media(min-width:640px){.mic{width:105px;height:105px}}
+.mic svg{width:35px;height:35px;stroke:var(--color-carbon);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.mic::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--color-carbon);animation:ring 2s ease-out infinite}
+@keyframes ring{0%{transform:scale(.92);opacity:.8}100%{transform:scale(1.2);opacity:0}}
+@media(prefers-reduced-motion:reduce){.mic::before{animation:none;opacity:.4}}
+.mic.rec{background:var(--status-block-solid)}
+.bars{display:flex;gap:4px;align-items:center;height:35px}.bars i{display:block;width:5px;background:#fff;border-radius:3px}
+
+/* verdict */
+.vchip{display:inline-flex;align-items:center;gap:var(--spacing-13);padding:var(--spacing-9) var(--spacing-26) var(--spacing-9) var(--spacing-18);border-radius:var(--radius-cards);font-weight:600;font-size:var(--text-heading);line-height:1.02}
+.vchip svg{width:44px;height:44px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.vchip.sm{font-size:var(--text-subheading);padding:var(--spacing-9) var(--spacing-18) var(--spacing-9) var(--spacing-13);gap:var(--spacing-9)}.vchip.sm svg{width:26px;height:26px}
+.meter{display:flex;align-items:center;gap:var(--spacing-18)}
+.track{position:relative;flex:1;height:13px;border-radius:var(--radius-inputs);background:var(--color-plaster)}
+.track b{position:absolute;left:0;top:0;bottom:0;border-radius:var(--radius-inputs);background:var(--fill);border:1px solid var(--color-carbon)}
+.track i{position:absolute;top:-4px;bottom:-4px;width:1px;background:var(--color-carbon)}
+.score{font-weight:600;font-size:var(--text-heading-sm);line-height:1}
+.tg{display:flex;flex-wrap:wrap;align-items:center;gap:var(--spacing-7) var(--spacing-13);background:var(--color-powder-blue);border-radius:var(--radius-tags);padding:var(--spacing-9) var(--spacing-13);font-size:var(--text-small)}
+.tg svg{width:16px;height:16px;stroke:var(--color-carbon);fill:none;stroke-width:1.75}
+.ul{list-style:none;padding:0;display:grid;gap:var(--spacing-9)}
+.ul li{display:flex;gap:var(--spacing-9);font-size:var(--text-body)}
+.ul svg{flex:none;width:18px;height:18px;margin-top:2px;stroke:var(--color-carbon);fill:none;stroke-width:1.75;stroke-linecap:round}
+.alert{display:flex;gap:var(--spacing-13);padding:var(--spacing-18) var(--spacing-26);border-radius:var(--radius-cards);font-size:var(--text-body)}
+.alert svg{flex:none;width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.alert.err{background:var(--status-block-tint);color:var(--status-block-ink)}
+.alert.warn{background:var(--status-warn-tint);color:var(--status-warn-ink)}
+.alert.info{background:var(--color-powder-blue);color:var(--color-carbon)}
+.code{background:var(--color-plaster);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--spacing-18);font:500 var(--text-small)/1.5 var(--font-mono);overflow-x:auto;white-space:pre}
+.tablewrap{border:1px solid var(--color-carbon);border-radius:var(--radius-cards);overflow:hidden;overflow-x:auto;background:var(--color-pure-white)}
+table{width:100%;border-collapse:collapse}
+th{background:var(--color-bone);text-align:left;font-size:var(--text-small);font-weight:500;color:var(--color-ash-gray);padding:var(--spacing-13) var(--spacing-18)}
+td{padding:var(--spacing-18);border-top:1px solid var(--color-bone);font-size:var(--text-body)}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.tabs{display:flex;gap:var(--spacing-26);border-bottom:1px solid var(--color-carbon);flex-wrap:wrap}
+.tabs a{display:inline-flex;align-items:center;min-height:var(--tap-target);color:var(--color-ash-gray);text-decoration:none;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs a[aria-current]{color:var(--color-obsidian);border-color:var(--color-obsidian)}
+.pack.sel{border-width:2px}
+.big{font-weight:600;font-size:70px;line-height:.9}
+@media(min-width:1024px){.big{font-size:var(--text-heading-lg)}}
+.credit{display:inline-flex;align-items:center;gap:var(--spacing-9);min-height:var(--tap-target);padding:0 var(--spacing-18);border:1px solid var(--color-carbon);background:var(--color-pure-white);border-radius:var(--radius-inputs);font-size:var(--text-body)}
+.credit svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.75}
+.credit.low{background:var(--status-block-tint);color:var(--status-block-ink);border-color:var(--status-block-ink)}
+
+/* FAQ */
+.faq{background:var(--color-bone);border-radius:var(--radius-cards);padding:var(--spacing-26);display:flex;justify-content:space-between;align-items:center;gap:var(--spacing-18);font-size:var(--text-body-lg)}
+.faq+.faq{margin-top:var(--spacing-7)}
+.plus{flex:none;width:26px;height:26px;border:1px solid var(--color-carbon);border-radius:50%;position:relative}
+.plus::before,.plus::after{content:"";position:absolute;background:var(--color-carbon);left:50%;top:50%;transform:translate(-50%,-50%)}
+.plus::before{width:10px;height:1px}.plus::after{width:1px;height:10px}
+
+.swatches{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--spacing-13)}
+@media(min-width:640px){.swatches{grid-template-columns:repeat(4,1fr)}}
+@media(min-width:1024px){.swatches{grid-template-columns:repeat(6,1fr)}}
+.sw{border:1px solid var(--color-carbon);border-radius:var(--radius-tags);overflow:hidden;background:#fff}
+.sw div{height:53px;border-bottom:1px solid var(--color-carbon)}.sw p{padding:var(--spacing-9);font-size:var(--text-small);line-height:1.3}
+.ribbon{position:fixed;left:0;top:0;z-index:10;height:26px;padding:0 var(--spacing-13);display:flex;align-items:center;background:var(--color-cotton-pink);border:1px solid var(--color-carbon);border-left:0;border-top:0;font-size:var(--text-small);font-weight:600;border-radius:0 0 var(--radius-tags) 0}
+footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-white);padding:var(--spacing-70) 0}
+</style>
+</head>
+<body>
+<div class="ribbon">MOCK DATA</div>
+
+<header class="nav">
+  <div class="container">
+    <a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a>
+    <ul class="pill">
+      <li><a href="#check" aria-current="page">Check</a></li>
+      <li><a href="#benchmark">Benchmark</a></li>
+      <li><a href="#credits">Credits</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <div class="right">
+      <div class="seg hide-m" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
+      <span class="credit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 12h6"/></svg>12</span>
+      <a class="btn btn-black hide-m" href="#">Connect wallet</a>
+    </div>
+  </div>
+</header>
+
+<section class="section center">
+  <div class="container stack" style="--x:0">
+    <p class="eyebrow">Check before you pay</p>
+    <h1 class="display" style="margin-top:var(--spacing-26)">Say a wallet.<br>Get a verdict.</h1>
+    <div class="row" style="justify-content:center;margin-top:var(--spacing-53)"><a class="btn btn-green" href="#check">Get started</a><a class="btn btn-ghost" href="#how">See how it works</a></div>
+    <p class="help" style="margin-top:var(--spacing-26)">Risk signal, not an accusation.</p>
+  </div>
+</section>
+
+<section class="section" id="how" style="padding-top:0">
+  <div class="container grid" style="align-items:start">
+    <div class="s4 t4 d4 stagger a"><div class="confetti" style="background:var(--color-sticker-yellow)"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><p class="sub">Say or paste any Bitcoin wallet.</p><span class="tag">Simple</span></div></div>
+    <div class="s4 t4 d4 stagger b"><div class="confetti" style="background:var(--color-cotton-pink)"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg><p class="sub">See how close it sits to flagged wallets.</p><span class="tag">Graph</span></div></div>
+    <div class="s4 t8 d4 stagger c"><div class="confetti" style="background:var(--color-powder-blue)"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM9 12l2 2 4-4"/></svg><p class="sub">Keep the proof on-chain, in Hindi or English.</p><span class="tag">Proof</span></div></div>
+  </div>
+</section>
+
+<section class="section" id="check" style="padding-top:0">
+  <div class="container">
+    <p class="eyebrow">Check a wallet</p>
+    <h2 class="h-lg" style="margin:var(--spacing-18) 0 var(--spacing-42)">Verdict, evidence, reasons.</h2>
+    <div class="grid" style="align-items:start">
+      <div class="s4 t8 d5 stack">
+        <div class="card stack">
+          <div class="row" style="justify-content:space-between"><h3 class="sub">Check a wallet</h3><div class="seg" role="group" aria-label="Voice language"><button aria-pressed="true">English</button><button aria-pressed="false" lang="hi">हिन्दी</button></div></div>
+          <div class="row" style="gap:var(--spacing-26);padding:var(--spacing-13) var(--spacing-9)"><button class="mic" aria-label="Hold to talk"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button><div><b>Hold to talk</b><div class="help" style="margin:0">Space · or paste below</div></div></div>
+          <div><label for="a">Wallet address</label><input id="a" class="input" value="DEMO-ILLICIT-01"><p class="help">Enter only a public address. Never share your seed phrase.</p></div>
+          <div class="row9"><span class="tag demo sel" style="background:var(--color-carbon);color:#fff">Known illicit (demo)</span><span class="tag demo">Borderline (demo)</span><span class="tag demo">Clean (demo)</span></div>
+          <div class="row"><button class="btn btn-black lg">Check wallet (1 credit)</button><button class="btn btn-ghost">Clear</button></div>
+          <div><label for="b">Invalid state</label><input id="b" class="input err" value="1abc"><p class="help err">Address format looks invalid.</p></div>
+        </div>
+        <div class="alert err"><svg viewBox="0 0 24 24"><path d="M12 3l9 16H3L12 3zM12 10v4M12 17v.5"/></svg><span><b>That looks like a secret key or seed phrase.</b> Never share it. Cryptiq only needs a public address.</span></div>
+      </div>
+
+      <div class="s4 t8 d7 stack">
+        <div class="card stack">
+          <div><span class="vchip" style="background:var(--status-block-tint);color:var(--status-block-ink)"><svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3zM10 10l4 4M14 10l-4 4"/></svg>BLOCK</span></div>
+          <p>Strong risk signals found in the dataset.</p>
+          <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="86" aria-label="Risk score"><span class="score">86</span><div class="track" style="--fill:var(--status-block-solid)"><b style="width:86%"></b><i style="left:30%"></i><i style="left:70%"></i></div></div>
+          <div class="mono">DEMO-ILLICIT-01</div>
+          <div class="row9"><span class="tag bone">Dataset label: illicit</span><span class="tag block">Nearest flagged: 1 hop</span><span class="tag block">OFAC: match</span><span class="tag unknown">Ransomwhere: no match</span></div>
+          <div class="tg"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg>Graph query answered by TigerGraph in <b>41 ms</b> <span class="mono">walletRisk_khop</span> <a href="#">View GSQL</a></div>
+          <ul class="ul"><li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/></svg>1 illicit wallet within 1 hop</li><li><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5"/></svg>Sits in a large connected cluster</li></ul>
+          <p class="help">Risk signal, not an accusation. Based on a research dataset of Bitcoin activity (Elliptic++), not the live blockchain.</p>
+        </div>
+        <div class="row9" style="align-items:stretch">
+          <div class="card" style="flex:1 1 180px;padding:var(--spacing-18)"><span class="vchip sm" style="background:var(--status-allow-tint);color:var(--status-allow-ink)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>ALLOW</span><p class="help">No strong risk signals found in the dataset</p></div>
+          <div class="card" style="flex:1 1 180px;padding:var(--spacing-18)"><span class="vchip sm" style="background:var(--status-warn-tint);color:var(--status-warn-ink)"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17v.5"/></svg>WARN</span><p class="help">Some risk signals found</p></div>
+          <div class="card" style="flex:1 1 180px;padding:var(--spacing-18)"><span class="vchip sm" style="background:var(--status-unknown-tint);color:var(--status-unknown-ink)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17v.5"/></svg>UNKNOWN</span><p class="help">Not in our dataset, so we can’t say</p></div>
+        </div>
+        <div class="card stack">
+          <h3 class="sub">Evidence graph</h3>
+          <div class="seg" role="group" aria-label="Hop depth" style="width:max-content"><button aria-pressed="false">1</button><button aria-pressed="true">2</button><button aria-pressed="false">3</button></div>
+          <svg viewBox="0 0 520 260" style="width:100%;border-radius:17.5px;background:var(--color-paper-white);border:1px solid var(--color-slate-gray)" role="img" aria-label="Sample graph: the checked wallet linked to one illicit, two licit and two unknown wallets">
+            <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" fill="#6e726e"/></marker></defs>
+            <g stroke="#6e726e" stroke-width="1.5" marker-end="url(#ar)"><line x1="170" y1="130" x2="258" y2="130"/><line x1="262" y1="130" x2="360" y2="60" stroke="#000" stroke-width="3"/><line x1="262" y1="130" x2="360" y2="200"/><line x1="262" y1="130" x2="420" y2="130"/><line x1="170" y1="130" x2="90" y2="60"/><line x1="170" y1="130" x2="90" y2="200"/></g>
+            <circle cx="262" cy="130" r="22" fill="#000"/><circle cx="262" cy="130" r="8" fill="#fcea59"/><circle cx="262" cy="130" r="30" fill="none" stroke="#0f0f0f" stroke-width="2"/>
+            <text x="262" y="182" text-anchor="middle" font-size="13" font-weight="600" fill="#0f0f0f" font-family="Inter Tight,sans-serif">Checked wallet</text>
+            <path d="M360 44l16 16-16 16-16-16z" fill="#d92d20"/>
+            <circle cx="420" cy="130" r="12" fill="#138a2e"/><circle cx="170" cy="130" r="12" fill="#138a2e"/>
+            <circle cx="360" cy="200" r="12" fill="#fff" stroke="#6e726e" stroke-width="2"/><circle cx="90" cy="60" r="12" fill="#fff" stroke="#6e726e" stroke-width="2"/><circle cx="90" cy="200" r="12" fill="#fff" stroke="#6e726e" stroke-width="2"/>
+          </svg>
+          <div class="row9"><span class="tag block">◆ Illicit</span><span class="tag allow">● Licit</span><span class="tag unknown">○ Unknown</span><span class="tag bone">● Checked wallet</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="credits" style="padding-top:0">
+  <div class="container">
+    <p class="eyebrow">Pay per check</p>
+    <h2 class="h-lg" style="margin:var(--spacing-18) 0 var(--spacing-42)">Credits.</h2>
+    <div class="grid">
+      <div class="s4 t4 d4 card pack stack"><h3 class="sub">Starter</h3><div class="big">10</div><p class="muted">$1.00 · credits</p><span class="tag bone">Test mode, no real charge</span><div><button class="btn btn-ghost">Select</button></div></div>
+      <div class="s4 t4 d4 card pack sel stack"><h3 class="sub">Plus</h3><div class="big">50</div><p class="muted">$4.00 · credits</p><span class="tag" style="background:var(--color-sticker-yellow)">Test mode, no real charge</span><div><button class="btn btn-black">Selected</button></div></div>
+      <div class="s4 t8 d4 card pack stack"><h3 class="sub">Pro</h3><div class="big">200</div><p class="muted">$12.00 · credits</p><span class="tag bone">Test mode, no real charge</span><div><button class="btn btn-ghost">Select</button></div></div>
+    </div>
+    <div class="grid" style="margin-top:var(--spacing-42);align-items:start">
+      <div class="s4 t8 d7 stack">
+        <div class="tabs"><a href="#" aria-current="page">Pay with card (Dodo, test mode)</a><a href="#">Pay privately (Cake Wallet)</a></div>
+        <div class="tablewrap"><table><thead><tr><th>Time</th><th>Activity</th><th class="num">Credits</th></tr></thead><tbody><tr><td>12:04</td><td>Check · DEMO-LICIT-02</td><td class="num">−1</td></tr><tr><td>11:58</td><td>Top-up · Plus</td><td class="num">+50</td></tr></tbody></table></div>
+      </div>
+      <div class="s4 t8 d5 stack">
+        <div class="alert info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></svg><span>Attestations are public and permanent. This uses the Base Sepolia TEST network.</span></div>
+        <div class="alert warn"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3zM12 10v4M12 17v.5"/></svg>Low credits. <a href="#">Top up</a></div>
+        <div class="code">bitcoin:DEMO-ADDRESS?amount=0.0004</div>
+        <div class="row9"><span class="credit low">1 · Top up</span><span class="tag bone">Waiting</span><span class="tag allow">Paid</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <p class="eyebrow center">Any questions?</p>
+    <h2 class="display d153" style="margin:var(--spacing-18) 0 var(--spacing-53)">FAQ</h2>
+    <div style="max-width:800px">
+      <div class="faq">What is a credit?<span class="plus"></span></div>
+      <div class="faq">Is this real money?<span class="plus"></span></div>
+      <div class="faq">Why pay privately with crypto?<span class="plus"></span></div>
+      <div class="faq">क्या यह पैसा असली है?<span class="plus"></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="about" style="padding-top:0">
+  <div class="container">
+    <p class="eyebrow">Palette</p>
+    <h2 class="h-lg" style="margin:var(--spacing-18) 0 var(--spacing-42)">Colors and type.</h2>
+    <div class="swatches">
+      <div class="sw"><div style="background:var(--color-acid-lime)"></div><p><b>Acid Lime</b><br>#05c92f</p></div>
+      <div class="sw"><div style="background:var(--color-sticker-yellow)"></div><p><b>Sticker Yellow</b><br>#fcea59</p></div>
+      <div class="sw"><div style="background:var(--color-cotton-pink)"></div><p><b>Cotton Pink</b><br>#ffd0e2</p></div>
+      <div class="sw"><div style="background:var(--color-powder-blue)"></div><p><b>Powder Blue</b><br>#a7cbf6</p></div>
+      <div class="sw"><div style="background:var(--color-carbon)"></div><p><b>Carbon</b><br>#0f0f0f</p></div>
+      <div class="sw"><div style="background:var(--color-ash-gray)"></div><p><b>Ash Gray</b><br>#5a585a</p></div>
+      <div class="sw"><div style="background:var(--color-slate-gray)"></div><p><b>Slate Gray</b><br>#6e726e</p></div>
+      <div class="sw"><div style="background:var(--color-bone)"></div><p><b>Bone</b><br>#ecefec</p></div>
+      <div class="sw"><div style="background:var(--color-plaster)"></div><p><b>Plaster</b><br>#eeeeee</p></div>
+      <div class="sw"><div style="background:var(--status-allow-tint)"></div><p><b>Allow tint</b><br>#dcf7e1</p></div>
+      <div class="sw"><div style="background:var(--status-block-tint)"></div><p><b>Block tint</b><br>#ffd9d6</p></div>
+      <div class="sw"><div style="background:var(--status-block-solid)"></div><p><b>Block solid</b><br>#d92d20</p></div>
+    </div>
+    <div class="stack" style="margin-top:var(--spacing-53)">
+      <p class="h">Heading 35 / 600 — Inter Tight</p>
+      <p class="sub">Subheading 25 / 600</p>
+      <p style="max-width:65ch">Body 18 / 500. Weights stay at 500 and 600 only, and tracking stays at default; the tightness comes from line-height.</p>
+      <p lang="hi" style="max-width:65ch">पैसे भेजने से पहले वॉलेट जाँचें। यह एक जोखिम संकेत है, आरोप नहीं।</p>
+      <div class="code">{ "address": "DEMO-ILLICIT-01", "verdict": "BLOCK", "risk_score": 86 }</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container grid">
+    <div class="s4 t8 d4 stack"><a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a><p class="muted small">Say a wallet. Get ALLOW, WARN or BLOCK. See why on a graph. Keep proof on-chain.</p></div>
+    <div class="s4 t4 d4 stack"><b>Built with</b><p class="muted small">TigerGraph · Dodo Payments · Cake Wallet (payment links) · Base Sepolia + EAS</p></div>
+    <div class="s4 t4 d4 stack"><b>Thanks</b><p class="muted small">AI Grants India · Socket Security · Edge City</p></div>
+    <p class="help s4 t8 d12" style="border-top:1px solid var(--color-carbon);padding-top:var(--spacing-26)">Risk signal, not an accusation. Research dataset, not the live blockchain.</p>
+  </div>
+</footer>
+</body>
+</html>
