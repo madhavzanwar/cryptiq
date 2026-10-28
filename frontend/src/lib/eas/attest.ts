@@ -51,7 +51,7 @@ export interface SubmitOptions {
 }
 
 /** Wraps the signer so the transaction hash is reported the moment it is sent. */
-function reportSubmitted(signer: TransactionSigner, onSubmitted?: (hash: string) => void): TransactionSigner {
+export function reportSubmitted(signer: TransactionSigner, onSubmitted?: (hash: string) => void): TransactionSigner {
   if (!onSubmitted) return signer;
   return new Proxy(signer, {
     get(target, prop) {
