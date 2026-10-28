@@ -48,7 +48,7 @@ def ensure_schema(conn: object, graph: str) -> None:
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(min=2, max=30), reraise=True)
 def _upsert_vertices(conn: object, chunk: pd.DataFrame) -> int:
     return int(conn.upsertVertexDataFrame(chunk, "Wallet", v_id="address",  # type: ignore[attr-defined]
-                                          attributes={c: c for c in VERTEX_COLS}))
+                                          attributes={c: c for c in VERTEX_COLS if c != "address"}))
 
 
 @retry(stop=stop_after_attempt(5), wait=wait_exponential(min=2, max=30), reraise=True)

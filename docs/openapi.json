@@ -890,6 +890,17 @@
             ],
             "title": "Modelloaded"
           },
+          "ofacLoaded": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ofacloaded"
+          },
           "ok": {
             "title": "Ok",
             "type": "boolean"
@@ -1235,7 +1246,20 @@
     },
     "/api/benchmark/run": {
       "post": {
+        "description": "Spends the owner's LLM budget and is CPU-heavy: in prod it needs the admin token.",
         "operationId": "run_api_benchmark_run_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-admin-token",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "X-Admin-Token",
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -1266,6 +1290,16 @@
               }
             },
             "description": "Bad Request"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
           },
           "409": {
             "content": {

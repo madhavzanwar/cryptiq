@@ -57,3 +57,34 @@ Housekeeping done: removed unused `base58` dependency; declared `scipy` (importe
   Webhooks test secret (`whsec_` + base64 of "cryptiq-test-secret-not-real-0001"). `gitleaks` was
   **not run** (not installed in this environment); run it on your laptop before the `dev` -> `main` PR.
 - No data, model, `.env` or SQLite file is tracked (`git ls-files` check).
+
+## 5. Work done in parallel (three agents, disjoint files) and how it was integrated
+
+| Agent | Scope | Result | Verification by the integrator |
+|---|---|---|---|
+| A | Hugging Face file layout (no `wallets_classes.csv`), Git-LFS pointer detection | merged (`integration/data-loader`) | merged tree: 155 tests, ruff, mypy |
+| B | Typed TypeScript API client, zod schemas, SSE reader, reportHash verifier, 96 unit tests, in `frontend/src/lib/api/` only (framework-agnostic: no `package.json` created) | merged (`integration/api-client`) | re-run from the merged repo copy in a scratch project: `tsc --noEmit` clean, 96/96 tests |
+| C | Read-only adversarial review of the merged backend | findings below | its double-charge claim was reproduced by the regression test; fixes in section 6 |
+
+No two agents had overlapping files; the only shared files (`docs/*`, `pyproject.toml`, `uv.lock`) were
+edited only by the integrator.
+
+## 6. Review findings
+
+See `backend/DECISIONS.md` -> "Adversarial review of the merged backend": 13 items fixed (with regression
+tests) and the list of known issues that were found but not fixed.
+
+Current verification state (synthetic data only): **174 backend tests pass (1 TigerGraph test skipped),
+ruff clean, mypy --strict clean; 96 TypeScript client tests pass.**
+
+## 7. Frontend: what exists and what is needed
+
+`frontend/src/lib/api/` is ready to import. The Next.js app itself must still be created (by the
+teammate or on request) with:
+
+- `zod` and (dev) `vitest` dependencies; `NEXT_PUBLIC_API_BASE_URL` empty (same origin);
+- `next.config` rewrites: `{ source: "/api/:path*", destination: `${process.env.BACKEND_URL}/api/:path*` }`
+  so the session cookie is first-party (this is required for payments, see `backend/DEPLOY.md`);
+- UI rules from the contract: TigerGraph badge only when `engine === "tigergraph"`; "Replay" label for
+  `replay`; "cached, no credit used"; "results truncated" note; 402 opens the credits drawer;
+  `secret_input` shows the seed-phrase warning; 503 `voice_unavailable` uses browser speech recognition.

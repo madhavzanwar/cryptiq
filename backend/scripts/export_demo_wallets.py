@@ -50,7 +50,8 @@ def pick(s: Scorer, n_each: int = 3, seed: int = 11) -> list[dict[str, str]]:
     for w in out:
         if w["expected"] != "UNKNOWN":
             res = s.score(w["address"])
-            assert res is not None and decide(res.score, True, False, s.warn, s.block) == w["expected"]
+            assert res is not None
+            assert decide(res.score, True, False, s.warn, s.block, s.label(w["address"])) == w["expected"]
     return out
 
 

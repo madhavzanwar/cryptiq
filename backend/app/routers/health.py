@@ -20,6 +20,7 @@ async def health(state: AppState = Depends(get_state)) -> HealthResponse:
         resp.engine = p.engine.name
         resp.engine_ok = await p.engine_ok()
         resp.model_loaded = p.scorer is not None
+        resp.ofac_loaded = p.labels.ofac_loaded
         resp.data_source = p.data_source
         resp.mocks = p.data_source != "elliptic++" or None
     else:

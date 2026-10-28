@@ -23,9 +23,19 @@ from app.services.pipeline import build_pipeline
 from app.state import AppState
 
 
+def _fail_stale_benchmark_jobs(db: Database) -> None:
+    """A job left "running" by a restart would block every later run with 409 forever."""
+    from app.db.models import BenchmarkJob
+
+    with db.session() as s:
+        for job in s.query(BenchmarkJob).filter(BenchmarkJob.status == "running"):
+            job.status, job.error = "failed", "server_restarted"
+
+
 def build_state(settings: Settings) -> AppState:
     db = Database(settings.database_url)
     db.create_all()
+    _fail_stale_benchmark_jobs(db)
     http = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=5.0))
     return AppState(settings=settings, db=db, pipeline=build_pipeline(settings, db, http=http), http=http)
 
@@ -45,6 +55,9 @@ def check_production_settings(settings: Settings) -> None:
         problems.append("COOKIE_SECURE must be true with COOKIE_SAMESITE=none")
     if not settings.cors_origin_list:
         problems.append("CORS_ORIGINS must list the frontend origin")
+    if not settings.ofac_list_path.exists():
+        problems.append(f"OFAC list missing at {settings.ofac_list_path} (the sanctions override would be off): "
+                        "run make data")
     if settings.demo_mode:
         log.warning("demo_mode_in_prod", note="DEMO- placeholder addresses are accepted; responses are isMock")
     if problems:

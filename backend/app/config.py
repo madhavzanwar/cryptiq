@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     rate_limit_check: str = "30/minute"
     rate_limit_transcribe: str = "10/minute"
     max_request_bytes: int = 6 * 1024 * 1024
+    # Only true when the app is reachable ONLY through Fly's proxy, which overwrites Fly-Client-IP
+    trust_fly_client_ip: bool = False
 
     graph_engine: Literal["tigergraph", "networkx"] = "tigergraph"
     tg_host: str = ""

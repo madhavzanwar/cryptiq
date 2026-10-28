@@ -40,7 +40,7 @@ def verify(secret: str, headers: Mapping[str, str], body: bytes, now: float | No
     msg_id = headers.get("webhook-id", "")
     ts_raw = headers.get("webhook-timestamp", "")
     sigs = headers.get("webhook-signature", "")
-    if not msg_id or not ts_raw.isdigit() or not sigs:
+    if not msg_id or not (ts_raw.isascii() and ts_raw.isdigit()) or not sigs:
         raise WebhookVerificationError("missing headers")
     ts = int(ts_raw)
     if abs((now if now is not None else time.time()) - ts) > TOLERANCE_S:

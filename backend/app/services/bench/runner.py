@@ -118,7 +118,7 @@ async def run_benchmark(cfg: BenchConfig, scorer: Scorer, engine: GraphEngine, e
         for method in ("raw_dump", "graph_evidence"):
             start = time.perf_counter()
             if method == "raw_dump":
-                payload = raw_dump(addr, scorer, edges)
+                payload = await anyio.to_thread.run_sync(raw_dump, addr, scorer, edges)
             else:
                 payload = await anyio.to_thread.run_sync(graph_evidence, addr, engine, cfg)
             res = await llm.complete(INSTRUCTIONS, payload, max_tokens=200)

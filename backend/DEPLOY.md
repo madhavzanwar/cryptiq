@@ -3,10 +3,11 @@
 Chosen host: **Fly.io**. It runs the existing Dockerfile (with ffmpeg), gives automatic HTTPS (the
 frontend's microphone needs a secure origin), and has persistent volumes for the git-ignored
 `data/` and `artifacts/`. Check Fly's current pricing: a 1 GB machine plus a 1 GB volume may exceed
-any free allowance. Memory: with the full Elliptic++ table loaded, the scorer needs roughly
-300-400 MB (the 64 float32 feature columns for 823k wallets are about 210 MB). 512 MB machines are
-tight, so `fly.toml` uses 1 GB. The NetworkX fallback engine needs about 2 GB more; in production use
-TigerGraph (`GRAPH_ENGINE=tigergraph`) plus replays.
+any free allowance. **Memory (measured in review on a synthetic 823k x 64 table):** loading the feature
+table peaked at about 1.04 GB RSS and settled near 0.84 GB, before the XGBoost model, FastAPI and the
+libraries are counted. A 1 GB machine would be killed at start-up, so `fly.toml` uses **2 GB**
+(re-measure on the real data and adjust). The NetworkX fallback engine needs about 2.5 GB more; in
+production use TigerGraph (`GRAPH_ENGINE=tigergraph`) plus replays.
 
 > The Docker image was written but **not built in the development sandbox** (no Docker daemon).
 > Build it locally first: `docker build -t cryptiq-backend backend/ && docker run --env-file backend/.env -p 8000:8000 cryptiq-backend`.
@@ -35,8 +36,17 @@ fly secrets set SESSION_SECRET=$(openssl rand -hex 32) LOG_SALT=$(openssl rand -
 ```
 
 `APP_ENV=prod` makes the app **refuse to start** with placeholder secrets, `SameSite=None`
-without `Secure`, or an empty CORS list. Cross-site cookies need `COOKIE_SAMESITE=none` and
-`COOKIE_SECURE=true` (already in `fly.toml`) when the frontend and backend are on different sites.
+without `Secure`, an empty CORS list, or a missing OFAC list.
+
+**Cookies / payments (important):** serve the API *through the frontend origin* (Next.js
+`rewrites()`: `/api/:path*` -> `https://<app>.fly.dev/api/:path*`) so the session cookie is first-party
+(`COOKIE_SAMESITE=lax`, as in `fly.toml`). With a separate backend site and `SameSite=None`, Safari and
+Chrome with third-party cookies blocked will not keep `cryptiq_sid`; every request then becomes a
+brand-new session with free credits and a Dodo payment would credit a session the browser can never
+reach.
+
+**Benchmark endpoint:** in prod `POST /api/benchmark/run` needs the header `x-admin-token: $ADMIN_TOKEN`
+(it spends LLM budget and is CPU-heavy). Run it from your laptop with curl, not from the public UI.
 
 ## 3. Ship the artifacts (one-off copy; they are not in git or in the image)
 

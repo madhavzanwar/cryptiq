@@ -103,10 +103,12 @@ class CheckPipeline:
         self.tts = tts if tts is not None and tts.configured else None
         self.usage_hook: Callable[[str], Awaitable[None]] | None = None
         self._tasks: set[asyncio.Future[Any]] = set()
+        self._inflight: dict[str, tuple[asyncio.Lock, int]] = {}
         self.cache: TTLCache[dict[str, Any]] = TTLCache(settings.cache_ttl_seconds)
         self.data_source = scorer.data_source if scorer else "not_loaded"
         self.tg_subset = self._read_tg_subset()
-        self.dataset_name = "synthetic fixture" if self.data_source == "synthetic_fixture" else "Elliptic++"
+        self.dataset_name = {"synthetic_fixture": "synthetic fixture", "elliptic++": "Elliptic++"}.get(
+            self.data_source, "research")
 
     def _read_tg_subset(self) -> str | None:
         p = self.s.artifacts_dir / "tg_load_summary.json"
@@ -140,6 +142,23 @@ class CheckPipeline:
 
     # ------------------------------------------------------------------ run
     async def execute(self, p: Prepared) -> AsyncIterator[Step | Result]:
+        """Single-flight per address+lang: identical concurrent requests (double click, StrictMode
+        double effect, retry) queue behind the first one and are then served from the cache, uncharged."""
+        key = f"{p.address}|{p.lang}"
+        lock, _ = self._inflight.get(key, (asyncio.Lock(), 0))
+        self._inflight[key] = (lock, self._inflight.get(key, (lock, 0))[1] + 1)
+        try:
+            async with lock:
+                async for ev in self._execute_locked(p):
+                    yield ev
+        finally:
+            lock, n = self._inflight[key]
+            if n <= 1:
+                del self._inflight[key]
+            else:
+                self._inflight[key] = (lock, n - 1)
+
+    async def _execute_locked(self, p: Prepared) -> AsyncIterator[Step | Result]:
         yield Step(*STEPS[0])
         cached = self.cache.get(f"{p.address}|{p.lang}")
         if cached is not None:
@@ -153,7 +172,7 @@ class CheckPipeline:
         if self.s.demo_replay:
             replayed = self._replay(p)
             if replayed is not None:
-                async for ev in self._finish(p, replayed, charge=True):
+                async for ev in self._finish(p, replayed, charge=replayed.status == "ok"):
                     yield ev
                 return
 
@@ -170,7 +189,7 @@ class CheckPipeline:
                         addr=hash_address(p.address))
             replayed = self._replay(p) if self.s.replay_fallback else None
             if replayed is not None:
-                async for ev in self._finish(p, replayed, charge=True):
+                async for ev in self._finish(p, replayed, charge=replayed.status == "ok"):
                     yield ev
                 return
             yield Result(self._error_response(p, "graph_unavailable"), 503)
@@ -265,7 +284,9 @@ class CheckPipeline:
 
     def _base_limitations(self) -> list[str]:
         lim = ["Risk signal, not an accusation.",
-               "Based on the Elliptic++ research dataset of historical Bitcoin activity, not the live blockchain.",
+               f"Based on the {self.dataset_name} research dataset of historical Bitcoin activity, not the live "
+               "blockchain." if self.data_source != "synthetic_fixture" else
+               "Based on a synthetic research-style dataset, not the live blockchain.",
                "Dataset labels come from the dataset authors and can be incomplete or wrong."]
         if self.data_source == "synthetic_fixture":
             lim.insert(0, "Synthetic demo data: these are not real wallets.")
@@ -319,9 +340,9 @@ class CheckPipeline:
         else:
             limitations.append("Not in the research dataset: absence from the data is not evidence of safety.")
         score = score_res.score if score_res else None
-        verdict = decide(score, in_dataset, ofac, self.scorer.warn, self.scorer.block)
-        status: Literal["ok", "not_in_dataset"] = "ok" if in_dataset else "not_in_dataset"
         dataset_label = self.scorer.label(p.address) if in_dataset else None
+        verdict = decide(score, in_dataset, ofac, self.scorer.warn, self.scorer.block, dataset_label)
+        status: Literal["ok", "not_in_dataset"] = "ok" if in_dataset else "not_in_dataset"
         hop1 = hops.get(1, Counts())
         reasons = build_reasons(ReasonInput(
             ofac=ofac, ransomwhere=ransom, in_dataset=in_dataset, dataset_label=dataset_label,

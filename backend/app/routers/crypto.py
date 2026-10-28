@@ -44,6 +44,6 @@ async def admin_mark_paid(invoice_id: str, state: AppState = Depends(get_state),
                           x_admin_token: str = Header(default="")) -> CryptoInvoiceStatus:
     """Demo-only (Monero has no automatic confirmation). Disabled unless ADMIN_TOKEN is set."""
     token = state.settings.admin_token.get_secret_value()
-    if not token or token == "change_me" or not hmac.compare_digest(x_admin_token, token):  # noqa: S105
+    if not token or token == "change_me" or not hmac.compare_digest(x_admin_token.encode(), token.encode()):  # noqa: S105
         raise ApiError(403, "forbidden")
     return CryptoInvoiceStatus(status=_svc(state).mark_paid(invoice_id[:64], txid=None))

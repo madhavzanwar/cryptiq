@@ -112,6 +112,14 @@ Charging: only `status: "ok"` costs 1 credit. `not_in_dataset`, `error` and `cac
 - **SSE `error` event** payload: `{ "error": string, "status": number }` (used for a late `no_credits`, 402).
 - **`evidence.dataset`** is `"elliptic++"` for real data and `"synthetic_fixture"` when `isMock` is true.
   Pick it from `isMock`, otherwise hashes of fixture responses will not verify.
+- **SSE step count:** the normal path emits 5 `step` events; cache hits, replays and error paths emit fewer
+  (1-3). Don't require exactly 5 before `result`.
+- **`/api/health`** also returns `ofacLoaded` (false = the sanctions override is off).
+- **`POST /api/benchmark/run`** needs header `x-admin-token` when the backend runs in prod (403 `forbidden`
+  otherwise). The public UI should only *show* benchmark results, not start runs.
+- **Identical concurrent checks** (same session, same address and language) are single-flighted: the
+  first is charged, the others are served from the cache with `cached: true` and no charge.
+- **429 `too_many_open_invoices`** (max 5 unpaid crypto invoices per session).
 - **Further error codes** (all `{ "error": code }`): 400 `empty_audio`; 422 `audio_unreadable`,
   `audio_conversion_timeout`; 404 `unknown_pack`, `not_found`; 403 `forbidden` (admin routes);
   502 `payments_unavailable` (Dodo call failed; 503 when Dodo is not configured); 503 `service_not_ready`;

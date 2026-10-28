@@ -18,4 +18,7 @@ async def demo_wallets(state: AppState = Depends(get_state)) -> DemoWalletsRespo
     if not path.exists():
         return DemoWalletsResponse(wallets=[])
     data = json.loads(path.read_text())
+    loaded = state.pipeline.data_source if state.pipeline is not None else None
+    if loaded is not None and data.get("dataSource") != loaded:
+        return DemoWalletsResponse(wallets=[])  # exported for a different dataset than the loaded model
     return DemoWalletsResponse(wallets=[DemoWallet.model_validate(w) for w in data["wallets"]])

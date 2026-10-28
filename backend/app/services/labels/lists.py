@@ -34,7 +34,10 @@ class LabelLists:
             log.warning("ransomwhere_list_missing")
             return frozenset()
         text = path.read_text()
-        if "," not in text.splitlines()[0]:
+        lines = text.splitlines()
+        if not lines:
+            return frozenset()
+        if "," not in lines[0]:
             return frozenset(_canonical(x) for x in text.splitlines() if is_valid_address(x.strip()))
         out = set()
         for row in csv.DictReader(text.splitlines()):

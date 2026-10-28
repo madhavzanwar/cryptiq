@@ -25,6 +25,7 @@ from app.services.address import is_valid_address
 from app.services.billing import ledger
 
 POLL_MIN_INTERVAL_S = 10
+MAX_OPEN_INVOICES_PER_SESSION = 5
 XMR_DEMO_PICONERO_PER_CREDIT = 10_000_000_000  # 0.01 XMR per credit, demo only (no real pricing)
 
 
@@ -75,6 +76,12 @@ class CryptoInvoices:
                       expires_at=now + timedelta(minutes=self.s.invoice_ttl_minutes))
         with self.db.session() as s:
             ledger.ensure_session(s, session_id, self.s.starting_credits)
+            # free amounts held by invoices that ran out of time without ever being polled
+            for stale in s.query(Invoice).filter(Invoice.status == "waiting", Invoice.expires_at < now):
+                stale.status = "expired"
+            open_n = s.query(Invoice).filter(Invoice.session_id == session_id, Invoice.status == "waiting").count()
+            if open_n >= MAX_OPEN_INVOICES_PER_SESSION:
+                raise ApiError(429, "too_many_open_invoices")
             if coin == "btc":
                 # amounts must be unique among open invoices at this address
                 clash = s.query(Invoice).filter(Invoice.status == "waiting", Invoice.amount_atomic == sats,
@@ -100,7 +107,9 @@ class CryptoInvoices:
         if inv.coin == "btc" and (inv.last_polled_at is None
                                   or (now - _utc(inv.last_polled_at)).total_seconds() >= POLL_MIN_INTERVAL_S):
             try:
-                match = await self.find_payment(inv.address, inv.amount_atomic, _utc(inv.created_at))
+                with self.db.session() as s:
+                    used = {t for (t,) in s.query(Invoice.txid).filter(Invoice.txid.is_not(None)) if t}
+                match = await self.find_payment(inv.address, inv.amount_atomic, _utc(inv.created_at), used)
             except UpstreamError as exc:
                 log.warning("explorer_failed", detail=exc.detail)
                 match = None
@@ -135,7 +144,8 @@ class CryptoInvoices:
         log.info("invoice_paid", invoice=invoice_id, coin=row.coin)
         return "paid"
 
-    async def find_payment(self, address: str, amount_sats: int, created_at: datetime) -> TxMatch | None:
+    async def find_payment(self, address: str, amount_sats: int, created_at: datetime,
+                           used_txids: set[str] | None = None) -> TxMatch | None:
         base = self.s.btc_explorer_base_url.rstrip("/")
         try:
             txs_r = await self.http.get(f"{base}/address/{address}/txs", timeout=8.0)
@@ -147,6 +157,8 @@ class CryptoInvoices:
         except (httpx.HTTPError, ValueError) as exc:
             raise UpstreamError("explorer", type(exc).__name__) from exc
         for tx in txs:
+            if used_txids and str(tx.get("txid")) in used_txids:
+                continue  # already credited to another invoice with the same amount
             status = tx.get("status") or {}
             block_time = status.get("block_time")
             if block_time and datetime.fromtimestamp(int(block_time), UTC) < created_at - timedelta(minutes=5):

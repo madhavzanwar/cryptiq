@@ -217,6 +217,7 @@ class HealthResponse(CamelModel):
     engine_ok: bool | None = None
     model_loaded: bool | None = None
     llm_configured: bool | None = None
+    ofac_loaded: bool | None = None
     data_source: str | None = None
 
 

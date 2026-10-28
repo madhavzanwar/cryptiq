@@ -16,13 +16,16 @@ CREATE OR REPLACE QUERY khop_exposure(VERTEX<Wallet> seed, INT max_hop = 3, INT 
   Visited = Start;
   Frontier = Start;
   FOREACH i IN RANGE[1, max_hop] DO
-    Frontier = SELECT t FROM Frontier:s -(SENT_TO>|<SENT_TO)- Wallet:t
-               WHERE t.@visited == FALSE
-               POST-ACCUM t.@visited = TRUE, t.@hop = i
-               LIMIT max_frontier;
-    IF Frontier.size() >= max_frontier THEN
+    // undirected view = outgoing UNION incoming (two plain directed hops: simplest valid GSQL)
+    Out1 = SELECT t FROM Frontier:s -(SENT_TO>)- Wallet:t WHERE t.@visited == FALSE;
+    In1  = SELECT t FROM Frontier:s -(<SENT_TO)- Wallet:t WHERE t.@visited == FALSE;
+    Cand = Out1 UNION In1;
+    // hub guard: cap the NEW frontier first, and only then mark what survived the cap as visited
+    Frontier = SELECT s FROM Cand:s LIMIT max_frontier;
+    IF Cand.size() > max_frontier THEN
       @@truncated += TRUE;
     END;
+    Frontier = SELECT s FROM Frontier:s POST-ACCUM s.@visited = TRUE, s.@hop = i;
     Visited = Visited UNION Frontier;
   END;
 

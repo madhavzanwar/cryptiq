@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -222,10 +223,20 @@ def _bip39_words() -> frozenset[str]:
     return frozenset(w.strip() for w in path.read_text().splitlines() if w.strip())
 
 
+_INVISIBLE = dict.fromkeys(map(ord, "\u200b\u200c\u200d\u2060\ufeff\u00ad"), None)
+_LIST_NUMBER = re.compile(r"(?:(?<=\s)|^)\(?\d{1,2}[.):]\s*")
+
+
+def _normalize(text: str) -> str:
+    """Remove invisible characters and list numbering ("1. word 2. word") that hide a seed phrase."""
+    text = unicodedata.normalize("NFKC", text).translate(_INVISIBLE)
+    return _LIST_NUMBER.sub(" ", text)
+
+
 def _longest_bip39_run(text: str) -> int:
     words = _bip39_words()
     best = run = 0
-    for tok in re.split(r"[\s,;.\-]+", text.lower()):
+    for tok in re.split(r"[\s,;.\-]+", _normalize(text).lower()):
         if not tok:
             continue
         if tok in words:
@@ -242,6 +253,7 @@ def looks_like_secret(text: str, address_field: bool = False) -> bool:
     address_field=True adds a stricter rule for inputs that should be a single address: any
     12/15/18/21/24 lowercase words are rejected even if they are not all BIP-39 words.
     """
+    text = _normalize(text)
     if _HEX64.search(text) or _WIF.search(text) or _XPRV.search(text):
         return True
     if _longest_bip39_run(text) >= _SEED_LENGTHS[0]:

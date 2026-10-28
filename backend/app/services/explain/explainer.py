@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
 from typing import Any
@@ -31,11 +32,20 @@ def parse_pair(text: str) -> tuple[str, str] | None:
 class LLMExplainer:
     name = "llm"
 
-    def __init__(self, llm: LLMClient, attempts: int = 2) -> None:
+    def __init__(self, llm: LLMClient, attempts: int = 2, deadline_s: float = 8.0) -> None:
         self.llm = llm
         self.attempts = attempts
+        self.deadline_s = deadline_s
 
     async def explain(self, evidence: dict[str, Any]) -> tuple[str, str]:
+        """Overall deadline: a slow or retrying LLM must never hold a live check hostage."""
+        try:
+            return await asyncio.wait_for(self._explain(evidence), timeout=self.deadline_s)
+        except TimeoutError:
+            log.warning("explain_deadline", deadline_s=self.deadline_s)
+            return template_en(evidence), template_hi(evidence)
+
+    async def _explain(self, evidence: dict[str, Any]) -> tuple[str, str]:
         good: dict[str, str] = {}
         for attempt in range(1, self.attempts + 1):
             try:

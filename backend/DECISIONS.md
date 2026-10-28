@@ -319,6 +319,56 @@ bottom of each heading.
   has no cold start). 1 GB machine because the scorer's feature table for 823k wallets is
   ~210 MB in float32. See `DEPLOY.md`.
 
+## Adversarial review of the merged backend (integration)
+
+An independent read-only reviewer examined the merged code. Fixed (each has a regression test in
+`tests/test_review_fixes.py`):
+
+1. **Double charge on concurrent identical checks** (verified by experiment: 3 identical concurrent
+   checks charged 3 credits). Now single-flight per address+lang: the first is charged, the rest wait
+   and are served from the cache uncharged.
+2. Benchmark run endpoint: admin token required in prod; heavy scans moved off the event loop; the
+   job slot is claimed atomically; stale "running" jobs are failed at startup (otherwise 409 forever);
+   cancellation no longer records "done"; a row without provider-reported tokens is omitted, never 0.
+3. Verdict floor: a wallet the dataset itself labels illicit is never ALLOW (floored at WARN), so the
+   verdict can't contradict the label shown beside it. Model-card metrics describe the model alone,
+   without this floor.
+4. OFAC list: surfaced as `ofacLoaded` in `/api/health`; prod refuses to start without it.
+5. LLM explanations have an overall 8 s deadline, then the template (was up to ~25 s).
+6. Secret guard: zero-width characters, full-width letters and "1. word 2. word" numbering no longer
+   bypass it.
+7. Unauthenticated 500s: a Unicode-digit webhook timestamp and a non-ASCII admin token now give 401/403.
+8. Crypto: a tx can't credit two invoices; stale invoices release their amount; max 5 open invoices
+   per session; an empty Ransomwhere file no longer crashes start-up.
+9. Replays are only charged when `status == "ok"`.
+10. Rate limiting no longer trusts `X-Forwarded-For`; behind Fly it keys on `Fly-Client-IP`
+    (`TRUST_FLY_CLIENT_IP=true`).
+11. Fly: memory raised to 2 GB (measured peak ~1.04 GB just for the feature table; the earlier
+    "300-400 MB" claim in DEPLOY.md was wrong) and cookies switched to `SameSite=Lax` with a
+    same-origin proxy (cross-site `SameSite=None` loses sessions, and payments, in Safari/Chrome).
+12. `/api/demo-wallets` returns nothing if the file was exported for a different dataset than the
+    loaded model. Limitation text names the actual dataset.
+13. GSQL `khop_exposure` revised: two plain directed hops (`-(SENT_TO>)-`, `-(<SENT_TO)-`) instead of
+    `-(SENT_TO>|<SENT_TO)-`, and the frontier cap is applied before vertices are marked visited.
+    **Still never compiled on a real cluster.** `address` removed from the vertex upsert attribute
+    mapping (it is the primary id).
+
+Found but NOT fixed (known issues, in rough priority):
+
+- **Hub cost in TigerGraph:** the frontier cap limits what is kept, not the edges scanned; a very high
+  degree wallet may hit the 8 s timeout and take the `graph_unavailable` path (replay or 503).
+- The TigerGraph subgraph (`Capped`) has no ancestor closure like the NetworkX engine, so a shown node
+  can lack a path to the subject in the picture.
+- `TigerGraphEngine._token_ok` never refreshes (calls fail after the token expires); `elapsed_ms`
+  includes the existence lookup (two round trips) and the worst case is about 16 s.
+- A wallet in the dataset but outside a documented TigerGraph *subset* is reported "not in the research
+  dataset".
+- Free credits are per cookie (3 per new cookie); the per-IP rate limit is the only brake.
+- If `DODO_USAGE_METER_EVENT` is set while packs are prepaid, customers would be billed twice: leave it unset.
+- `ffmpeg -f wav pipe:1` writes unseekable size fields; a strict STT parser may reject it.
+- NetworkX engine: ~2.5 GB+ memory on the full graph, and a hub's neighbours are re-sorted on every visit.
+- The feature table loader's peak memory was not optimised (only the VM size was raised).
+
 ## Contract additions
 
 See `docs/api-contract.md` -> "Backend additions".
