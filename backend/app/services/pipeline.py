@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from typing import Any, Literal, Protocol
 
 import anyio
+import httpx
 
 from app.config import Settings
 from app.db.base import Database
@@ -47,6 +48,7 @@ from app.services.model.policy import decide
 from app.services.model.reasons import ReasonInput, build_reasons
 from app.services.model.scorer import Scorer
 from app.services.report_hash import report_hash
+from app.services.voice.tts import TTS
 
 Lang = Literal["en", "hi"]
 
@@ -89,7 +91,7 @@ class Prepared:
 
 class CheckPipeline:
     def __init__(self, settings: Settings, db: Database, engine: GraphEngine, scorer: Scorer | None,
-                 labels: LabelLists, explainer: Explainer, replay: ReplayStore) -> None:
+                 labels: LabelLists, explainer: Explainer, replay: ReplayStore, tts: TTS | None = None) -> None:
         self.s = settings
         self.db = db
         self.engine = engine
@@ -97,6 +99,7 @@ class CheckPipeline:
         self.labels = labels
         self.explainer = explainer
         self.replay = replay
+        self.tts = tts if tts is not None and tts.configured else None
         self.cache: TTLCache[dict[str, Any]] = TTLCache(settings.cache_ttl_seconds)
         self.data_source = scorer.data_source if scorer else "not_loaded"
         self.tg_subset = self._read_tg_subset()
@@ -179,6 +182,8 @@ class CheckPipeline:
         yield Step(*STEPS[4])
         en, hi = await self.explainer.explain(evidence)
         resp.explanation = Explanation(en=en, hi=hi)
+        if self.tts is not None:
+            resp.audio_url = await self.tts.synthesize(en if p.lang == "en" else hi, p.lang)
         self.cache.set(f"{p.address}|{p.lang}", resp.model_dump(mode="json", exclude={"credits_remaining"}))
         async for ev in self._finish(p, resp, charge=resp.status == "ok"):
             yield ev
@@ -365,7 +370,10 @@ class _UnavailableEngine:
         return None
 
 
-def build_pipeline(settings: Settings, db: Database, explainer: Explainer | None = None) -> CheckPipeline:
+def build_pipeline(settings: Settings, db: Database, explainer: Explainer | None = None,
+                   http: httpx.AsyncClient | None = None) -> CheckPipeline:
+    from app.services.explain.explainer import LLMExplainer
+    from app.services.explain.llm import build_llm
     from app.services.explain.templates import TemplateExplainer
     from app.services.graph.factory import build_engine
 
@@ -383,5 +391,9 @@ def build_pipeline(settings: Settings, db: Database, explainer: Explainer | None
         engine = _UnavailableEngine(settings.graph_engine, f"{settings.graph_engine} not available")
     labels = LabelLists(settings.ofac_list_path,
                         settings.ransomwhere_path if settings.ransomwhere_enabled else None)
-    return CheckPipeline(settings, db, engine, scorer, labels, explainer or TemplateExplainer(),
-                         ReplayStore(settings.artifacts_dir / "replay"))
+    if explainer is None:
+        llm = build_llm(settings)
+        explainer = LLMExplainer(llm) if llm is not None else TemplateExplainer()
+    tts = TTS(settings, http) if http is not None else None
+    return CheckPipeline(settings, db, engine, scorer, labels, explainer,
+                         ReplayStore(settings.artifacts_dir / "replay"), tts)

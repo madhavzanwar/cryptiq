@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi.errors import RateLimitExceeded
@@ -16,7 +17,7 @@ from app.errors import install_error_handlers
 from app.logging_setup import configure_logging, log
 from app.middleware import RequestContextMiddleware
 from app.ratelimit import limiter
-from app.routers import check, demo, health
+from app.routers import audio, check, demo, health, transcribe
 from app.services.pipeline import build_pipeline
 from app.state import AppState
 
@@ -24,7 +25,8 @@ from app.state import AppState
 def build_state(settings: Settings) -> AppState:
     db = Database(settings.database_url)
     db.create_all()
-    return AppState(settings=settings, db=db, pipeline=build_pipeline(settings, db))
+    http = httpx.AsyncClient(timeout=httpx.Timeout(15.0, connect=5.0))
+    return AppState(settings=settings, db=db, pipeline=build_pipeline(settings, db, http=http), http=http)
 
 
 def create_app(settings: Settings | None = None, state: AppState | None = None) -> FastAPI:
@@ -40,6 +42,7 @@ def create_app(settings: Settings | None = None, state: AppState | None = None) 
         p = app.state.cryptiq.pipeline
         if p is not None:
             await p.aclose()
+        await app.state.cryptiq.http.aclose()
 
     app = FastAPI(title="Cryptiq API", version="0.1.0", lifespan=lifespan,
                   docs_url="/api/docs" if settings.app_env != "prod" else None, redoc_url=None,
@@ -61,7 +64,7 @@ def create_app(settings: Settings | None = None, state: AppState | None = None) 
         allow_headers=["content-type", "x-request-id", "x-admin-token"],
         expose_headers=["x-request-id"],
     )
-    for r in (health.router, demo.router, check.router):
+    for r in (health.router, demo.router, check.router, transcribe.router, audio.router):
         app.include_router(r)
     return app
 

@@ -151,6 +151,48 @@ bottom of each heading.
 - On the synthetic fixture every text says "synthetic fixture" instead of "Elliptic++" and
   `isMock: true` is set.
 
+## Explanations
+
+- `LLM_PROVIDER` anthropic | openai | openai_compatible over plain httpx (no SDK); timeout
+  `LLM_TIMEOUT_S`, 2 attempts on 429/5xx/transport errors; usage = the provider's reported tokens.
+- The LLM sees only a whitelisted slice of the evidence JSON (verdict, score, label, counts, hops,
+  list hits, component size, deterministic reasons). The address is checksum-validated and the
+  language is an enum, so no user free text reaches the prompt.
+- One call returns `{"en", "hi"}`. Each language is validated separately: every number must appear in
+  the evidence (constants allowed: 100 and hop indices 0..maxHop; Devanagari digits normalised),
+  verdict words must match, OFAC/ransomware/illicit mentions must be backed by evidence, banned
+  phrases (guilty, criminal, scam..., safe wallet, guaranteed..., police/lawyer, owned by...) are
+  rejected, and the limitation sentence must be present (appended if missing, then validated).
+  One retry, then the deterministic template for any language that still fails. The path taken is
+  logged (`explain_path`), not returned.
+- The templates themselves are tested to pass the validator for every verdict type.
+- No LLM configured -> templates only (`/api/health` `llmConfigured: false`).
+
+## Voice
+
+- STT order: Wispr Flow (if `WISPR_API_KEY`) -> Sarvam (if `SARVAM_API_KEY` and `SARVAM_STT_MODEL`)
+  -> HTTP 503 `voice_unavailable` (the frontend falls back to browser speech recognition). The
+  `provider` field is whoever actually produced the text.
+- Sarvam request/response shapes verified against the official `sarvamai` 0.1.40 SDK source
+  (STT: multipart `file`, `model`, `language_code` -> `transcript`; TTS: JSON `text`,
+  `language_code`, `model`, `speaker`, `output_audio_codec` -> `audios[0]` base64; header
+  `api-subscription-key`). Model names stay in env (`SARVAM_STT_MODEL`, e.g. `saaras:v3`;
+  `SARVAM_TTS_MODEL`, e.g. `bulbul:v3`).
+- **Wispr Flow request shape is unverified** (docs unreachable from the build sandbox): implemented
+  from the brief (`POST /api/v1/dash/api`, Bearer key, JSON `{audio: base64 16 kHz WAV, language,
+  context}`; the transcript is read from `text` or `transcript`). Any error falls through to Sarvam.
+  Hindi support on Wispr is unverified.
+- Audio: content type allow-list plus magic-byte check, max 5 MB, converted with ffmpeg (subprocess,
+  15 s timeout) to 16 kHz mono WAV, max 30 s.
+- A transcript that looks like a seed phrase or private key is dropped (400 `secret_input`), never
+  returned or logged.
+- Address extraction tries the raw text, the text without separators, then spoken forms ("capital
+  A", "small b", number words in English and Hindi). Every candidate must pass the checksum; else
+  `address: null` and the frontend asks the user to confirm or edit `text`.
+- TTS is optional: mp3 cached by content hash under `artifacts/audio/`, files older than 24 h are
+  deleted, served at `/api/audio/{hash}.mp3`. Without Sarvam TTS, `audioUrl` is omitted and the
+  frontend uses browser speech synthesis.
+
 ## TigerGraph
 
 - pyTigerGraph **2.0.5** (installed version; connection args read from its source):
