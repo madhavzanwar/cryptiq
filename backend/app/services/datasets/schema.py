@@ -1,7 +1,7 @@
 """Elliptic++ actors dataset schema, as verified from the dataset's own notebooks (see DECISIONS.md).
 
 wallets_classes.csv: address, class  (1 = illicit, 2 = licit, 3 = unknown)
-wallets_features.csv: address, "Time step", 56 feature columns; one row per (address, time step)
+wallets_features.csv: address, "Time step", 55 feature columns (the dataset README's "56" counts `Time step`); one row per (address, time step)
     appearance, with exact duplicate rows; the feature values are address-level aggregates.
 AddrAddr_edgelist.csv: input_address, output_address (directed, no time column).
 """

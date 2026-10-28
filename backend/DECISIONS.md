@@ -67,6 +67,18 @@ bottom of each heading.
   account/licence acceptance, so the export is downloaded manually to `RANSOMWHERE_PATH` (one
   address per line, or the OpenSanctions CSV with an `address`-like column).
 
+## Raw file layouts (integration)
+
+- Supported: (a) `wallets_classes.csv` + `wallets_features.csv` + edge list (original), or (b) the
+  Hugging Face layout without a classes file: classes come from `wallets_features_classes_combined.csv`
+  (one class per address; conflicts raise `ConflictingClassesError`). Features come from
+  `wallets_features.csv` when present, else from the combined file (class column dropped).
+- Only `address`, `Time step` and the 55 known feature columns are read, so unknown extra columns in a
+  real file are ignored. Not tested at the real 600 MB size: the combined file is read twice (two
+  column subsets) when it is the only source.
+- That mirror shows its licence as "unknown", same as the original (no stated licence): the data
+  stays git-ignored either way.
+
 ## Split design
 
 - **Time-based split on the first time step a wallet appears in**: train = steps 1-28, validation =

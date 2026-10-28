@@ -63,6 +63,13 @@ data/raw/AddrAddr_edgelist.csv
 | `make data` | `explore` + builds `data/processed/*.parquet` (wallets, edges, time-based splits, graph features) + downloads the OFAC list |
 | `make fixture` | builds a **synthetic** fake dataset with `DEMO-` addresses under `data/fixture/` for offline work (set `DATA_DIR=./data/fixture`, `DEMO_MODE=true`) |
 
+**Hugging Face mirror layout.** The mirror https://huggingface.co/datasets/AI4FinTech/ellipticpp has no
+`wallets_classes.csv`. The pipeline then reads labels from `wallets_features_classes_combined.csv`
+(plus `AddrAddr_edgelist.csv`, and `wallets_features.csv` if present). An address with conflicting
+classes across rows is an error (never guessed). Git-LFS pointer files (tiny text files starting with
+`version https://git-lfs`) are detected and reported instead of failing in the CSV parser.
+`python -m scripts.make_fixture --layout combined` builds a synthetic fixture in this layout.
+
 All scripts are idempotent (re-running overwrites outputs).
 
 ## Graph engines
