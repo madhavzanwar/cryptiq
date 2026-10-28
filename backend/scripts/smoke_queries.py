@@ -14,7 +14,7 @@ from typing import Any
 import pandas as pd
 
 from app.config import get_settings
-from app.services.graph.tigergraph_engine import parse_khop_result
+from app.services.graph.tigergraph_engine import TigerGraphEngine, parse_khop_result
 from scripts.tg_common import connect
 
 
@@ -32,7 +32,7 @@ def main() -> None:
             results.append((name, False, f"{type(exc).__name__}: {str(exc)[:400]}"))
 
     def wallet_summary() -> str:
-        out: Any = conn.runInstalledQuery("wallet_summary", {"seed": seed})
+        out: Any = conn.runInstalledQuery("wallet_summary", {"seed": (seed,)})
         w = out[0]["wallet"][0]["attributes"]
         assert w["label"] == "illicit" and w["address"] == seed, w
         return f"label={w['label']} comp_size={w['comp_size']}"
@@ -44,8 +44,8 @@ def main() -> None:
         return json.dumps(by)
 
     def khop() -> str:
-        out: Any = conn.runInstalledQuery("khop_exposure", {"seed": seed, "max_hop": 2, "max_nodes": 30,
-                                                            "max_frontier": s.max_frontier})
+        out: Any = conn.runInstalledQuery(
+            "khop_exposure", TigerGraphEngine.query_params(seed, 2, 30, s.max_frontier))
         _counts, nearest, trunc, nodes, links = parse_khop_result(out, 2)
         assert any(n.id == seed and n.hop == 0 for n in nodes), "seed missing from returned nodes"
         assert len(nodes) <= 30

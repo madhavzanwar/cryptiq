@@ -104,3 +104,41 @@ def test_tigergraph_matches_networkx_on_real_data() -> None:
         assert a is not None and b is not None
         if not (a.truncated or b.truncated):
             assert a.counts == b.counts and a.nearest_illicit == b.nearest_illicit
+
+
+def test_tigergraph_vertex_parameter_is_a_one_tuple() -> None:
+    """Plain values for VERTEX<T> are deprecated and make pyTigerGraph reject then retry every call."""
+    from app.services.graph.tigergraph_engine import TigerGraphEngine
+
+    p = TigerGraphEngine.query_params("1Abc", 2, 60, 5000)
+    assert p == {"seed": ("1Abc",), "max_hop": 2, "max_nodes": 60, "max_frontier": 5000}
+
+
+def _bare_tg_engine(conn: object) -> object:
+    import concurrent.futures as cf
+    import threading
+
+    from app.services.graph.tigergraph_engine import TigerGraphEngine
+
+    e = TigerGraphEngine.__new__(TigerGraphEngine)
+    e.conn, e._secret, e._token_ok, e._lock = conn, "", True, threading.Lock()
+    e._pool, e.timeout_s, e.max_frontier, e.khop_gsql = cf.ThreadPoolExecutor(1), 5.0, 100, ""
+    return e
+
+
+def test_tigergraph_id_not_in_graph_is_none_not_an_engine_error() -> None:
+    """Measured on a real TigerGraph 4.2.5 cluster: an unknown id raises error 601, not an empty list."""
+    from app.services.graph.base import GraphEngineError
+
+    class Conn:
+        def __init__(self, exc: Exception) -> None:
+            self.exc = exc
+
+        def getVerticesById(self, *_a: object) -> list[object]:
+            raise self.exc
+
+    not_found = Exception("The input vertex id 'bc1p0x' is not a valid vertex id for vertex type = Wallet.", "601")
+    assert _bare_tg_engine(Conn(not_found)).get_wallet("bc1p0x") is None  # type: ignore[attr-defined]
+    assert _bare_tg_engine(Conn(not_found)).khop_exposure("bc1p0x", 2, 30) is None  # type: ignore[attr-defined]
+    with pytest.raises(GraphEngineError):  # any other failure stays an error
+        _bare_tg_engine(Conn(Exception("connection reset"))).get_wallet("x")  # type: ignore[attr-defined]

@@ -105,7 +105,14 @@ class TigerGraphEngine:
         return True
 
     def _vertex(self, address: str) -> dict[str, Any] | None:
-        rows = self._call(self.conn.getVerticesById, "Wallet", [address])
+        try:
+            rows = self._call(self.conn.getVerticesById, "Wallet", [address])
+        except GraphEngineError as exc:
+            # Unlike NetworkX, TigerGraph answers an id that is not in the graph with error 601 instead of an
+            # empty list. That means "not in the dataset" (UNKNOWN), not "engine failure".
+            if "is not a valid vertex id" in str(exc.__cause__):
+                return None
+            raise
         if not rows:
             return None
         row: dict[str, Any] = rows[0]
@@ -122,6 +129,12 @@ class TigerGraphEngine:
         attrs = self._vertex(address)
         return None if attrs is None else self._info(address, attrs)
 
+    @staticmethod
+    def query_params(address: str, max_hop: int, max_nodes: int, max_frontier: int) -> dict[str, Any]:
+        """VERTEX<T> parameters must be 1-tuples: the plain-value form is deprecated in pyTigerGraph 2.x and every
+        call is first rejected (REST-30000) and then retried, which doubles the round trips."""
+        return {"seed": (address,), "max_hop": max_hop, "max_nodes": max_nodes, "max_frontier": max_frontier}
+
     def khop_exposure(self, address: str, max_hop: int, max_nodes: int) -> Exposure | None:
         start = time.perf_counter()
         attrs = self._vertex(address)
@@ -129,7 +142,7 @@ class TigerGraphEngine:
             return None
         result = self._call(
             self.conn.runInstalledQuery, "khop_exposure",
-            {"seed": address, "max_hop": max_hop, "max_nodes": max_nodes, "max_frontier": self.max_frontier},
+            self.query_params(address, max_hop, max_nodes, self.max_frontier),
             timeout=int(self.timeout_s * 1000),
         )
         elapsed = (time.perf_counter() - start) * 1000
