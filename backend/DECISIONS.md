@@ -99,6 +99,32 @@ bottom of each heading.
   The **model features** use the precomputed train-label-only features, so served scores match the
   measured test metrics.
 
+## TigerGraph
+
+- pyTigerGraph **2.0.5** (installed version; connection args read from its source):
+  `TigerGraphConnection(host, graphname, gsqlSecret=...)` then `getToken(secret)` for Savanna/Cloud,
+  or `username`/`password`. pyTigerGraph sets **no HTTP timeout** unless a `GSQL-TIMEOUT` header is
+  set, so the engine sets the header (server-side abort) **and** enforces a client-side deadline
+  (`TG_QUERY_TIMEOUT_S`, default 8 s) by running each call in a worker thread.
+- Schema (`app/services/graph/gsql/schema.gsql`): `Wallet(PRIMARY_ID address, label, pagerank,
+  comp_id, comp_size, in_deg, out_deg)`, directed `SENT_TO`, graph `Cryptiq`. The 55 wallet
+  feature columns stay in Parquet (keeps the load small).
+- Queries: `khop_exposure` (undirected BFS with a per-hop frontier `LIMIT` hub guard, per-hop label
+  counts, nearest illicit hop, capped subgraph ordered by hop then illicit/unknown/licit, edges
+  among the capped nodes in their original direction), `wallet_summary`, `graph_stats` (verification).
+  **The GSQL was written from the GSQL v2 documentation but could not be compiled in the build
+  sandbox (no cluster).** `make install-queries` will report any syntax error; the parser of the
+  query output is unit-tested against the documented JSON shape.
+- Graph features (PageRank, WCC) are computed offline (see "Graph features") and upserted as
+  attributes; the GSQL algorithm library is not required.
+- **Free-tier limits: not verified** (no account available in the build sandbox). The full graph is
+  ~823k vertices / ~2.87M edges with 7 small attributes. If the cluster refuses it, run
+  `make load-graph ARGS="--subset labelled-2hop"` (wallets within 2 hops of any labelled wallet) and
+  record the exact counts from `artifacts/tg_load_summary.json` here; responses then carry a
+  limitation line about the subset.
+- Hub safety: per-hop frontier cap `MAX_FRONTIER` (5000) and the query timeout. On truncation the
+  response sets `truncated: true` and adds a limitation line.
+
 ## Contract additions
 
 See `docs/api-contract.md` -> "Backend additions".
