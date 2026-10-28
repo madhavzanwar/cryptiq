@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { creditPill, noHorizontalScroll, watchErrors } from "./helpers";
+import { creditPill, needsMocks, noHorizontalScroll, watchErrors } from "./helpers";
 
-// These scenarios use the mock backend's DEMO-… wallets and payment simulation; the real backend has its own spec.
-test.skip(process.env.E2E_REAL === "1", "mock-backend scenario");
+needsMocks();
+
 
 test.describe("check flow (mock backend)", () => {
   test("demo wallet -> progress -> verdict -> graph -> explanation -> credit decrements", async ({ page }) => {

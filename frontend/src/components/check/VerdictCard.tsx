@@ -56,6 +56,11 @@ export function VerdictCard({ result, size = "md", className }: { result: CheckR
         <div className="flex flex-col items-start gap-[11px]">
           <VerdictBadge verdict={result.verdict} size="lg" />
           <p className={cn(size === "lg" ? "text-subheading" : "text-body-lg")}>{t(meta.line)}</p>
+          {(result.verdict === "UNKNOWN" || result.status === "not_in_dataset") && (
+            <p role="note" data-testid="unknown-not-safe" className="rounded-tag bg-unknown-tint px-[13px] py-[9px] text-body-lg font-semibold text-unknown-ink">
+              {t("check.unknown.notSafe")}
+            </p>
+          )}
         </div>
 
         <RiskGauge score={result.riskScore} verdict={result.verdict} size={size} />

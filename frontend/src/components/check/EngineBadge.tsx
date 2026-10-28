@@ -43,12 +43,13 @@ export function EngineBadge({ result }: { result: CheckResponse }) {
     );
   }
 
-  const text = replay || engine === "replay" ? t("check.engine.replay") : engine === "networkx" ? t("check.engine.networkx", { ms }) : t("check.engine.other", { name: engine ?? tigergraph.queryName, ms });
+  const isReplay = Boolean(replay) || engine === "replay";
+  const detail = isReplay ? t("check.engine.replay") : engine === "networkx" ? t("check.engine.networkx", { ms }) : t("check.engine.other", { name: engine ?? tigergraph.queryName, ms });
   return (
     <div className="flex flex-wrap items-center gap-[9px]" data-testid="engine-label">
-      <Tag tone="bone">
+      <Tag tone="bone" title={detail}>
         <Zap className="size-4" aria-hidden />
-        {text}
+        {isReplay ? t("check.engine.replayTag") : t("check.engine.offline")}
       </Tag>
     </div>
   );

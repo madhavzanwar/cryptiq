@@ -11,8 +11,9 @@ if [ ! -d data/fixture/processed ]; then
   make setup
   make fixture
 fi
-rm -f data/fixture/e2e.sqlite
+DB="data/fixture/e2e-${PORT}.sqlite"   # one database per port, so two backends never share (or delete) each other's file
+rm -f "$DB" "$DB-wal" "$DB-shm"
 exec env \
   DATA_DIR=./data/fixture ARTIFACTS_DIR=./data/fixture/artifacts DEMO_MODE=true GRAPH_ENGINE=networkx \
-  DATABASE_URL=sqlite:///./data/fixture/e2e.sqlite \
+  DATABASE_URL="sqlite:///./$DB" \
   uv run uvicorn app.main:app --host 127.0.0.1 --port "$PORT"

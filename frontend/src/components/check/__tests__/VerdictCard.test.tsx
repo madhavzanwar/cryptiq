@@ -66,12 +66,13 @@ describe("graph engine badge", () => {
   it("never claims TigerGraph for NetworkX or replay", () => {
     const { unmount, container } = render(<VerdictCard result={with_(block, { engine: "networkx", isMock: false })} />);
     expect(screen.queryByTestId("tigergraph-badge")).toBeNull();
-    expect(screen.getByTestId("engine-label")).toHaveTextContent(/NetworkX \(fallback\)/);
+    expect(screen.getByTestId("engine-label")).toHaveTextContent(/Offline engine/);
+    expect(screen.getByTestId("engine-label").firstElementChild).toHaveAttribute("title", expect.stringMatching(/NetworkX \(fallback\)/));
     expect(container.textContent).not.toMatch(/answered by TigerGraph/);
     unmount();
     render(<VerdictCard result={with_(block, { engine: "replay", replay: true })} />);
     expect(screen.queryByTestId("tigergraph-badge")).toBeNull();
-    expect(screen.getByTestId("engine-label")).toHaveTextContent(/replay/i);
+    expect(screen.getByTestId("engine-label")).toHaveTextContent(/^Replay$/);
   });
   it("hides the GSQL toggle when the API sent no gsql", () => {
     render(<VerdictCard result={with_(block, { engine: "tigergraph", tigergraph: { queryName: "q", ms: 12 } })} />);

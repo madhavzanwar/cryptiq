@@ -6,12 +6,14 @@ import { useT } from "@/lib/i18n/provider";
 import { useEffect, useRef, useState } from "react";
 import { AttestFrame } from "./AttestFrame";
 import { AttestStepper } from "./AttestStepper";
+import type { CheckResponse } from "@/lib/api/types";
+import { VerifyHash } from "./VerifyHash";
 
 /**
  * Mock mode (NEXT_PUBLIC_USE_MOCKS=true): the whole flow is simulated on screen with a visible "Simulated"
  * badge. Nothing is sent anywhere, so there is no transaction, no UID and no explorer link, on purpose.
  */
-export function SimulatedAttest() {
+export function SimulatedAttest({ result }: { result?: CheckResponse } = {}) {
   const { t } = useT();
   const [phase, setPhase] = useState<"idle" | "working" | "done">("idle");
   const timer = useRef<number | undefined>(undefined);
@@ -37,6 +39,7 @@ export function SimulatedAttest() {
         </Button>
       )}
       <p className="text-small text-ash-gray">{t("web3.simulated.note")}</p>
+      {result && <VerifyHash result={result} />}
     </AttestFrame>
   );
 }

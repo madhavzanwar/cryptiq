@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
 import type { CheckResponse } from "@/lib/api/types";
 import { shortAddress } from "@/lib/address/validate";
-import { classifyAttestError, reportHashOf, type AttestErrorKind } from "@/lib/eas/rules";
+import { classifyAttestError, reportHashOf, txUrl, type AttestErrorKind } from "@/lib/eas/rules";
 import { EAS_CONTRACT, EAS_SCHEMA_UID } from "@/lib/env";
 import type { MessageKey } from "@/lib/i18n";
 import { useT } from "@/lib/i18n/provider";
@@ -16,6 +16,8 @@ import { useAccount, useSwitchChain, useWalletClient } from "wagmi";
 import { AttestFrame } from "./AttestFrame";
 import { AttestStepper } from "./AttestStepper";
 import { AttestSuccess } from "./AttestSuccess";
+import { useHashGuard } from "./useHashGuard";
+import { VerifyHash } from "./VerifyHash";
 
 const FAUCET_URL = "https://docs.base.org/base-chain/tools/network-faucets";
 
@@ -32,6 +34,9 @@ export default function AttestFlow({ result, historyId }: Props) {
   const { openConnectModal } = useConnectModal();
   const [busy, setBusy] = useState(false);
   const [uid, setUid] = useState<string | null>(null);
+  const [txHash, setTxHash] = useState<string | null>(null);
+  const guard = useHashGuard(result);
+  const blocked = guard.outcome === "mismatch";
   const [error, setError] = useState<{ kind: AttestErrorKind; key: MessageKey } | null>(null);
 
   const onRightChain = chainId === CHAIN.id;
@@ -54,8 +59,9 @@ export default function AttestFlow({ result, historyId }: Props) {
   };
 
   const sign = async () => {
-    if (!walletClient || !address) return;
+    if (!walletClient || !address || blocked) return;
     setError(null);
+    setTxHash(null);
     setBusy(true);
     try {
       // The signing code (ethers + EAS SDK) is only downloaded now, when the person actually signs.
@@ -69,6 +75,7 @@ export default function AttestFlow({ result, historyId }: Props) {
         schemaUid: EAS_SCHEMA_UID,
         recipient: address,
         result,
+        onSubmitted: setTxHash,
       });
       setUid(newUid);
     } catch (e) {
@@ -99,10 +106,10 @@ export default function AttestFlow({ result, historyId }: Props) {
           size="lg"
           className="self-start"
           loading={busy}
-          disabled={schemaMissing || !walletClient}
+          disabled={schemaMissing || !walletClient || blocked}
           onClick={sign}
         >
-          {busy ? t("web3.button.creating") : t("web3.button.create")}
+          {busy ? t(txHash ? "web3.tx.pending" : "web3.button.creating") : t("web3.button.create")}
         </Button>
       );
     }
@@ -117,6 +124,12 @@ export default function AttestFlow({ result, historyId }: Props) {
       {schemaMissing && <Alert tone="info">{t("web3.setup.schema")}</Alert>}
       {!HAS_WALLETCONNECT && step === 0 && (
         <p className="text-small text-ash-gray">{t("web3.connect.noProject")}</p>
+      )}
+      {blocked && <Alert tone="error">{t("web3.error.hashMismatch")}</Alert>}
+      {txHash && !uid && (
+        <Alert tone="info" action={<Button variant="ghost" href={txUrl(txHash)} external className="border-carbon!">{t("web3.tx.view")}</Button>}>
+          {t("web3.tx.pending")}
+        </Alert>
       )}
       {error && (
         <Alert
@@ -142,6 +155,7 @@ export default function AttestFlow({ result, historyId }: Props) {
           <CopyButton value={hash} iconOnly />
         </p>
       )}
+      <VerifyHash result={result} uid={uid ?? undefined} />
     </AttestFrame>
   );
 }

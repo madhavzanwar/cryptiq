@@ -56,12 +56,12 @@ export function DetailsTabs({ result, className }: { result: CheckResponse; clas
             panel: (
               <dl className="text-body">
                 <Row k={t("check.model.name")} v={result.model.name} mono />
-                {typeof f1 === "number" && <Row k={t("check.model.f1")} v={f1.toFixed(3)} />}
-                <Row k={t("check.model.engine")} v={result.engine ?? "-"} />
+                <Row k={t("check.model.f1")} v={typeof f1 === "number" ? f1.toFixed(3) : t("check.model.notMeasured")} />
+                <Row k={t("check.model.engine")} v={result.engine ?? t("check.model.notMeasured")} />
                 <Row k={t("check.model.query")} v={result.tigergraph.queryName} mono />
                 <Row k={t("check.model.ms")} v={`${Math.round(result.tigergraph.ms)} ms`} />
-                {result.graphFeatures.pagerank !== undefined && <Row k={t("check.model.pagerank")} v={result.graphFeatures.pagerank.toExponential(2)} />}
-                {result.graphFeatures.componentSize !== undefined && <Row k={t("check.model.component")} v={String(result.graphFeatures.componentSize)} />}
+                <Row k={t("check.model.pagerank")} v={result.graphFeatures.pagerank !== undefined ? result.graphFeatures.pagerank.toExponential(2) : t("check.model.notMeasured")} />
+                <Row k={t("check.model.component")} v={result.graphFeatures.componentSize !== undefined ? String(result.graphFeatures.componentSize) : t("check.model.notMeasured")} />
                 <Row k={t("check.model.dataset")} v={result.isMock ? t("check.model.dataset.synthetic") : t("check.model.dataset.elliptic")} />
               </dl>
             ),

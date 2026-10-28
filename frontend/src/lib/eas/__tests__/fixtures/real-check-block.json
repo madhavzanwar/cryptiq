@@ -1,0 +1,1225 @@
+{
+ "isMock": true,
+ "status": "ok",
+ "address": "DEMO-w02271",
+ "chain": "bitcoin",
+ "verdict": "BLOCK",
+ "riskScore": 100,
+ "datasetLabel": "illicit",
+ "hopsToNearestIllicit": 1,
+ "neighbors": {
+  "hop1": {
+   "illicit": 5,
+   "licit": 0,
+   "unknown": 0
+  },
+  "hop2": {
+   "illicit": 7,
+   "licit": 0,
+   "unknown": 2
+  },
+  "hop3": {
+   "illicit": 27,
+   "licit": 112,
+   "unknown": 182
+  }
+ },
+ "graphFeatures": {
+  "pagerank": 0.00023848423099964524,
+  "componentSize": 2400
+ },
+ "labelHits": {
+  "ofac": false,
+  "ransomwhere": false
+ },
+ "topReasons": [
+  "Labelled illicit in the synthetic fixture research dataset",
+  "5 flagged wallets within 1 hop",
+  "Part of a large connected cluster of 2400 wallets",
+  "Model signal: flagged direct neighbours raised the risk",
+  "Model signal: flagged wallets two steps away raised the risk",
+  "Model signal: known-licit wallets two steps away raised the risk"
+ ],
+ "subgraph": {
+  "nodes": [
+   {
+    "id": "DEMO-w02271",
+    "label": "illicit",
+    "hop": 0,
+    "isSubject": true
+   },
+   {
+    "id": "DEMO-w00120",
+    "label": "illicit",
+    "hop": 1
+   },
+   {
+    "id": "DEMO-w00756",
+    "label": "illicit",
+    "hop": 1
+   },
+   {
+    "id": "DEMO-w01116",
+    "label": "illicit",
+    "hop": 1
+   },
+   {
+    "id": "DEMO-w01207",
+    "label": "illicit",
+    "hop": 1
+   },
+   {
+    "id": "DEMO-w02341",
+    "label": "illicit",
+    "hop": 1
+   },
+   {
+    "id": "DEMO-w00561",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00614",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00877",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00938",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w01463",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w01690",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w02099",
+    "label": "illicit",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00000",
+    "label": "unknown",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00916",
+    "label": "unknown",
+    "hop": 2
+   },
+   {
+    "id": "DEMO-w00006",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00037",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00159",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00196",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00209",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00352",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00575",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00648",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00859",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00872",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00935",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00959",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01127",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01135",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01240",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01265",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01592",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01667",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01793",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01835",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01869",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01879",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01925",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w02052",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w02209",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w02281",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w02352",
+    "label": "illicit",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00005",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00026",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00030",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00042",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00060",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00066",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00077",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00081",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00101",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00110",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00116",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00123",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00144",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00176",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00200",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00233",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00275",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00287",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00289",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00316",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00363",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00367",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00387",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00403",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00413",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00414",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00440",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00448",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00450",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00469",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00482",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00494",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00515",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00521",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00581",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00588",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00593",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00611",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00626",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00652",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00686",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00701",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00706",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00738",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00741",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00752",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00761",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00767",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00792",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00793",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00798",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00799",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00815",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00823",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00850",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00858",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00873",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00881",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00888",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00907",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00920",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00927",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00939",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00969",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w00990",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01005",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01018",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01044",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01048",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01053",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01056",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01065",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01068",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01070",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01077",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01080",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01093",
+    "label": "unknown",
+    "hop": 3
+   },
+   {
+    "id": "DEMO-w01115",
+    "label": "unknown",
+    "hop": 3
+   }
+  ],
+  "links": [
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00005"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00006"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00026"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00030"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00042"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00060"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00066"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00077"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00081"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00101"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00110"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00116"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00123"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00144"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00176"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00196"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00200"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00209"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00233"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00275"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00287"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00289"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00316"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00363"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00367"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00387"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00403"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00413"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00414"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00440"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00450"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00469"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00482"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00494"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00515"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00521"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00581"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00588"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00593"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00611"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00626"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00648"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00652"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00686"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00701"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00706"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00738"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00741"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00752"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00761"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00767"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00792"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00793"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00798"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00799"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00815"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00823"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00850"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00858"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00859"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00873"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00877"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00881"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00888"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00907"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00920"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00927"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00939"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00969"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w00990"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01005"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01018"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01044"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01048"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01053"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01056"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01065"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01068"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01070"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01077"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01080"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01093"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01115"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01116"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01240"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01793"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01835"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01869"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01879"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w01925"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w02281"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w02341"
+   },
+   {
+    "source": "DEMO-w00000",
+    "target": "DEMO-w02352"
+   },
+   {
+    "source": "DEMO-w00120",
+    "target": "DEMO-w02271"
+   },
+   {
+    "source": "DEMO-w00159",
+    "target": "DEMO-w00575"
+   },
+   {
+    "source": "DEMO-w00159",
+    "target": "DEMO-w00935"
+   },
+   {
+    "source": "DEMO-w00159",
+    "target": "DEMO-w01463"
+   },
+   {
+    "source": "DEMO-w00352",
+    "target": "DEMO-w00614"
+   },
+   {
+    "source": "DEMO-w00494",
+    "target": "DEMO-w00469"
+   },
+   {
+    "source": "DEMO-w00561",
+    "target": "DEMO-w01207"
+   },
+   {
+    "source": "DEMO-w00575",
+    "target": "DEMO-w00561"
+   },
+   {
+    "source": "DEMO-w00575",
+    "target": "DEMO-w00648"
+   },
+   {
+    "source": "DEMO-w00614",
+    "target": "DEMO-w00037"
+   },
+   {
+    "source": "DEMO-w00614",
+    "target": "DEMO-w01135"
+   },
+   {
+    "source": "DEMO-w00614",
+    "target": "DEMO-w01207"
+   },
+   {
+    "source": "DEMO-w00701",
+    "target": "DEMO-w00413"
+   },
+   {
+    "source": "DEMO-w00756",
+    "target": "DEMO-w02271"
+   },
+   {
+    "source": "DEMO-w00767",
+    "target": "DEMO-w00081"
+   },
+   {
+    "source": "DEMO-w00877",
+    "target": "DEMO-w00448"
+   },
+   {
+    "source": "DEMO-w00959",
+    "target": "DEMO-w00561"
+   },
+   {
+    "source": "DEMO-w01065",
+    "target": "DEMO-w00581"
+   },
+   {
+    "source": "DEMO-w01116",
+    "target": "DEMO-w00916"
+   },
+   {
+    "source": "DEMO-w01127",
+    "target": "DEMO-w01463"
+   },
+   {
+    "source": "DEMO-w01207",
+    "target": "DEMO-w00877"
+   },
+   {
+    "source": "DEMO-w01207",
+    "target": "DEMO-w00938"
+   },
+   {
+    "source": "DEMO-w01207",
+    "target": "DEMO-w01463"
+   },
+   {
+    "source": "DEMO-w01265",
+    "target": "DEMO-w01463"
+   },
+   {
+    "source": "DEMO-w01463",
+    "target": "DEMO-w00872"
+   },
+   {
+    "source": "DEMO-w01463",
+    "target": "DEMO-w01690"
+   },
+   {
+    "source": "DEMO-w01592",
+    "target": "DEMO-w01793"
+   },
+   {
+    "source": "DEMO-w01592",
+    "target": "DEMO-w02099"
+   },
+   {
+    "source": "DEMO-w01667",
+    "target": "DEMO-w00561"
+   },
+   {
+    "source": "DEMO-w01690",
+    "target": "DEMO-w00120"
+   },
+   {
+    "source": "DEMO-w01690",
+    "target": "DEMO-w00935"
+   },
+   {
+    "source": "DEMO-w01690",
+    "target": "DEMO-w01207"
+   },
+   {
+    "source": "DEMO-w01835",
+    "target": "DEMO-w01135"
+   },
+   {
+    "source": "DEMO-w01879",
+    "target": "DEMO-w01793"
+   },
+   {
+    "source": "DEMO-w02052",
+    "target": "DEMO-w00561"
+   },
+   {
+    "source": "DEMO-w02052",
+    "target": "DEMO-w00575"
+   },
+   {
+    "source": "DEMO-w02052",
+    "target": "DEMO-w01690"
+   },
+   {
+    "source": "DEMO-w02099",
+    "target": "DEMO-w01135"
+   },
+   {
+    "source": "DEMO-w02099",
+    "target": "DEMO-w02209"
+   },
+   {
+    "source": "DEMO-w02271",
+    "target": "DEMO-w01116"
+   },
+   {
+    "source": "DEMO-w02271",
+    "target": "DEMO-w01207"
+   },
+   {
+    "source": "DEMO-w02271",
+    "target": "DEMO-w02341"
+   },
+   {
+    "source": "DEMO-w02281",
+    "target": "DEMO-w00196"
+   },
+   {
+    "source": "DEMO-w02281",
+    "target": "DEMO-w01667"
+   },
+   {
+    "source": "DEMO-w02341",
+    "target": "DEMO-w02099"
+   }
+  ]
+ },
+ "tigergraph": {
+  "queryName": "networkx.khop_exposure",
+  "ms": 2.49
+ },
+ "model": {
+  "name": "xgboost-with_graph_features"
+ },
+ "explanation": {
+  "en": "The verdict for this wallet is BLOCK with a risk score of 100 out of 100. The synthetic fixture research dataset labels it illicit. 5 flagged wallets are directly connected to it. This is a risk signal from a research dataset, not an accusation.",
+  "hi": "इस वॉलेट का नतीजा BLOCK (रोकें) है और जोखिम स्कोर 100 में से 100 है। synthetic fixture शोध डेटासेट में इसे अवैध (illicit) चिह्नित किया गया है। 5 चिह्नित वॉलेट इससे सीधे जुड़े हैं। यह एक शोध डेटासेट पर आधारित जोखिम संकेत है, आरोप नहीं।"
+ },
+ "limitations": [
+  "Synthetic demo data: these are not real wallets.",
+  "Risk signal, not an accusation.",
+  "Based on a synthetic research-style dataset, not the live blockchain.",
+  "Dataset labels come from the dataset authors and can be incomplete or wrong.",
+  "Graph answered by the networkx fallback engine, not TigerGraph."
+ ],
+ "reportHash": "0xc66e81a23d4cd9015cea8916e56ba86efd2802d23286d2ebd2f70afba8874b03",
+ "cached": true,
+ "engine": "networkx",
+ "replay": false,
+ "truncated": false
+}

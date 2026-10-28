@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { watchErrors } from "./helpers";
+import { needsMocks, watchErrors } from "./helpers";
 
-// These scenarios use the mock backend's DEMO-… wallets and payment simulation; the real backend has its own spec.
-test.skip(process.env.E2E_REAL === "1", "mock-backend scenario");
+needsMocks();
+
 
 test("crypto invoice shows a QR and URI, and 'Simulate payment' adds credits", async ({ page }) => {
   const errors = watchErrors(page);

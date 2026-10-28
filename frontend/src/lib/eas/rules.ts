@@ -46,13 +46,37 @@ export function fieldsFor(result: CheckResponse, reportHash: string): AttestFiel
 
 export const attestationUrl = (uid: string): string => `${EASSCAN_URL}/attestation/view/${uid}`;
 
-export type AttestErrorKind = "rejected" | "wrong_network" | "insufficient_funds" | "schema" | "other";
+/** Public Base Sepolia (test network) endpoints. Read-only use; no keys involved. */
+export const BASESCAN_URL = "https://sepolia.basescan.org";
+export const BASE_SEPOLIA_RPC = "https://sepolia.base.org";
+export const txUrl = (hash: string): string => `${BASESCAN_URL}/tx/${hash}`;
+
+/** Thrown before any attestation call is built when the browser's recomputed report hash differs from the backend's. */
+export class HashMismatchError extends Error {
+  readonly local: string;
+  readonly backend: string;
+  constructor(local: string, backend: string) {
+    super("report hash mismatch");
+    this.name = "HashMismatchError";
+    this.local = local;
+    this.backend = backend;
+  }
+}
+
+export type AttestErrorKind =
+  | "rejected"
+  | "wrong_network"
+  | "insufficient_funds"
+  | "schema"
+  | "hash_mismatch"
+  | "other";
 
 const KEYS: Record<AttestErrorKind, MessageKey> = {
   rejected: "web3.error.rejected",
   wrong_network: "web3.error.wrongNetwork",
   insufficient_funds: "web3.error.funds",
   schema: "web3.error.schema",
+  hash_mismatch: "web3.error.hashMismatch",
   other: "web3.error.other",
 };
 
@@ -71,6 +95,7 @@ function describe(e: unknown, depth = 0): string {
 
 /** Maps any failure to one of five friendly cases (EN/HI text lives in the web3 messages). */
 export function classifyAttestError(e: unknown): { kind: AttestErrorKind; messageKey: MessageKey } {
+  if (e instanceof HashMismatchError) return { kind: "hash_mismatch", messageKey: KEYS.hash_mismatch };
   const text = describe(e);
   let kind: AttestErrorKind = "other";
   if (

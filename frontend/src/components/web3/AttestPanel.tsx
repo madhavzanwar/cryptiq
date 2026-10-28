@@ -42,7 +42,7 @@ export function AttestPanel({ result, historyId }: { result: CheckResponse; hist
       </Card>
     );
   }
-  if (USE_MOCKS) return <SimulatedAttest />;
+  if (USE_MOCKS) return <SimulatedAttest result={result} />;
   return (
     <WalletSlot fallback={<AttestSkeleton />}>
       <AttestFlow result={result} historyId={historyId} />

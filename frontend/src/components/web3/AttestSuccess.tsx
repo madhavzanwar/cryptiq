@@ -23,6 +23,7 @@ export function AttestSuccess({ uid, historyId }: { uid: string; historyId?: str
         <CircleCheck className="size-6 flex-none" aria-hidden strokeWidth={1.75} />
         {t("web3.success.title")}
       </p>
+      <p className="text-small font-semibold">{t("web3.panel.testnet")}</p>
       <div className="flex flex-wrap items-center gap-[9px]">
         <span className="text-small">{t("web3.success.uid")}</span>
         <span className="mono text-small" title={uid}>

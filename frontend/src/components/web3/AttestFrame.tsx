@@ -18,7 +18,10 @@ export function AttestFrame({ simulated = false, children }: { simulated?: boole
         {simulated && <Tag tone="yellow">{t("web3.badge.simulated")}</Tag>}
       </div>
       <p className="measure text-body-lg">{t("web3.panel.intro")}</p>
-      <Alert tone="warning">{t("web3.panel.warning")}</Alert>
+      <Alert tone="warning">
+        <p>{t("web3.panel.warning")}</p>
+        <p className="mt-1 font-semibold">{t("web3.panel.testnet")}</p>
+      </Alert>
       {children}
     </Card>
   );
