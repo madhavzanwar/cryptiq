@@ -5,7 +5,7 @@ RAW ?= data/raw
 
 .PHONY: run-fixture
 
-.PHONY: download verify-data
+.PHONY: download verify-data smoke-queries compare-engines
 .PHONY: setup data fixture labels explore train demo-wallets load-graph install-queries verify-graph \
         run test test-tg lint typecheck openapi record-replays benchmark smoke audit
 
@@ -49,6 +49,12 @@ install-queries:
 
 verify-graph:
 	$(PY) -m scripts.verify_graph
+
+smoke-queries:    ## one smoke check per installed GSQL query
+	$(PY) -m scripts.smoke_queries
+
+compare-engines:  ## TigerGraph vs NetworkX on demo + random wallets, latency p50/p95, hub safety
+	$(PY) -m scripts.compare_engines --random 50 --calls 60 --hubs 5
 
 run:
 	uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
