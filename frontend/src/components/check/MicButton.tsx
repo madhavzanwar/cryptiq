@@ -4,6 +4,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/cn";
 import { useT } from "@/lib/i18n/provider";
 import type { MessageKey } from "@/lib/i18n";
+import { isOtherControl, isTextEntry } from "@/lib/hooks/checkKeys";
 import { TAP_MS, formatTimer } from "@/lib/voice/record";
 import type { VoiceErrorKind, VoiceInput } from "@/lib/voice/useVoiceInput";
 import { motion, useReducedMotion } from "framer-motion";
@@ -18,12 +19,6 @@ const ERROR_KEYS: Record<VoiceErrorKind, MessageKey> = {
   failed: "check.mic.err.failed",
   unavailable: "check.mic.err.unavailable",
 };
-
-const isEditable = (el: EventTarget | null) =>
-  el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
-/** Space on another control (a button, a link, a tab) must still activate that control. */
-const isOtherControl = (el: EventTarget | null) =>
-  el instanceof HTMLElement && el.closest("a,button,summary,[role=button],[role=tab],[role=radio]") !== null && el.closest("[data-mic]") === null;
 
 /**
  * Push-to-talk. Hold the button (or hold Space) to record and release to send. A quick tap starts a
@@ -84,12 +79,12 @@ export function MicButton({ voice, size = "md", disabled = false, shortcut = tru
         return;
       }
       if (e.code !== "Space" || e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (isEditable(e.target) || isOtherControl(e.target)) return;
+      if (isTextEntry(e.target) || isOtherControl(e.target)) return;
       e.preventDefault();
       press();
     };
     const up = (e: KeyboardEvent) => {
-      if (e.code !== "Space" || isEditable(e.target) || isOtherControl(e.target)) return;
+      if (e.code !== "Space" || isTextEntry(e.target) || isOtherControl(e.target)) return;
       e.preventDefault();
       release();
     };

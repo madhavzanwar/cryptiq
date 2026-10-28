@@ -175,7 +175,7 @@ export function HistoryView() {
                       </div>
                       <p className="mono text-small" title={e.result.address}>{shortAddress(e.result.address, 10, 8)}</p>
                       <p className="text-body text-ash-gray">{t("history.col.score")}: <span className="text-carbon tabular-nums">{c.score}</span> · {t("history.col.hops")}: <span className="text-carbon tabular-nums">{c.hops}</span></p>
-                      <p className="text-body"><Proof entry={e} /></p>
+                      {e.attestationUid && <p className="text-body"><Proof entry={e} /></p>}
                       <div className="flex gap-[9px]">
                         <Link className={linkBtn} href={`/r/${e.id}`}>{t("history.open")}</Link>
                         <button type="button" className={linkBtn} onClick={() => remove(e.id)} aria-label={`${t("history.delete")} ${e.result.address}`}>{t("history.delete")}</button>

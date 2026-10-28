@@ -39,14 +39,14 @@ export function InvoiceCard({
   const live = status === "waiting";
 
   return (
-    <div className="grid gap-[18px] rounded-card border border-carbon bg-pure-white p-[var(--card-padding)] sm:grid-cols-[auto_1fr]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-[18px] rounded-card border border-carbon bg-pure-white p-[var(--card-padding)] sm:grid-cols-[auto_minmax(0,1fr)]">
       <div className={live ? "" : "opacity-40"}>
         <div role="img" aria-label={t("credits.crypto.qr")} className="w-fit rounded-tag border border-carbon bg-pure-white p-[18px] text-carbon">
           <QRCodeSVG value={invoice.uri} size={176} level="M" marginSize={0} bgColor="transparent" fgColor="currentColor" />
         </div>
       </div>
 
-      <div className="grid min-w-0 content-start gap-[13px]">
+      <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] content-start gap-[13px]">
         <p className="text-body-lg font-semibold">{t("credits.crypto.pay", { amount: invoice.amount, coin: invoice.coin.toUpperCase() })}</p>
         <p className="text-body text-ash-gray">{t("credits.crypto.scan")}</p>
 

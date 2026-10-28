@@ -150,7 +150,7 @@ export function AboutView() {
 
         <Section id="credits" title={t("about.credits.title")}>
           <p className="measure mb-[18px] text-body-lg text-ash-gray">{t("about.credits.intro")}</p>
-          <div className="grid gap-[26px]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-[26px]">
             {CREDIT_AREAS.map((area) => (
               <div key={area}>
                 <h3 className="mb-[9px] text-body-lg font-semibold">{t(AREA_LABEL[area])}</h3>

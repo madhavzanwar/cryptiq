@@ -37,7 +37,7 @@ describe("SideDock", () => {
   it("marks sub-routes of a destination as current", () => {
     pathname.value = "/credits/success";
     render(<SideDock />);
-    expect(screen.getByRole("link", { name: "Credits" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Credits", hidden: true })).toHaveAttribute("aria-current", "page");
   });
 
   it("closes on Escape and returns focus to the launcher", async () => {

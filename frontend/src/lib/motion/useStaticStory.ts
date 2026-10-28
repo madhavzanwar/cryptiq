@@ -6,6 +6,7 @@ import { useSyncExternalStore } from "react";
 const QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribe(onChange: () => void): () => void {
+  if (typeof window.matchMedia !== "function") return () => undefined;
   const mq = window.matchMedia(QUERY);
   mq.addEventListener("change", onChange);
   return () => mq.removeEventListener("change", onChange);
@@ -15,7 +16,7 @@ function subscribe(onChange: () => void): () => void {
 export function usePrefersReducedMotion(): boolean {
   return useSyncExternalStore(
     subscribe,
-    () => window.matchMedia(QUERY).matches,
+    () => typeof window.matchMedia === "function" && window.matchMedia(QUERY).matches,
     () => false,
   );
 }

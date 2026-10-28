@@ -7,6 +7,7 @@ import { AttestPanel } from "@/components/web3/AttestPanel";
 import { cn } from "@/lib/cn";
 import type { CheckResponse, Verdict } from "@/lib/api/types";
 import { useCheckController } from "@/lib/hooks/checkController";
+import { isTextEntry } from "@/lib/hooks/checkKeys";
 import { useDemoWallets } from "@/lib/hooks/useApi";
 import { useT } from "@/lib/i18n/provider";
 import { FIXTURES } from "@/lib/mocks";
@@ -44,9 +45,6 @@ export function replayFor(expected: Verdict): CheckResponse {
   const base = FIXTURES[REPLAY_BY_VERDICT[expected]] as CheckResponse;
   return { ...base, replay: true, engine: "replay", cached: false, creditsRemaining: undefined };
 }
-
-const isEditable = (el: EventTarget | null) =>
-  el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
 
 /** Index of the script segment that `seconds` falls in. */
 export function scriptIndexAt(seconds: number): number {
@@ -91,7 +89,7 @@ export function StageExperience() {
   });
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target)) return;
+      if (e.ctrlKey || e.metaKey || e.altKey || isTextEntry(e.target)) return;
       if (e.key >= "1" && e.key <= "4") pickRef.current(Number(e.key) - 1);
       else if (e.key === "a" || e.key === "A") {
         attestRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -210,8 +208,8 @@ export function StageExperience() {
       )}
 
       {showScript && (
-        <Card className="fixed bottom-[18px] left-[18px] z-40 max-h-[70dvh] w-[min(440px,calc(100vw-36px))] overflow-y-auto" role="complementary" aria-label={t("check.stage.script.title")}>
-          <div className="mb-[13px] flex items-center justify-between gap-[13px]">
+        <Card className="fixed inset-x-[18px] bottom-[18px] z-40 max-h-[50dvh] overflow-y-auto !p-[18px]" role="complementary" aria-label={t("check.stage.script.title")}>
+          <div className="mb-[11px] flex items-center justify-between gap-[13px]">
             <h2 className="sub">{t("check.stage.script.title")}</h2>
             <Button
               variant="ghost"
@@ -226,7 +224,7 @@ export function StageExperience() {
               {running ? t("check.stage.timer.stop") : t("check.stage.timer.start")}
             </Button>
           </div>
-          <ol className="grid gap-[9px]">
+          <ol className="grid gap-[9px] lg:grid-cols-6">
             {SCRIPT.map((step, i) => (
               <li key={step.key} aria-current={running && scriptIndexAt(seconds) === i ? "step" : undefined} className={cn("rounded-tag px-[13px] py-[9px] text-body", running && scriptIndexAt(seconds) === i ? "bg-sticker-yellow" : "bg-bone")}>
                 {t(step.key)}

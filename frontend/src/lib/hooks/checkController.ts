@@ -11,6 +11,7 @@ import { useUi } from "@/lib/stores/ui";
 import { useVoiceInput, type VoiceInput, type VoiceResult } from "@/lib/voice/useVoiceInput";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type RefObject } from "react";
 import { findRecent, useCheckFlow, type CheckFlow } from "./checkFlow";
+import { isTextEntry } from "./checkKeys";
 
 const subscribeOnline = (cb: () => void) => {
   window.addEventListener("online", cb);
@@ -24,9 +25,6 @@ const subscribeOnline = (cb: () => void) => {
 export function useOnline(): boolean {
   return useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
 }
-
-const isEditable = (el: EventTarget | null) =>
-  el instanceof HTMLElement && (el.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName));
 
 export interface CheckController {
   lang: Lang;
@@ -165,7 +163,7 @@ export function useCheckController(): CheckController {
   // "/" jumps to the address box.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || isEditable(e.target)) return;
+      if (e.key !== "/" || e.ctrlKey || e.metaKey || e.altKey || isTextEntry(e.target)) return;
       e.preventDefault();
       inputRef.current?.focus();
     };

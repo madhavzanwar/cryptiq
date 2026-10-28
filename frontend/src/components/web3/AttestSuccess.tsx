@@ -28,7 +28,7 @@ export function AttestSuccess({ uid, historyId }: { uid: string; historyId?: str
         <CopyButton value={uid} iconOnly className="text-carbon" />
       </div>
       <div className="flex flex-wrap gap-[9px]">
-        <Button variant="ghost" href={attestationUrl(uid)} external className="bg-pure-white">
+        <Button variant="ghost" href={attestationUrl(uid)} external className="border-carbon! bg-pure-white">
           {t("web3.success.view")}
           <ExternalLink className="size-4" aria-hidden />
         </Button>

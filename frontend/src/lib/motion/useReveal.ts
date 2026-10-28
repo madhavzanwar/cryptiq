@@ -11,7 +11,7 @@ export function useReveal(ref: RefObject<HTMLElement | null>): void {
     const root = ref.current;
     if (!root) return;
     const targets = [...root.querySelectorAll<HTMLElement>("[data-reveal]")];
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced || typeof IntersectionObserver === "undefined") {
       targets.forEach((t) => t.classList.add("in"));
       return;

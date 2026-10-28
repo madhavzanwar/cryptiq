@@ -21,7 +21,7 @@ export default function ConnectUi() {
         }
         if (chain.unsupported) {
           return (
-            <Button variant="ghost" onClick={openChainModal}>
+            <Button variant="ghost" className="border-carbon!" onClick={openChainModal}>
               {t("web3.connect.wrongNetwork")}
             </Button>
           );

@@ -101,7 +101,7 @@ export default function AttestFlow({ result, historyId }: Props) {
       {schemaMissing && <Alert tone="info">{t("web3.setup.schema")}</Alert>}
       {!HAS_WALLETCONNECT && step === 0 && <p className="text-small text-ash-gray">{t("web3.connect.noProject")}</p>}
       {error && (
-        <Alert tone="error" action={error.kind === "insufficient_funds" ? <Button variant="ghost" href={FAUCET_URL} external>{t("web3.error.faucet")}</Button> : undefined}>
+        <Alert tone="error" action={error.kind === "insufficient_funds" ? <Button variant="ghost" href={FAUCET_URL} external className="border-carbon!">{t("web3.error.faucet")}</Button> : undefined}>
           {t(error.key)}
         </Alert>
       )}

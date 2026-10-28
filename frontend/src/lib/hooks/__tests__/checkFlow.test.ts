@@ -61,3 +61,24 @@ describe("findRecent", () => {
     expect(RECENT_MS).toBe(600_000);
   });
 });
+
+import { isOtherControl, isTextEntry } from "@/lib/hooks/checkKeys";
+
+describe("keyboard shortcut helpers", () => {
+  const el = (html: string) => {
+    const host = document.createElement("div");
+    host.innerHTML = html;
+    document.body.appendChild(host);
+    return host.firstElementChild as HTMLElement;
+  };
+  it("treats text fields as typing but checkboxes and buttons as controls", () => {
+    expect(isTextEntry(el('<input type="text">'))).toBe(true);
+    expect(isTextEntry(el("<textarea></textarea>"))).toBe(true);
+    expect(isTextEntry(el('<input type="checkbox">'))).toBe(false);
+    expect(isTextEntry(el("<button>x</button>"))).toBe(false);
+    expect(isOtherControl(el('<input type="checkbox">'))).toBe(true);
+    expect(isOtherControl(el("<button>x</button>"))).toBe(true);
+    expect(isOtherControl(el('<button data-mic>x</button>'))).toBe(false);
+    expect(isOtherControl(el("<p>text</p>"))).toBe(false);
+  });
+});
