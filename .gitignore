@@ -26,3 +26,6 @@ __pycache__/
 *.log
 playwright-report/
 test-results/
+
+# agent scratch worktrees
+.claude/worktrees/
