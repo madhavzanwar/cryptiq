@@ -41,7 +41,7 @@ async def wispr_transcribe(client: httpx.AsyncClient, s: Settings, wav: bytes, l
 
 
 async def sarvam_transcribe(client: httpx.AsyncClient, s: Settings, wav: bytes, lang: str) -> Transcript:
-    """Sarvam speech-to-text (multipart; verified against the sarvamai 0.1.40 SDK source)."""
+    """Sarvam speech-to-text (multipart; verified against the sarvamai 0.1.40 SDK source and live on 2026-10-28)."""
     data = {"model": s.sarvam_stt_model, "language_code": _SARVAM_LANG.get(lang, "unknown")}
     try:
         r = await client.post(f"{s.sarvam_api_url}/speech-to-text", data=data,
