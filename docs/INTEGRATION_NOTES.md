@@ -398,7 +398,7 @@ supplied through the environment and are not in the repository.
 | Benchmark N=25 on the local 1.5B model | not measured | that run was killed at 24 % by a stray `pkill`; superseded by the Gemini run |
 | Benchmark on Groq free tier | not run | 8,000 tokens per minute is below the raw dumps (mean 10,931, max 19,264 tokens at N=25); Gemini was used instead |
 | TigerGraph Community Edition (local Docker, v4.2.5) | **FAIL (environment)** | schema created on the engine; data upsert failed with `SYS-0001` because GSE could not start: `System hard limit of file descriptors is 20000. The expected is no less than 65535`. The sandbox cannot raise it, and it was not bypassed. GSQL queries therefore remain **never compiled**; no TigerGraph counts, comparison or latency |
-| TigerGraph Savanna | not tested | needs an account (credits only, no free instance per its FAQ) |
+| TigerGraph Savanna | **PASS** | workspace provided later the same day; results in the TigerGraph section below |
 | Sarvam STT / TTS (`saaras:v4`, `bulbul:v4-flash`) | **PASS** | first call: SDK `text_to_speech.convert` (hi-IN) returned a valid 22,050 Hz mono WAV (2.00 s, 88,244 B); `speech_to_text.transcribe` of that file returned the identical sentence. The app's own `TTS.synthesize` produced MP3s (en 98,220 B, hi 96,966 B) and `sarvam_transcribe` recovered the text (en exact; hi exact); a bad key gives `UpstreamError(sarvam, http 403)`. Quirk: Hindi audio sent with `language_code=en-IN` comes back translated to English, and English audio sent as `hi-IN` comes back in Devanagari transliteration. Free-credit balance and rate limits not read |
 | Wispr | not tested | host reachable, no key. Nothing in the app claims Wispr |
 | Dodo test checkout, webhook exactly-once, bad signature | not tested live | host reachable (403 on `/`), no key. Signature and idempotency remain unit-tested only |
@@ -452,3 +452,25 @@ What this does and does not support:
 Known wording problem found here: the explanation says the wallet "is part of a cluster of 822,935 wallets". That number is the size of the
 connected component, which is nearly the whole graph, so "cluster" is misleading to a reader. The text should not present component size as
 a cluster; not fixed yet.
+
+
+### TigerGraph Savanna (TigerGraph 4.2.5, graph `Cryptiq`), measured 2026-10-28
+The workspace was created by the owner. The graph already held the full dataset when checked, so nothing was reloaded.
+
+| Check | Result | Measured detail |
+|---|---|---|
+| Counts vs the processed Parquet (`scripts.verify_graph`) | **PASS, exact match** | 822,942 vertices, 2,775,637 edges, labels illicit 14,266 / licit 251,088 / unknown 557,588 on both sides |
+| GSQL compile and install (never compiled before) | **PASS** | `graph_stats`, `khop_exposure`, `wallet_summary`: 3 succeeded, 0 failed, 55 s, first attempt, no GSQL edits needed |
+| Smoke per query (`scripts.smoke_queries`) | **PASS** | wallet_summary (illicit, component 822,935), graph_stats (counts above), khop_exposure (30 nodes, 29 links, nearest illicit 1 hop, not truncated) |
+| TigerGraph vs NetworkX, same full data (`scripts.compare_engines`) | **PASS, 0 differences** | 57 wallets (7 demo + 50 random, seed 7): 46 compared, 11 skipped because the hub cap truncated them (reported, not counted as passes), 0 diffs, 0 errors |
+| Latency over 60 real calls (3 warm-up, 57 distinct wallets) | measured | p50 669.86 ms, p95 774.72 ms, min 571.8, max 794.48. This is the client-observed time from this sandbox to Savanna (network included) and covers two round trips (vertex lookup, then the k-hop query); the engine-reported figure is the same to within 0.4 ms |
+| Hub safety, 5 highest-degree wallets (22,996 / 14,287 / 12,396 / 8,855 / 8,704) | **PASS** | each answered in 0.77 to 0.95 s with `truncated: true`, 120 nodes, no hang, no error |
+| `pytest -m tigergraph` | **PASS** | 1 passed (TigerGraph vs NetworkX on random wallets) |
+| Replays re-recorded from TigerGraph | **PASS** | 16 files, all `engine: tigergraph`, no Sarvam audio (so they are portable); known wallets 599 to 734 ms, UNKNOWN 53 to 68 ms |
+| Production-mode smoke with `GRAPH_ENGINE=tigergraph` | **11/11 PASS** | `/api/check` latency row n=40: median 12 ms, p95 15,043 ms (cache hits included). The p95 is the first uncached calls, which include a live Gemini call. The cause of 15 s was **not investigated** (the explanation deadline is 8 s) |
+
+Two real defects were found only because the code ran against a real cluster, and are fixed with regression tests:
+1. pyTigerGraph 2.x deprecates plain values for `VERTEX<T>` parameters: every call was rejected (REST-30000) and retried, doubling the round trips. The seed is now passed as a 1-tuple (`TigerGraphEngine.query_params`).
+2. An id that is not in the graph makes TigerGraph answer error 601 ("not a valid vertex id") instead of an empty list, so a not-in-dataset wallet was reported as an engine failure. It now means "not in dataset" (UNKNOWN); other failures stay errors.
+
+Credits: the workspace consumes Savanna credits while running; its remaining balance and rate of use were not read. Suspend the workspace when not demonstrating.
