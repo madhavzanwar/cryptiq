@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo options</title>
+<link rel="icon" href="public/brand/logo-mark.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&display=swap">
+<link rel="stylesheet" href="src/styles/tokens.css">
+<link rel="stylesheet" href="src/styles/logo.css">
+<style>
+*{box-sizing:border-box;margin:0}
+body{background:var(--surface-canvas);color:var(--color-carbon);font:500 var(--text-body-lg)/var(--leading-body-lg) var(--font-inter-tight);-webkit-font-smoothing:antialiased}
+b,h1,h2,h3{font-weight:600}
+.container{max-width:var(--page-max-width);margin:0 auto;padding:0 var(--page-gutter)}
+header.top{padding:var(--spacing-53) 0 var(--spacing-35)}
+h1{font-size:clamp(40px,6vw,84px);line-height:.95;margin-top:var(--spacing-18)}
+.lead{color:var(--color-ash-gray);max-width:65ch;margin-top:var(--spacing-18)}
+.eyebrow{color:var(--color-ash-gray);font-size:var(--text-body-lg)}
+.cards{display:grid;gap:var(--grid-gap);padding-bottom:var(--section-gap)}
+.card{background:var(--color-pure-white);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--card-padding);display:grid;gap:var(--spacing-26)}
+.card.rec{border-width:2px}
+.head{display:flex;flex-wrap:wrap;align-items:center;gap:var(--spacing-13)}
+.head h2{font-size:var(--text-subheading);line-height:var(--leading-subheading)}
+.tag{display:inline-flex;align-items:center;background:var(--color-bone);border-radius:var(--radius-tags);padding:var(--spacing-7) var(--spacing-13);font-size:var(--text-small,13px);line-height:1.2}
+.tag.pick{background:var(--color-sticker-yellow)}
+.why{color:var(--color-ash-gray);max-width:65ch}
+.panels{display:grid;gap:var(--spacing-13);grid-template-columns:1fr}
+@media(min-width:900px){.panels{grid-template-columns:repeat(3,1fr)}}
+.panel{border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--spacing-26);display:flex;align-items:flex-end;justify-content:center;gap:var(--spacing-26);min-height:190px}
+.panel small{display:block;font-size:11px;text-align:center;margin-top:var(--spacing-9);opacity:.7}
+.p-paper{background:var(--color-paper-white)}.p-bone{background:var(--color-bone)}.p-carbon{background:var(--color-carbon);color:#fff;border-color:var(--color-carbon)}
+.panel figure{margin:0}
+.panel img{display:block;margin:0 auto}
+.replay{font:500 var(--text-body)/1 var(--font-inter-tight);background:var(--color-carbon);color:#fff;border:0;border-radius:var(--radius-buttons);min-height:44px;padding:0 var(--spacing-26);cursor:pointer;transition:background-color 120ms ease-out,transform 90ms ease-out}
+.replay:hover{background:var(--color-obsidian)}.replay:active{transform:scale(.97)}
+footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-white);padding:var(--spacing-42) 0;color:var(--color-ash-gray);font-size:14px}
+</style>
+</head>
+<body>
+<header class="top"><div class="container">
+  <p class="eyebrow">Brand</p>
+  <h1>Logo options</h1>
+  <p class="lead">Five mark-only concepts, no lettering. Each is a flat black sticker tile with one Sticker Yellow confetti dot peeking off the corner. Every concept is shown at 120, 40 and 24px on Paper White, Bone and Carbon.</p>
+</div></header>
+
+<main class="container cards" id="cards"></main>
+
+<footer><div class="container">Files: public/brand/concept-*.svg (options) and public/brand/logo-mark.svg (the chosen mark, with a built-in one-shot needle swing).</div></footer>
+
+<script>
+const C=[
+ {f:'concept-1-verdict-dial.svg',n:'1 · Verdict Dial',w:'A gauge of three arcs (sage, butter, rose) with a needle: ALLOW, WARN, BLOCK at a glance. It is the product’s answer, and it stays readable at 24px.',pick:true},
+ {f:'concept-2-hop-path.svg',n:'2 · Hop Path',w:'A ring with a three-hop node path that ends in a pink flagged node: the graph evidence idea in one gesture.'},
+ {f:'concept-3-watcher-eye.svg',n:'3 · Watcher Eye',w:'An almond eye whose iris is a tiny node graph with a yellow pupil: looking before you pay.'},
+ {f:'concept-4-sonar-shield.svg',n:'4 · Sonar Shield',w:'A shield filled with radar and sound arcs from one node: voice in, protection out.'},
+ {f:'concept-5-sticker-orbit.svg',n:'5 · Sticker Orbit',w:'A core node with confetti-coloured dots orbiting a dashed ring, one pink and flagged: wallets around a wallet.'},
+];
+const sizes=[120,40,24], bgs=[['p-paper','Paper White'],['p-bone','Bone'],['p-carbon','Carbon']];
+const root=document.getElementById('cards');
+const panels=(src)=>bgs.map(([c,l])=>`<div class="panel ${c}">${sizes.map(s=>`<figure><img src="${src}" width="${s}" height="${s}" alt=""><small>${s}px</small></figure>`).join('')}</div>`).join('');
+root.innerHTML=
+ `<section class="card rec" id="final"><div class="head"><h2>Chosen mark</h2><span class="tag pick">In use</span><button class="replay" id="replay">Replay swing</button></div><p class="why">Verdict Dial with the needle swing that plays once when the mark loads. The animation lives inside the SVG, so it also plays when the file is used in an img tag.</p><div class="panels" id="finalPanels">${panels('public/brand/logo-mark.svg')}</div></section>`+
+ C.map(c=>`<section class="card ${c.pick?'rec':''}"><div class="head"><h2>${c.n}</h2>${c.pick?'<span class="tag pick">Recommended</span>':''}</div><p class="why">${c.w}</p><div class="panels">${panels('public/brand/'+c.f)}</div></section>`).join('');
+document.getElementById('replay').addEventListener('click',()=>{const t=Date.now();document.querySelectorAll('#finalPanels img').forEach(i=>{i.src='public/brand/logo-mark.svg?t='+t;});});
+</script>
+</body>
+</html>

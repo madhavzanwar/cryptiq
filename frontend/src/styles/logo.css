@@ -1,0 +1,6 @@
+/* Logo mark sizing helpers. The mark is square; the yellow sticker dot sits in the top-right corner of the box, so never clip it. */
+.logo-mark { display: inline-block; width: 40px; height: 40px; flex: none; vertical-align: middle; }
+.logo-mark--24 { width: 24px; height: 24px; }
+.logo-mark--32 { width: 32px; height: 32px; }
+.logo-mark--40 { width: 40px; height: 40px; }
+.logo-mark--52 { width: 52px; height: 52px; }
