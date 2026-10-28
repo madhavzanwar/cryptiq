@@ -112,6 +112,7 @@ export function StageExperience() {
 
   return (
     <div className="mx-auto w-full max-w-[1480px] px-[var(--page-gutter)] py-[26px]">
+      <h1 className="sr-only">{t("check.stage.title")}</h1>
       <div className="mb-[26px] flex flex-wrap items-center justify-between gap-[13px]">
         <Button variant="ghost" href="/">
           <ArrowLeft className="size-4" aria-hidden />

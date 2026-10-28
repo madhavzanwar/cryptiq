@@ -150,6 +150,7 @@ export const check = defineMessages(
     "check.attest.unknown.title": "No attestation for this result",
     "check.attest.unknown.body": "The wallet is not in our dataset, so there is no verdict to put on-chain.",
 
+    "check.stage.title": "Stage mode: check a wallet",
     "check.stage.exit": "Exit stage mode",
     "check.stage.replay": "Replay",
     "check.stage.replaySwitch": "Cached replay",
@@ -322,6 +323,7 @@ export const check = defineMessages(
     "check.attest.unknown.title": "इस नतीजे का अटेस्टेशन नहीं बनता",
     "check.attest.unknown.body": "यह वॉलेट हमारे डेटासेट में नहीं है, इसलिए ऑन-चेन रखने लायक कोई verdict नहीं है।",
 
+    "check.stage.title": "स्टेज मोड: वॉलेट जाँचें",
     "check.stage.exit": "स्टेज मोड से बाहर निकलें",
     "check.stage.replay": "रीप्ले",
     "check.stage.replaySwitch": "सेव किया हुआ रीप्ले",

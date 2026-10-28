@@ -43,5 +43,25 @@ Every non-obvious decision, conflict and assumption for `/frontend`. Newest deci
 - Mock fixtures cover BLOCK / WARN / ALLOW / UNKNOWN, 20-120 node subgraphs, EN and HI explanations, and a valid `reportHash`.
 - Hindi strings are short and simple but **have not been reviewed by a native speaker**. Please review `src/lib/i18n/messages/*.ts`.
 
+## Verification (what was actually run)
+- `npm run typecheck`, `npm run lint`: clean. `npm test`: 36 files / 308 tests pass (client, mocks, i18n, token sync, every feature area).
+- `npm run build`: passes (13 routes) in mock mode.
+- `npm run test:e2e` (mock backend, production build): 21 passed on desktop and phone sizes. `E2E_REAL=1 npm run test:e2e`
+  against the real FastAPI backend on its synthetic fixture (through the Next.js `/api` rewrite, real session cookie, real SSE):
+  15 passed, mock-only scenarios skipped. A repeat check of the same wallet within 10 minutes is served from the backend cache and is
+  free, which the UI labels "Cached, no credit used".
+- Not run (needs keys or a laptop): real Elliptic++ data, TigerGraph, Wispr/Sarvam voice, LLM explanations, Dodo and BTC/XMR payments,
+  a real wallet signing an EAS attestation (the signing path was exercised with an in-page fake wallet), Lighthouse.
+
 ## Known limitations
-See the final report in the pull request description.
+- The backend this app was tested against runs on a synthetic fixture (`isMock: true`, engine NetworkX); the UI says so with a
+  "SYNTHETIC DATA" ribbon. Real data and TigerGraph have not been exercised.
+- Voice: with no voice keys the backend answers `503 voice_unavailable` and the UI falls back to the browser's speech recognition,
+  which could not be tested in headless Chromium.
+- Attesting needs `NEXT_PUBLIC_EAS_SCHEMA_UID` (register the schema once) and Base Sepolia test ETH; without the schema UID the button
+  is disabled with a setup message. WalletConnect needs `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`; without it only injected wallets work.
+- Hindi strings have not been reviewed by a native speaker.
+- The `*.css` Turbopack rule from the scaffold sends `*.module.css` through the Tailwind loader, which breaks CSS-module class hashing.
+  The app uses global/Tailwind CSS only, so this is dormant; do not add CSS modules without excluding them from that rule.
+- Wallet code is loaded lazily after the first paint (about 122 kB gzip) and the EAS SDK only when someone signs (about 244 kB gzip).
+- The root `README.md` still says the Next.js app is not in the repo; update that line when this branch is merged.
