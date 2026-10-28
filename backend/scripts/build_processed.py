@@ -18,13 +18,18 @@ from app.services.datasets.processing import (
     build_edges,
     build_wallets,
     check_schema,
+    detect_lfs_pointers,
     graph_features,
     index_graph,
+    lfs_pointer_message,
     read_raw,
 )
 
 
 def build(raw: Path, out: Path, source: str) -> dict[str, object]:
+    pointers = detect_lfs_pointers(raw)
+    if pointers:
+        raise SystemExit(lfs_pointer_message(pointers))
     steps = tqdm(total=6, desc="build_processed")
     feats, classes, edges_raw = read_raw(raw)
     problems = check_schema(feats, classes, edges_raw)

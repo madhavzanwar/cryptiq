@@ -15,8 +15,13 @@ import pandas as pd
 
 from app.services.datasets.schema import FEATURE_COLUMNS
 
+LAYOUTS = ("default", "combined")
 
-def make_fixture(out: Path, n_wallets: int = 2400, seed: int = 7) -> dict[str, int]:
+
+def make_fixture(out: Path, n_wallets: int = 2400, seed: int = 7, layout: str = "default") -> dict[str, int]:
+    """layout 'default': features + classes files; 'combined': features file with a class column (HF mirror)."""
+    if layout not in LAYOUTS:
+        raise ValueError(f"layout must be one of {LAYOUTS}")
     rng = np.random.default_rng(seed)
     out.mkdir(parents=True, exist_ok=True)
     # class codes as in Elliptic++: 1 illicit, 2 licit, 3 unknown
@@ -54,8 +59,12 @@ def make_fixture(out: Path, n_wallets: int = 2400, seed: int = 7) -> dict[str, i
     edges += [(hub, addrs[j]) for j in rng.choice(n_wallets, size=300, replace=False)]
     edges += [(addrs[5], addrs[5]), (addrs[6], addrs[7]), (addrs[6], addrs[7])]
 
-    feats.to_csv(out / "wallets_features.csv", index=False)
-    pd.DataFrame({"address": addrs, "class": classes}).to_csv(out / "wallets_classes.csv", index=False)
+    if layout == "combined":
+        feats["class"] = feats["address"].map(dict(zip(addrs, classes.tolist(), strict=True)))
+        feats.to_csv(out / "wallets_features_classes_combined.csv", index=False)
+    else:
+        feats.to_csv(out / "wallets_features.csv", index=False)
+        pd.DataFrame({"address": addrs, "class": classes}).to_csv(out / "wallets_classes.csv", index=False)
     pd.DataFrame(edges, columns=["input_address", "output_address"]).to_csv(
         out / "AddrAddr_edgelist.csv", index=False)
     return {"wallets": n_wallets, "feature_rows": len(feats), "edges": len(edges)}
@@ -65,8 +74,10 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, default=Path("data/fixture/raw"))
     ap.add_argument("--wallets", type=int, default=2400)
+    ap.add_argument("--layout", choices=LAYOUTS, default="default",
+                    help="combined: only wallets_features_classes_combined.csv + edge list (Hugging Face layout)")
     args = ap.parse_args()
-    print(make_fixture(args.out, args.wallets))
+    print(make_fixture(args.out, args.wallets, layout=args.layout))
 
 
 if __name__ == "__main__":
