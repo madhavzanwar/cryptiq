@@ -88,3 +88,28 @@ teammate or on request) with:
 - UI rules from the contract: TigerGraph badge only when `engine === "tigergraph"`; "Replay" label for
   `replay`; "cached, no credit used"; "results truncated" note; 402 opens the credits drawer;
   `secret_input` shows the seed-phrase warning; 503 `voice_unavailable` uses browser speech recognition.
+
+## 8. Second integration round (the partner's push)
+
+- Fetched all branches. The partner's new work is `frontend/design-system` (identical tip `59f2299` to
+  `claude/wonderful-goodall-5nwkvk`): logo concepts, motion CSS/JS, nav docs, HTML previews. **Still no
+  Next.js app** (`frontend/package.json`, `src/app`, components, mock layer and Playwright config are all
+  absent from every branch). Merged with a merge commit; no conflicts (it only adds `frontend/` design files).
+- Because there is no app, these Phase 2 items are **not done**: `next.config` rewrites, UI badges and
+  labels, Playwright happy path and axe checks, `next build`, frontend lint/typecheck/test. They have
+  nothing to attach to; no app was invented.
+- Done: `frontend/.env.example` (names only); root README "Run everything"; `backend/.env.example`
+  gained `TRUST_FLY_CLIENT_IP`.
+- When the app exists, add this rewrite and the UI rules from section 7:
+
+```js
+// next.config.js
+module.exports = { async rewrites() {
+  return [{ source: "/api/:path*", destination: `${process.env.BACKEND_URL}/api/:path*` }];
+} };
+```
+
+- Expected conflicts when the real app lands: `frontend/src/lib/api/*` (keep the app's client and mocks as
+  the base; add only the missing pieces: `credentials: "include"`, the additive response fields, error
+  codes with EN/HI messages, cookie-aware SSE via fetch, `reportHash` verification), `README.md`,
+  `.gitignore`, `docs/api-contract.md`, `docs/CREDITS.md` (docs keep the union).

@@ -51,3 +51,19 @@ git fetch origin && git merge origin/dev     # (merge, do not rebase)
 
 # open PR: frontend/check-page -> dev   (never -> main)
 ```
+
+## Run everything
+
+Backend (FastAPI), tested on a **synthetic** dataset only so far:
+
+```bash
+cd backend && make setup && make fixture && make run-fixture     # API on http://localhost:8000
+cd backend && make test lint                                      # tests, ruff, mypy --strict
+```
+
+Frontend: **the Next.js app is not in the repo yet** (only the design system in `frontend/` and a typed API
+client in `frontend/src/lib/api/`). Once `frontend/package.json` exists the commands will be
+`cd frontend && npm ci && npm run dev` and `npm run typecheck && npm run lint && npm test && npm run build`.
+Copy `frontend/.env.example` to `frontend/.env.local`, and `backend/.env.example` to `backend/.env`
+(names/placeholders only; real keys never go in git). Wiring and the real-data steps are in
+`docs/INTEGRATION_NOTES.md`; deployment is in `backend/DEPLOY.md`.
