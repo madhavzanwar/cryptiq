@@ -439,3 +439,16 @@ What this does and does not support:
 - The earlier local 1.5B model result (N=10: 50 % vs 20 %) is not comparable and should not be quoted.
 - Code change from this run: the benchmark now retries transient upstream errors (4 attempts, backoff) and records a call that
   still fails as `failed` instead of aborting (a Gemini 503 had crashed the first attempt).
+
+
+### Production-mode run from a clean download (2026-10-28)
+| Check | Result | Measured detail |
+|---|---|---|
+| `scripts/fetch_artifacts.py` against the live Hugging Face API (private dataset repo, read token) | **PASS** | first run on the real service: 27 files downloaded, 232,036,359 bytes, 7.5 s; 1 file ignored (`.gitattributes`, outside the allowlist) |
+| Start with `APP_ENV=prod` in that empty directory, `GRAPH_ENGINE=networkx`, generated secrets, Gemini + Sarvam configured | **PASS** | `/api/health`: `engineOk`, `modelLoaded`, `ofacLoaded` true, `dataSource: elliptic++`, `voiceProvider: sarvam`, `llmConfigured: true`, no `mocks` key |
+| `scripts.smoke --runs 5` against it | **11/11 PASS** | latency row: n=40, median 9 ms, p95 8,576 ms (cache hits included; the p95 is the first uncached calls with a live Gemini call, bounded by the 8 s explanation deadline); Dodo and crypto answer 503 as designed because they are not configured |
+| One real check, BLOCK demo wallet, Hindi | **PASS** | risk score 78, dataset label illicit, nearest illicit 1 hop, graph engine 1.91 ms (NetworkX), explanations from the LLM in both languages, `audioUrl` returned (Sarvam TTS ran inside the pipeline) |
+
+Known wording problem found here: the explanation says the wallet "is part of a cluster of 822,935 wallets". That number is the size of the
+connected component, which is nearly the whole graph, so "cluster" is misleading to a reader. The text should not present component size as
+a cluster; not fixed yet.
