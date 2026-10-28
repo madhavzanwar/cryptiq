@@ -1,0 +1,105 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+@import "../styles/theme.css";
+@import "../styles/motion.css";
+
+@layer base {
+  html {
+    background: var(--color-paper-white);
+    color: var(--color-carbon);
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  html:lang(hi) body {
+    font-family: var(--font-hindi);
+  }
+  h1, h2, h3, h4, strong, b, th {
+    font-weight: 600;
+  }
+  /* Design rule: weights are 500 and 600 only. */
+  button, input, select, textarea {
+    font: inherit;
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-carbon);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-sticker-yellow);
+    color: var(--color-carbon);
+  }
+  img, svg, video, canvas {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: var(--page-max-width);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter);
+  }
+  .section-gap {
+    padding-block: var(--section-gap);
+  }
+  .eyebrow {
+    font-size: var(--text-body-lg);
+    color: var(--color-ash-gray);
+  }
+  .display {
+    font-weight: 600;
+    font-size: clamp(50px, 11vw, 176px);
+    line-height: 0.82;
+  }
+  .h-lg {
+    font-weight: 600;
+    font-size: clamp(38px, 6.4vw, 84px);
+    line-height: 0.95;
+  }
+  .h-md {
+    font-weight: 600;
+    font-size: clamp(30px, 4.4vw, 53px);
+    line-height: 1.02;
+  }
+  .h-sm {
+    font-weight: 600;
+    font-size: 35px;
+    line-height: 1.06;
+  }
+  .sub {
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.13;
+  }
+  html:lang(hi) .display,
+  html:lang(hi) .h-lg,
+  html:lang(hi) .h-md {
+    line-height: 1.1;
+  }
+  .mono {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    word-break: break-all;
+  }
+  .measure {
+    max-width: 65ch;
+  }
+}
+
+/* Reduced motion: movement stops, fades remain (see MOTION.md). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+  }
+}

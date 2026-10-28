@@ -1,0 +1,67 @@
+/* Tailwind v4 theme for the app. Values mirror tokens.css (the design source of truth, see DESIGN.md);
+   src/lib/__tests__/theme-sync.test.ts fails if the two drift apart. Utilities: bg-carbon, text-ash-gray,
+   bg-acid-lime, bg-allow-tint, rounded-button, rounded-card, text-body-lg, font-mono, ... */
+@theme {
+  --color-acid-lime: #05c92f;
+  --color-sticker-yellow: #fcea59;
+  --color-cotton-pink: #ffd0e2;
+  --color-powder-blue: #a7cbf6;
+  --color-obsidian: #000000;
+  --color-carbon: #0f0f0f;
+  --color-ash-gray: #5a585a;
+  --color-slate-gray: #6e726e;
+  --color-paper-white: #f9faf9;
+  --color-pure-white: #ffffff;
+  --color-bone: #ecefec;
+  --color-plaster: #eeeeee;
+
+  --color-allow: #4b9a6a;
+  --color-allow-tint: #e6f3ea;
+  --color-allow-ink: #25623d;
+  --color-warn: #e0b93a;
+  --color-warn-tint: #fbf1c9;
+  --color-warn-ink: #6e5200;
+  --color-block: #c8574f;
+  --color-block-tint: #fbe9e7;
+  --color-block-ink: #8f2f2a;
+  --color-unknown: #6e726e;
+  --color-unknown-tint: #ecefec;
+  --color-unknown-ink: #5a585a;
+
+  --font-sans: var(--font-inter-tight), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-hindi: var(--font-noto-devanagari), var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --text-caption: 11px;
+  --text-caption--line-height: 1.5;
+  --text-small: 13px;
+  --text-small--line-height: 1.5;
+  --text-body: 14px;
+  --text-body--line-height: 1.5;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.5;
+  --text-subheading: 25px;
+  --text-subheading--line-height: 1.13;
+  --text-heading-sm: 35px;
+  --text-heading-sm--line-height: 1.06;
+  --text-heading: 53px;
+  --text-heading--line-height: 1.02;
+  --text-heading-lg: 84px;
+  --text-heading-lg--line-height: 0.9;
+  --text-display: 153px;
+  --text-display--line-height: 0.8;
+  --text-display-xl: 176px;
+  --text-display-xl--line-height: 0.77;
+
+  --radius-nav: 9px;
+  --radius-tag: 14px;
+  --radius-card: 17.5px;
+  --radius-input: 35px;
+  --radius-button: 35px;
+  --radius-large: 53px;
+
+  --breakpoint-story: 1180px;
+  --container-page: 1200px;
+
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+}
