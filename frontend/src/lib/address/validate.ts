@@ -11,7 +11,7 @@ export type AddressCheck =
 
 const LEGACY = /^[13][1-9A-HJ-NP-Za-km-z]{25,34}$/;
 const BECH32 = /^bc1[ac-hj-np-z02-9]{11,87}$/i;
-const DEMO = /^DEMO-[A-Z0-9][A-Z0-9-]{1,40}$/;
+const DEMO = /^DEMO-[A-Za-z0-9][A-Za-z0-9-]{1,40}$/;
 
 export function validateAddress(raw: string, opts: { allowDemo?: boolean } = {}): AddressCheck {
   const address = raw.trim();
@@ -37,10 +37,9 @@ export function extractAddress(text: string, opts: { allowDemo?: boolean } = {})
   const m =
     joined.match(/bc1[ac-hj-np-z02-9]{11,87}/i) ??
     joined.match(/[13][1-9A-HJ-NP-Za-km-z]{25,34}/) ??
-    (opts.allowDemo ? joined.match(/DEMO-[A-Z0-9][A-Z0-9-]{1,40}/i) : null);
+    (opts.allowDemo ? joined.match(/DEMO-[A-Za-z0-9][A-Za-z0-9-]{1,40}/) : null);
   if (!m) return null;
-  const found = opts.allowDemo && /^demo-/i.test(m[0]) ? m[0].toUpperCase() : m[0];
-  return validateAddress(found, opts).ok ? found : null;
+  return validateAddress(m[0], opts).ok ? m[0] : null;
 }
 
 /** First 6 and last 6 characters for tight spaces; the full value goes in a title/tooltip. */

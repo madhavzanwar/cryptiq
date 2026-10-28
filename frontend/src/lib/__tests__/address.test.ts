@@ -23,6 +23,7 @@ describe("validateAddress", () => {
   it("accepts DEMO- placeholders only when allowed", () => {
     expect(validateAddress("DEMO-ILLICIT-01").ok).toBe(false);
     expect(validateAddress("DEMO-ILLICIT-01", { allowDemo: true })).toMatchObject({ ok: true, kind: "demo" });
+    expect(validateAddress("DEMO-w02271", { allowDemo: true })).toMatchObject({ ok: true, kind: "demo" }); // real fixture backend
   });
 });
 
