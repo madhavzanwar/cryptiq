@@ -1,10 +1,25 @@
 # Deploy notes (free path, $0)
 
-**Status: NOTHING IS DEPLOYED.** The deployment could not be done from the development sandbox: it has no
-accounts or tokens for any host, and every hosting API (Fly.io, Hugging Face, Vercel) is blocked by its network
-policy. What WAS done and measured is the container: it builds, starts and passes the smoke test locally
-(section 1). Section 3 is the exact procedure for you to run, using only free services. No paid resource was
-created, and none is needed.
+**Status: NOTHING IS DEPLOYED. CORRECTION (2026-10-28): the plan below named Hugging Face Docker Spaces as free. That is
+wrong. Creating one through the API returned `402 Payment Required: hosting Gradio and Docker Spaces on free cpu-basic
+requires a PRO subscription` (only static Spaces are free). Nothing paid was created.**
+
+What WAS done: the container builds, starts and passes the smoke test locally (section 1); the processed data, model and
+replays were uploaded to a **private** Hugging Face dataset repo (`madhavzanwar/cryptiq-artifacts`, 28 files, 232.0 MB,
+free), so any host that can run the container can fetch them with `ARTIFACTS_REPO` + a read token.
+
+### Free hosting options, checked or measured
+| Option | Result |
+|---|---|
+| Hugging Face Docker Space | **Not free** (402, PRO required) |
+| Koyeb free instance | Its FAQ: 512 MB RAM, 0.1 vCPU, **credit card required**. Too small for the full app (about 1.0 GB scorer) |
+| Laptop + free `cloudflared` tunnel (3.6) | Free, no card, runs the full real model. Needs the laptop online. Not tested from here (cloudflared cannot be downloaded in the sandbox) |
+| Replay-only "lite" server (`DEMO_REPLAY=true`, no data or model loaded) | Measured **267 MB RSS** after serving requests: fits a 512 MB host, but answers only the recorded demo wallets |
+| Google Cloud Run / Fly.io | Card required, not checked further |
+
+Recommendation for the demo: laptop + tunnel for the real model, plus the lite replay-only server as a backup if a free
+512 MB host is available. Sections 3.1 to 3.5 below were written for a Hugging Face Space and still describe the
+variables and the smoke test, but the Space creation step cannot be done on the free plan.
 
 ## 1. Measured here (local Docker, synthetic fixture, nothing deployed)
 
@@ -41,7 +56,7 @@ provider's page before the demo.**
 
 | Part | Free choice | Notes |
 |---|---|---|
-| Backend host | **Hugging Face Spaces, Docker SDK, free CPU** | No card. Believed to be 2 vCPU / 16 GB RAM (we measured ~1.05 GB serving). Sleeps after inactivity; **disk is ephemeral**. Public URL `https://<user>-<space>.hf.space` |
+| Backend host | ~~Hugging Face Spaces, Docker SDK, free CPU~~ **not free (402)**; see the options table above | (was: No card. Believed to be 2 vCPU / 16 GB RAM (we measured ~1.05 GB serving). Sleeps after inactivity; **disk is ephemeral**. Public URL `https://<user>-<space>.hf.space` |
 | Frontend host | **Vercel Hobby** | Free for non-commercial use. Proxies `/api/*` to the backend (same-origin cookies) |
 | Graph DB | TigerGraph Savanna free tier | Size limits unverified; `--max-vertices` subset loader exists. Without it the app runs on NetworkX or replays |
 | Explanations | **Templates (no LLM, $0)**, or a free OpenAI-compatible tier | `LLM_PROVIDER=openai_compatible`, `LLM_BASE_URL` of Groq / Google Gemini (OpenAI-compatible endpoint) / OpenRouter, `LLM_MODEL` a free model. Base-URL-with-a-path handling is tested |

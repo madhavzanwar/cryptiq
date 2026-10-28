@@ -31,7 +31,7 @@ only from real runs before presenting.
 
 ## 1. Start-up order (about 15 minutes before)
 
-1. **Backend**: open `https://<space>.hf.space/api/health` (wakes a sleeping Space; wake time not measured).
+1. **Backend**: open `<backend url>/api/health` (a sleeping free host needs time to wake; wake time not measured).
    Required: `ok: true`, `engineOk: true`, `modelLoaded: true`, `ofacLoaded: true`, `dataSource: "elliptic++"`
    and **no `mocks` key**. If `mocks: true` you are on synthetic data: stop and fix before presenting.
 2. **Frontend**: open the Vercel URL; check the credit pill shows a balance.
@@ -49,7 +49,7 @@ only from real runs before presenting.
 | What | URL |
 |---|---|
 | Frontend (Vercel) | _not deployed yet_ (details in Part B) |
-| Backend (HF Space) | _not deployed yet_ |
+| Backend | _not deployed yet_ (a Hugging Face Docker Space needs PRO; see `docs/DEPLOY_NOTES.md` for the free options) |
 | Health | `<backend>/api/health` |
 | Demo wallets | `<backend>/api/demo-wallets` |
 | Dodo webhook | `<backend>/api/webhooks/dodo` |
