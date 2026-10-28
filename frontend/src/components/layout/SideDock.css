@@ -1,0 +1,46 @@
+/* Side dock: left-edge launcher that toggles the 4 main destinations (port of styles/nav.css). Flat: no shadows. */
+.sd-dock { position: fixed; left: var(--spacing-18); top: 50%; z-index: 30; display: flex; align-items: center; height: 53px; margin-top: -26.5px; }
+.sd-launch { position: relative; display: grid; place-items: center; width: 53px; height: 53px; padding: 0; border: 0; border-radius: var(--radius-buttons); background: var(--color-carbon); color: var(--color-pure-white); cursor: pointer; transition: background-color var(--duration-fast) var(--ease-out), transform 90ms var(--ease-out); }
+.sd-launch:hover { background: var(--color-obsidian); }
+.sd-launch:active { transform: scale(0.95); }
+.sd-launch svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--duration-slow) var(--ease-emphasized); }
+.sd-btc, .sd-x { transform-box: fill-box; transform-origin: center; transition: opacity var(--duration-default) var(--ease-out), transform var(--duration-slow) var(--ease-emphasized); }
+.sd-x { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+.sd-dock[data-open] .sd-launch svg { transform: rotate(90deg); }
+.sd-dock[data-open] .sd-btc { opacity: 0; transform: scale(0.6); }
+.sd-dock[data-open] .sd-x { opacity: 1; transform: none; }
+
+/* hover label (pointer devices only) */
+.sd-tip { position: absolute; left: calc(100% + var(--spacing-9)); top: 50%; padding: var(--spacing-4) var(--spacing-11); border: 1px solid var(--color-carbon); border-radius: var(--radius-tags); background: var(--color-pure-white); font-size: var(--text-small); line-height: 1.4; white-space: nowrap; opacity: 0; pointer-events: none; transform: translate(-6px, -50%); transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-default) var(--ease-out); }
+@media (hover: hover) {
+  .sd-dock:not([data-open]) .sd-launch:hover .sd-tip, .sd-dock:not([data-open]) .sd-launch:focus-visible .sd-tip { opacity: 1; transform: translate(0, -50%); }
+}
+
+/* panel */
+.sd-menu { position: absolute; left: calc(100% + var(--spacing-9)); top: 50%; display: grid; gap: var(--spacing-4); min-width: 200px; margin: 0; padding: var(--spacing-9); list-style: none; border: 1px solid var(--color-carbon); border-radius: var(--radius-cards); background: var(--color-bone); transform-origin: left center; opacity: 0; visibility: hidden; transform: translate(-12px, -50%) scale(0.9); transition: opacity 140ms var(--ease-in), transform 160ms var(--ease-in), visibility 0s linear 160ms; }
+.sd-dock[data-open] .sd-menu { opacity: 1; visibility: visible; transform: translate(0, -50%) scale(1); transition: opacity var(--duration-slow) var(--ease-emphasized), transform var(--duration-slow) var(--ease-emphasized), visibility 0s; }
+.sd-item { opacity: 0; transform: translateX(-12px); transition: opacity 90ms var(--ease-in), transform 90ms var(--ease-in); }
+.sd-dock[data-open] .sd-item { opacity: 1; transform: none; transition: opacity var(--duration-slow) var(--ease-emphasized) calc(var(--i) * 60ms), transform var(--duration-slow) var(--ease-emphasized) calc(var(--i) * 60ms); }
+.sd-link { display: flex; align-items: center; gap: var(--spacing-13); min-height: var(--tap-target); padding: 0 var(--spacing-18) 0 var(--spacing-13); border-radius: var(--radius-nav); color: var(--color-carbon); font-size: var(--text-body-lg); text-decoration: none; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.sd-link svg { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.sd-link:hover { background: var(--color-pure-white); }
+.sd-link[aria-current] { background: var(--color-carbon); color: var(--color-pure-white); }
+
+/* below 1340px the content starts close to the edge: the launcher becomes a flush edge tab */
+@media (max-width: 1339px) {
+  .sd-dock { left: 0; }
+  .sd-launch { width: 44px; border-radius: 0 var(--radius-buttons) var(--radius-buttons) 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-launch svg, .sd-btc, .sd-x { transform: none !important; transition: opacity var(--duration-fast) linear; }
+  .sd-menu { transform: translate(0, -50%) !important; transition: opacity 100ms linear, visibility 0s linear 100ms; }
+  .sd-dock[data-open] .sd-menu { transition: opacity 100ms linear, visibility 0s; }
+  .sd-item, .sd-dock[data-open] .sd-item { transform: none; transition: opacity 100ms linear; }
+  .sd-tip { transform: translateY(-50%) !important; }
+}
+
+/* phones: sit at the bottom-left (above the data ribbon) so the tab never covers headlines */
+@media (max-width: 639px) {
+  .sd-dock { top: auto; bottom: 88px; margin-top: 0; }
+}
