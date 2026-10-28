@@ -181,3 +181,65 @@ example XGBoost training time depends on the data), so they must be re-measured 
    F1, PR-AUC for baseline vs graph model). If graph features do not help, say so plainly.
 4. `artifacts/demo_wallets.json` from the TEST split (one BLOCK, one WARN, one ALLOW, one wallet truly absent
    from the data); verify the live model reproduces each verdict.
+
+## 10. Live run, steps 2 to 4 (TigerGraph, external integrations, replays, benchmark)
+
+**Status: NONE of these were run. Nothing below is a result; every row says "not tested" for a stated reason.**
+
+### Preconditions checked (not assumed)
+- `backend/.env` does not exist, and no `TG_*`, `LLM_*`, `SARVAM_*`, `WISPR_*`, `DODO_*`, `BTC_*` or
+  `ADMIN_TOKEN` variable is set in the environment.
+- E1 (real data) is not done (`data/raw` and `data/processed` do not exist), so there is no graph to load,
+  no trained model, no demo wallets.
+- The network policy denies the hosts these steps need: `tgcloud.io` / `www.tigergraph.com`, `api.sarvam.ai`,
+  `platform-api.wisprflow.ai`, `test.dodopayments.com`, `mempool.space`, `huggingface.co` (HTTP 000 / proxy
+  403). `api.anthropic.com` answers (404) but there is no key. No `dodo` CLI or `cloudflared` is installed.
+- A separate agent for the integration checks was deliberately NOT started: it would have no keys and no
+  network, and the only way to "pass" would be to fake results.
+
+### PASS / FAIL table
+| Check | Result | Why |
+|---|---|---|
+| TigerGraph: free-tier limits read (Savanna FAQ) | not tested | docs host unreachable; limits remain unverified |
+| TigerGraph: schema + chunked load | not tested | no cluster, no secret, no data |
+| TigerGraph: GSQL queries compile / run | not tested | no cluster. The GSQL has still **never been compiled** |
+| TigerGraph vs NetworkX agreement (demo + 50 random wallets) | not tested | needs the above |
+| TigerGraph latency p50 / p95 over >= 50 calls | not measured | needs the above |
+| Hub safety (frontier cap, timeout, `truncated`) on a real cluster | not tested | needs the above. Logic is unit-tested on NetworkX only |
+| LLM: 4 verdicts x EN/HI, groundedness validator, template fallback, provider token usage | not tested | no key. Validator and fallback are unit-tested with a fake LLM |
+| Sarvam STT (EN, HI), failure paths | not tested | no key, host blocked. Request shape follows the SDK source |
+| Sarvam TTS + `/api/audio/{hash}.mp3` | not tested | no key, host blocked |
+| Wispr | not tested | no `WISPR_API_KEY`. Nothing in the app claims Wispr was used |
+| Dodo test checkout, webhook exactly-once, bad signature rejected | not tested live | no key, host blocked, no CLI. Signature check and idempotency are unit-tested against a reference vector |
+| Bitcoin testnet invoice (explorer URL works for the network?) | not tested | no explorer reachable, no wallet. Explorer URL liveness remains unverified |
+| `make record-replays` against live TigerGraph | not run | needs TigerGraph + real data |
+| Replays offline (`DEMO_REPLAY=true`) | **PASS (mechanism only, synthetic data)** | new test `test_demo_replay_never_touches_the_engine`: the graph engine raises if called, yet the response is served, labelled `engine: "replay"`. Not a Wi-Fi-off test on real data |
+| Benchmark N=10 then N=25, token-budget guard on real data | not run | needs E1 + LLM key. The guard and the job are unit-tested with a fake LLM |
+
+### What was built so the real run is mechanical (all unit-tested offline, 192 backend tests pass)
+- `--max-vertices N` for `scripts/load_tigergraph.py`: the free-tier subset, exactly as specified: **every
+  illicit wallet first, then their 1-hop and 2-hop neighbours, then licit wallets and their neighbours, then
+  a seeded random sample** to fill the budget; edges are the induced subgraph. Deterministic (the subset is
+  recorded as `budget:<N>:<seed>` and recomputed by `verify_graph`). Per-tier counts and label counts are
+  written to `artifacts/tg_load_summary.json`. Because a kept wallet can lose neighbours that were left out, a
+  subset deployment must be compared with NetworkX built from the SAME subset (the script does this) and
+  responses carry a limitation line.
+- `make smoke-queries` (`scripts/smoke_queries.py`): one check per GSQL query on a real illicit wallet.
+- `make compare-engines` (`scripts/compare_engines.py`): TigerGraph vs NetworkX on the demo wallets plus 50
+  random wallets (counts per hop, nearest-illicit hop, node and link sets when uncapped); truncated results are
+  reported as skipped, never as passed; wall-clock p50 / p95 (nearest-rank) over >= 50 real calls, plus the
+  engine-reported time; the top-degree wallets with the `truncated` flag, outcome and a hang detector.
+  Negative tests prove a corrupted engine is detected.
+
+### Free-tier decision (to make with real numbers)
+Not decided: the FAQ could not be read. Procedure for the real run: try `make load-graph` (full graph:
+822,942 vertices, 2,868,964 edges before dedupe/self-loop removal); if the cluster refuses it, rerun with
+`--max-vertices <N>` for the largest N that loads, then record N, the tier counts and the label counts here.
+
+### What is needed from the owner to continue
+1. E1 done (real data processed and the model trained) and `backend/.env` filled in (names in `.env.example`).
+2. For each external service, either allow its host in the environment's Network access settings or run on a
+   laptop: Savanna (`*.tgcloud.io`), Sarvam, Wispr, Dodo test, an Esplora explorer for the chosen testnet.
+3. The Dodo CLI (or a `cloudflared` tunnel) for webhooks; a testnet wallet with test coins.
+Then, in this order: `make load-graph install-queries smoke-queries verify-graph compare-engines`, the
+integration checks, `make record-replays`, then the benchmark (N=10, then N=25).
