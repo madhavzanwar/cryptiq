@@ -9,10 +9,11 @@ and only for status "ok" responses that are not cache hits.
 
 from __future__ import annotations
 
+import asyncio
 import json
 import secrets
 import time
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any, Literal, Protocol
@@ -100,6 +101,8 @@ class CheckPipeline:
         self.explainer = explainer
         self.replay = replay
         self.tts = tts if tts is not None and tts.configured else None
+        self.usage_hook: Callable[[str], Awaitable[None]] | None = None
+        self._tasks: set[asyncio.Future[Any]] = set()
         self.cache: TTLCache[dict[str, Any]] = TTLCache(settings.cache_ttl_seconds)
         self.data_source = scorer.data_source if scorer else "not_loaded"
         self.tg_subset = self._read_tg_subset()
@@ -207,7 +210,15 @@ class CheckPipeline:
             yield Result(None, 402, "no_credits")
             return
         resp.credits_remaining = remaining
+        if charge and self.usage_hook is not None:
+            self._spawn(self.usage_hook(p.session_id))
         yield Result(resp)
+
+    def _spawn(self, coro: Any) -> None:
+        """Fire-and-forget (usage reporting); failures are logged and never affect the check."""
+        task = asyncio.ensure_future(coro)
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
 
     def _persist(self, p: Prepared, resp: CheckResponse, charge: bool) -> int | None:
         check_id = "chk_" + secrets.token_hex(8)
@@ -395,5 +406,29 @@ def build_pipeline(settings: Settings, db: Database, explainer: Explainer | None
         llm = build_llm(settings)
         explainer = LLMExplainer(llm) if llm is not None else TemplateExplainer()
     tts = TTS(settings, http) if http is not None else None
-    return CheckPipeline(settings, db, engine, scorer, labels, explainer,
-                         ReplayStore(settings.artifacts_dir / "replay"), tts)
+    pipeline = CheckPipeline(settings, db, engine, scorer, labels, explainer,
+                             ReplayStore(settings.artifacts_dir / "replay"), tts)
+    if http is not None and settings.dodo_api_key.get_secret_value() and settings.dodo_usage_meter_event:
+        pipeline.usage_hook = _usage_reporter(settings, db, http)
+    return pipeline
+
+
+def _usage_reporter(settings: Settings, db: Database, http: httpx.AsyncClient) -> Callable[[str], Awaitable[None]]:
+    from app.db.models import SessionRow
+    from app.errors import UpstreamError
+    from app.services.billing.dodo import DodoClient
+
+    dodo = DodoClient(settings, http)
+
+    async def report(session_id: str) -> None:
+        with db.session() as s:
+            row = s.get(SessionRow, session_id)
+            customer = row.dodo_customer_id if row else None
+        if not customer:
+            return  # anonymous session that never paid via Dodo: nothing to meter
+        try:
+            await dodo.report_usage(customer, "use_" + secrets.token_hex(10))
+        except UpstreamError as exc:
+            log.warning("dodo_usage_failed", detail=exc.detail)
+
+    return report

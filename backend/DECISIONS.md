@@ -193,6 +193,37 @@ bottom of each heading.
   deleted, served at `/api/audio/{hash}.mp3`. Without Sarvam TTS, `audioUrl` is omitted and the
   frontend uses browser speech synthesis.
 
+## Credits and payments
+
+- Ledger: append-only `credit_ledger`, balance = SUM(delta). `(reason, ref)` is UNIQUE, so a
+  starting grant (ref = session), a Dodo payment (ref = payment_id) or a crypto invoice
+  (ref = invoice id) can only ever be credited once, even if different webhook events repeat it.
+- Dodo: plain httpx against the endpoints of the official `dodopayments` SDK 1.124.0
+  (`POST https://test.dodopayments.com/checkouts` with `product_cart`, `metadata`, `return_url` ->
+  `checkout_url`). `DODO_ENV` only accepts `test_mode`. Cancel URL: the checkout API takes a single
+  `return_url` (success and failure), so it points to `/credits/success`; the frontend checks the
+  balance there (a `/credits/cancelled` page cannot be targeted by this API).
+- Webhooks: Standard Webhooks HMAC implemented in `webhook_verify.py` (5-minute tolerance,
+  constant-time compare, multiple signatures supported), unit-tested against a vector produced by the
+  official `standardwebhooks` library. The event id (`webhook-id`) is stored in `webhook_events` in
+  the same transaction as the credit, and duplicates return 200 immediately.
+- Usage reporting: after a charged check, a fire-and-forget task posts a usage event
+  (`/events/ingest`, `event_id` as idempotency key), only when `DODO_USAGE_METER_EVENT` is set and the
+  session has a Dodo `customer_id` (learned from its payment webhook). Anonymous sessions that never
+  paid through Dodo have no customer to meter. Failures are logged and never affect the check.
+- Crypto (testnet/signet only): BTC invoices need `BTC_RECEIVE_ADDRESS` (must validate as a testnet
+  address), `BTC_SATS_PER_USD` (testnet coins have no price; this is a demo conversion) and
+  `BTC_EXPLORER_BASE_URL` (Esplora API, e.g. `https://mempool.space/testnet4/api` or
+  `https://mempool.space/signet/api`; **liveness not verified from the build sandbox**). Amount = price
+  x rate + a unique 1..999 sats; a clash with an open invoice returns 409 `try_again`. Explorer polling
+  happens at most every 10 s per invoice. Payments older than the invoice (minus 5 minutes) are
+  ignored. Required confirmations: `BTC_CONFIRMATIONS` (0 or 1 for demos).
+- Monero: `monero:` URI only, `provider: "demo"`, 0.01 XMR per credit (demo amount, not a price). No
+  automatic confirmation; `POST /api/admin/crypto-invoice/{id}/mark-paid` with header
+  `x-admin-token: $ADMIN_TOKEN` (disabled while the token is empty or `change_me`; not exposed via CORS).
+- Invoices are only visible to the session that created them (others get 404).
+- The app never sees private keys: receive addresses are public, wallets stay with their owners.
+
 ## TigerGraph
 
 - pyTigerGraph **2.0.5** (installed version; connection args read from its source):

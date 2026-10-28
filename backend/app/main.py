@@ -17,7 +17,7 @@ from app.errors import install_error_handlers
 from app.logging_setup import configure_logging, log
 from app.middleware import RequestContextMiddleware
 from app.ratelimit import limiter
-from app.routers import audio, check, demo, health, transcribe
+from app.routers import audio, check, credits, crypto, demo, health, transcribe, webhooks
 from app.services.pipeline import build_pipeline
 from app.state import AppState
 
@@ -61,10 +61,11 @@ def create_app(settings: Settings | None = None, state: AppState | None = None) 
         allow_origins=settings.cors_origin_list,
         allow_credentials=True,
         allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["content-type", "x-request-id", "x-admin-token"],
+        allow_headers=["content-type", "x-request-id"],
         expose_headers=["x-request-id"],
     )
-    for r in (health.router, demo.router, check.router, transcribe.router, audio.router):
+    for r in (health.router, demo.router, check.router, transcribe.router, audio.router, credits.router,
+              crypto.router, webhooks.router):
         app.include_router(r)
     return app
 

@@ -271,6 +271,32 @@
         "title": "CheckResponse",
         "type": "object"
       },
+      "CheckoutRequest": {
+        "properties": {
+          "packId": {
+            "title": "Packid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "packId"
+        ],
+        "title": "CheckoutRequest",
+        "type": "object"
+      },
+      "CheckoutResponse": {
+        "properties": {
+          "url": {
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "title": "CheckoutResponse",
+        "type": "object"
+      },
       "Counts": {
         "properties": {
           "illicit": {
@@ -290,6 +316,124 @@
           }
         },
         "title": "Counts",
+        "type": "object"
+      },
+      "CreditsResponse": {
+        "properties": {
+          "balance": {
+            "title": "Balance",
+            "type": "integer"
+          },
+          "packs": {
+            "items": {
+              "$ref": "#/components/schemas/PackOut"
+            },
+            "title": "Packs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "balance",
+          "packs"
+        ],
+        "title": "CreditsResponse",
+        "type": "object"
+      },
+      "CryptoInvoiceRequest": {
+        "properties": {
+          "coin": {
+            "enum": [
+              "btc",
+              "xmr"
+            ],
+            "title": "Coin",
+            "type": "string"
+          },
+          "packId": {
+            "title": "Packid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "packId",
+          "coin"
+        ],
+        "title": "CryptoInvoiceRequest",
+        "type": "object"
+      },
+      "CryptoInvoiceResponse": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "amount": {
+            "title": "Amount",
+            "type": "string"
+          },
+          "coin": {
+            "enum": [
+              "btc",
+              "xmr"
+            ],
+            "title": "Coin",
+            "type": "string"
+          },
+          "expiresAt": {
+            "title": "Expiresat",
+            "type": "string"
+          },
+          "invoiceId": {
+            "title": "Invoiceid",
+            "type": "string"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "enum": [
+                  "explorer",
+                  "demo"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "uri": {
+            "title": "Uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoiceId",
+          "uri",
+          "address",
+          "amount",
+          "coin",
+          "expiresAt"
+        ],
+        "title": "CryptoInvoiceResponse",
+        "type": "object"
+      },
+      "CryptoInvoiceStatus": {
+        "properties": {
+          "status": {
+            "enum": [
+              "waiting",
+              "paid",
+              "expired"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "CryptoInvoiceStatus",
         "type": "object"
       },
       "DemoWallet": {
@@ -639,6 +783,34 @@
         "title": "Neighbors",
         "type": "object"
       },
+      "PackOut": {
+        "properties": {
+          "credits": {
+            "title": "Credits",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "priceUsd": {
+            "title": "Priceusd",
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "credits",
+          "priceUsd",
+          "label"
+        ],
+        "title": "PackOut",
+        "type": "object"
+      },
       "Subgraph": {
         "properties": {
           "links": {
@@ -955,6 +1127,189 @@
           }
         },
         "summary": "Check Stream"
+      }
+    },
+    "/api/checkout": {
+      "post": {
+        "operationId": "checkout_api_checkout_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Checkout"
+      }
+    },
+    "/api/credits": {
+      "get": {
+        "operationId": "credits_api_credits_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreditsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Credits"
+      }
+    },
+    "/api/crypto-invoice": {
+      "post": {
+        "operationId": "create_invoice_api_crypto_invoice_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CryptoInvoiceRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CryptoInvoiceResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Create Invoice"
+      }
+    },
+    "/api/crypto-invoice/{invoice_id}": {
+      "get": {
+        "operationId": "invoice_status_api_crypto_invoice__invoice_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invoice_id",
+            "required": true,
+            "schema": {
+              "title": "Invoice Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CryptoInvoiceStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Invoice Status"
       }
     },
     "/api/demo-wallets": {

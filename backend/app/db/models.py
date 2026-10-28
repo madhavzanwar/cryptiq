@@ -18,6 +18,7 @@ class SessionRow(Base):
     __tablename__ = "sessions"
     id: Mapped[str] = mapped_column(String(64), primary_key=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    dodo_customer_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
 
 class CreditLedger(Base):

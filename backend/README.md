@@ -101,3 +101,17 @@ Responses then carry `isMock: true` and "synthetic fixture" wording; never show 
 `make record-replays` stores REAL responses for the demo wallets (from the live engine) in
 `artifacts/replay/`. `DEMO_REPLAY=true` serves them directly; `REPLAY_FALLBACK=true` (default) serves
 them only when the graph engine fails. Replays are always labelled `engine: "replay"`, `replay: true`.
+
+## Payments (test mode only)
+
+- **Dodo:** set `DODO_API_KEY` (test key), `DODO_WEBHOOK_SECRET`, and `PACKS_JSON` with your test
+  product ids. Webhook URL: `https://<backend>/api/webhooks/dodo` (subscribe to `payment.succeeded`).
+  Local testing: expose port 8000 with a tunnel, or use the Dodo CLI's webhook listener if available.
+- **Bitcoin testnet / signet (Cake Wallet):** set `BTC_NETWORK`, `BTC_RECEIVE_ADDRESS` (a testnet
+  address from your own wallet), `BTC_SATS_PER_USD`, `BTC_EXPLORER_BASE_URL`, `BTC_CONFIRMATIONS`.
+  The invoice URI (`bitcoin:...?amount=`) can be shown as a QR code for Cake Wallet.
+- **Monero (demo):** `XMR_DEMO_ADDRESS`; confirm manually:
+
+```bash
+curl -X POST https://<backend>/api/admin/crypto-invoice/<invoiceId>/mark-paid -H "x-admin-token: $ADMIN_TOKEN"
+```
