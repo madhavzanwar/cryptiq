@@ -1,11 +1,7 @@
-import Link from "next/link";
+import { NotFoundView } from "@/components/pages/NotFoundView";
 
-/** STUB (owned by the pages agent). */
+export const metadata = { title: "Page not found" };
+
 export default function NotFound() {
-  return (
-    <div className="container-page section-gap">
-      <h1 className="h-md">Page not found</h1>
-      <Link href="/">Home</Link>
-    </div>
-  );
+  return <NotFoundView />;
 }

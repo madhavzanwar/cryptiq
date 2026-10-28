@@ -1,8 +1,11 @@
-/** STUB route (owned by the shell agent): replaced by the landing scroll story. */
+import { LandingSections } from "@/components/landing/LandingSections";
+import { ScrollStory } from "@/components/landing/ScrollStory";
+
 export default function Home() {
   return (
-    <div className="container-page section-gap">
-      <h1 className="display">Say a wallet. Get a verdict.</h1>
-    </div>
+    <>
+      <ScrollStory />
+      <LandingSections />
+    </>
   );
 }
