@@ -1,0 +1,72 @@
+/* Cryptiq micro-interactions and reveal utilities. Tokens come from tokens.css.
+   Rules: explicit properties only (never `transition: all`), ease-out in, interruptible, flat (no shadows). */
+
+/* Buttons: hover fill, press scale */
+.btn { transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform 90ms var(--ease-out); }
+.btn:active { transform: scale(0.97); }
+.btn .arrow { display: inline-block; transition: transform var(--duration-default) var(--ease-emphasized); }
+.btn:hover .arrow { transform: translateX(4px); }
+
+/* Chips and tags: gentle pop on hover for interactive ones */
+.tag.demo, .seg button, .credit { transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out), border-color var(--duration-fast) var(--ease-out), transform 90ms var(--ease-out); }
+.tag.demo:hover { transform: translateY(-2px); }
+.tag.demo:active, .seg button:active { transform: scale(0.96); }
+.seg button:hover:not([aria-pressed="true"]) { background: var(--color-bone); }
+
+/* Cards: lift by position + border, never shadow */
+.card.lift, .confetti, .pack { transition: transform var(--duration-slow) var(--ease-emphasized), background-color var(--duration-default) var(--ease-out); }
+.card.lift:hover, .confetti:hover, .pack:hover { transform: translateY(-6px); }
+.confetti:hover { transform: translateY(-6px) rotate(-0.6deg); }
+
+/* Links: underline draws in */
+a.ulink { background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size var(--duration-default) var(--ease-out); text-decoration: none; }
+a.ulink:hover { background-size: 100% 1px; }
+.pill a { transition: opacity var(--duration-fast) var(--ease-out); }
+.pill:hover a:not(:hover) { opacity: 0.55; }
+
+/* Scroll reveal (add data-reveal; optional data-delay in ms via --d) */
+[data-reveal] { opacity: 0; transform: translateY(var(--motion-distance-lg)); filter: blur(6px); transition: opacity 520ms var(--ease-emphasized) var(--d, 0ms), transform 520ms var(--ease-emphasized) var(--d, 0ms), filter 520ms var(--ease-emphasized) var(--d, 0ms); }
+[data-reveal="left"] { transform: translateX(-26px); }
+[data-reveal="scale"] { transform: scale(0.96); }
+[data-reveal].in { opacity: 1; transform: none; filter: none; }
+
+/* Page-load headline: line-by-line rise */
+.load-line { display: block; overflow: hidden; padding-bottom: 0.14em; margin-bottom: -0.14em; }
+.load-line > span { display: inline-block; transform: translateY(105%); animation: rise 700ms var(--ease-emphasized) forwards; animation-delay: var(--d, 0ms); }
+@keyframes rise { to { transform: translateY(0); } }
+
+/* Meter fill and number count are driven by reveal.js via --fill-w / textContent */
+.track b { transition: width 900ms var(--ease-emphasized); }
+
+/* Accordion: height via grid rows, plus rotates to a cross */
+.faq { cursor: pointer; transition: background-color var(--duration-fast) var(--ease-out); }
+.faq:hover { background: var(--color-plaster); }
+.faq .plus { transition: transform var(--duration-default) var(--ease-emphasized); }
+.faq .plus::before, .faq .plus::after { transition: transform var(--duration-default) var(--ease-emphasized); }
+.faq[aria-expanded="true"] .plus { transform: rotate(45deg); }
+.faq-wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--duration-slow) var(--ease-emphasized); }
+.faq-wrap.open { grid-template-rows: 1fr; }
+.faq-wrap > div { overflow: hidden; }
+.faq-wrap + .faq { margin-top: var(--spacing-7); }
+
+/* Mic: idle ring pulse and waveform bars */
+.mic { transition: background-color var(--duration-fast) var(--ease-out), transform 90ms var(--ease-out); }
+.mic:active { transform: scale(0.95); }
+.bars i { animation: bar 900ms var(--ease-in-out) infinite alternate; animation-delay: calc(var(--i, 0) * 90ms); transform-origin: center; }
+@keyframes bar { from { transform: scaleY(0.35); } to { transform: scaleY(1); } }
+
+/* Skeleton shimmer */
+.skeleton { background: linear-gradient(90deg, var(--color-plaster) 30%, var(--color-bone) 50%, var(--color-plaster) 70%) 0 0 / 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: var(--radius-tags); }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+/* Credit pill tick */
+.credit .n { display: inline-block; }
+.credit.tick .n { animation: tick 360ms var(--ease-emphasized); }
+@keyframes tick { 0% { transform: translateY(-60%); opacity: 0; } 100% { transform: none; opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1; transform: none; filter: none; transition: none; }
+  .load-line > span { transform: none; animation: none; }
+  .mic::before, .bars i, .skeleton { animation: none !important; }
+  .card.lift:hover, .confetti:hover, .pack:hover, .tag.demo:hover { transform: none; }
+}

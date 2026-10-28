@@ -1,0 +1,45 @@
+/* Cryptiq side dock: left-edge launcher that toggles the 4 main destinations.
+   Tokens only (tokens.css). Flat: no shadows. Opening/closing uses transform + opacity only. */
+.dock { position: fixed; left: var(--spacing-18); top: 50%; z-index: 30; height: 53px; margin-top: -26.5px; display: flex; align-items: center; }
+.dock-launch { position: relative; width: 53px; height: 53px; padding: 0; border: 0; border-radius: var(--radius-buttons); background: var(--color-carbon); color: var(--color-pure-white); cursor: pointer; display: grid; place-items: center; transition: background-color var(--duration-fast) var(--ease-out), transform 90ms var(--ease-out); }
+.dock-launch:hover { background: var(--color-obsidian); }
+.dock-launch:active { transform: scale(0.95); }
+.dock-launch:focus-visible, .dock-menu a:focus-visible { outline: 2px solid var(--color-carbon); outline-offset: 2px; }
+.dock-launch svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: transform var(--duration-slow) var(--ease-emphasized); }
+.dock-launch .g-btc, .dock-launch .g-x { transform-box: fill-box; transform-origin: center; transition: opacity var(--duration-default) var(--ease-out), transform var(--duration-slow) var(--ease-emphasized); }
+.dock-launch .g-x { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+.dock.open .dock-launch svg { transform: rotate(90deg); }
+.dock.open .dock-launch .g-btc { opacity: 0; transform: scale(0.6); }
+.dock.open .dock-launch .g-x { opacity: 1; transform: none; }
+
+/* hover label (pointer devices only) */
+.dock-tip { position: absolute; left: calc(100% + var(--spacing-9)); top: 50%; transform: translate(-6px, -50%); background: var(--color-pure-white); border: 1px solid var(--color-carbon); border-radius: var(--radius-tags); padding: var(--spacing-4) var(--spacing-11); font-size: var(--text-small); line-height: 1.4; white-space: nowrap; opacity: 0; pointer-events: none; transition: opacity var(--duration-fast) var(--ease-out), transform var(--duration-default) var(--ease-out); }
+@media (hover: hover) { .dock:not(.open) .dock-launch:hover .dock-tip, .dock:not(.open) .dock-launch:focus-visible .dock-tip { opacity: 1; transform: translate(0, -50%); } }
+
+/* panel */
+.dock-menu { position: absolute; left: calc(100% + var(--spacing-9)); top: 50%; margin: 0; padding: var(--spacing-9); list-style: none; min-width: 200px; background: var(--color-bone); border: 1px solid var(--color-carbon); border-radius: var(--radius-cards); display: grid; gap: var(--spacing-4);
+  transform-origin: left center; opacity: 0; visibility: hidden; transform: translate(-12px, -50%) scale(0.9);
+  transition: opacity 140ms var(--ease-in), transform 160ms var(--ease-in), visibility 0s linear 160ms; }
+.dock.open .dock-menu { opacity: 1; visibility: visible; transform: translate(0, -50%) scale(1);
+  transition: opacity var(--duration-slow) var(--ease-emphasized), transform var(--duration-slow) var(--ease-emphasized), visibility 0s; }
+.dock-menu li { opacity: 0; transform: translateX(-12px); transition: opacity 90ms var(--ease-in), transform 90ms var(--ease-in); }
+.dock.open .dock-menu li { opacity: 1; transform: none; transition: opacity var(--duration-slow) var(--ease-emphasized) calc(var(--i) * 60ms), transform var(--duration-slow) var(--ease-emphasized) calc(var(--i) * 60ms); }
+.dock-menu a { display: flex; align-items: center; gap: var(--spacing-13); min-height: var(--tap-target); padding: 0 var(--spacing-18) 0 var(--spacing-13); border-radius: var(--radius-nav); color: var(--color-carbon); text-decoration: none; font-size: var(--text-body-lg); font-weight: 500; transition: background-color var(--duration-fast) var(--ease-out), color var(--duration-fast) var(--ease-out); }
+.dock-menu a svg { width: 20px; height: 20px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.dock-menu a:hover { background: var(--color-pure-white); }
+.dock-menu a[aria-current] { background: var(--color-carbon); color: var(--color-pure-white); }
+
+/* below 1340px the content starts close to the edge: dock the launcher as a flush edge tab */
+@media (max-width: 1339px) {
+  .dock { left: 0; }
+  .dock-launch { width: 44px; border-radius: 0 var(--radius-buttons) var(--radius-buttons) 0; }
+  .dock-menu, .dock-tip { left: calc(100% + var(--spacing-9)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-launch svg, .dock-launch .g-btc, .dock-launch .g-x { transform: none !important; transition: opacity var(--duration-fast) linear; }
+  .dock-menu { transform: translate(0, -50%) !important; transition: opacity 100ms linear, visibility 0s linear 100ms; }
+  .dock.open .dock-menu { transition: opacity 100ms linear, visibility 0s; }
+  .dock-menu li, .dock.open .dock-menu li { transform: none; transition: opacity 100ms linear; }
+  .dock-tip { transform: translateY(-50%) !important; }
+}
