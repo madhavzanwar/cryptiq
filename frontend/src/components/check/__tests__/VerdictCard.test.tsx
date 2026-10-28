@@ -101,3 +101,16 @@ describe("notices", () => {
     expect(screen.getByText("Report hash does not match")).toBeInTheDocument();
   });
 });
+
+describe("UNKNOWN is never presented as safe", () => {
+  it("says 'Not in our dataset does not mean safe.' prominently for a wallet outside the dataset", () => {
+    const unknown = { ...block, status: "not_in_dataset" as const, verdict: "UNKNOWN" as const, riskScore: null, datasetLabel: null, hopsToNearestIllicit: null };
+    render(<VerdictCard result={unknown} />);
+    expect(screen.getByTestId("unknown-not-safe")).toHaveTextContent("Not in our dataset does not mean safe.");
+    expect(screen.getByText("UNKNOWN")).toBeInTheDocument();
+  });
+  it("does not show that note for BLOCK", () => {
+    render(<VerdictCard result={block} />);
+    expect(screen.queryByTestId("unknown-not-safe")).toBeNull();
+  });
+});

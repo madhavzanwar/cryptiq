@@ -61,8 +61,51 @@ On the synthetic fixture the API reports `isMock: true` and the UI shows a "SYNT
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint (Next core-web-vitals + TypeScript) |
 | `npm test` | Vitest unit and component tests |
-| `npm run test:e2e` | Playwright against a production build with the mock backend (`E2E_REAL=1` uses the real backend) |
+| `npm run test:e2e` | Playwright end-to-end tests: real fixture backend + production build (see below) |
+| `npm run test:e2e:mock` | the same runner against the built-in mock backend (no Python needed) |
+| `npm run test:e2e:repeat` | the suite three times in a row (flakiness check) |
 | `npm run format` | Prettier |
+
+## End-to-end tests (Playwright)
+
+The suite drives a real browser against **production builds**, never `next dev`, and it starts everything itself:
+
+1. the FastAPI backend on its **synthetic fixture** (`scripts/e2e-backend.sh`, port 8101; a fresh SQLite file per run, so the
+   credit ledger, sessions and the backend's in-process 10-minute check cache all start empty), and
+2. `next build && next start` on port 3110, proxying `/api/*` to that backend (the same rewrite production uses).
+
+```bash
+cd frontend
+npm ci
+npx playwright test --list >/dev/null   # (Chromium is Playwright's own; nothing else to install in this sandbox)
+npm run test:e2e                         # real stack: backend fixture + production frontend
+npm run test:e2e:mock                    # E2E_MOCKS=1: built-in mock backend, no Python
+npm run test:e2e:repeat                  # three runs in a row, no retries (retries stay 0 on purpose)
+npx playwright test tests/e2e/credits.spec.ts          # one spec
+npx playwright test -g "seed phrase" --project=desktop # one test
+```
+
+Needs: `uv` and the backend dependencies (`cd ../backend && make setup`; the fixture itself is built automatically on the first run),
+and Node 22. Failing tests keep a screenshot and a trace in `test-results/` (`npx playwright show-trace <trace.zip>`).
+
+| Spec | What it proves |
+|---|---|
+| `demo-wallets.spec.ts` | every wallet from `/api/demo-wallets` shows the verdict the backend expects (icon + word, meter or "n/a", honesty lines, credit charged only when found) |
+| `credits.spec.ts` | a new check drops the credit pill once, an identical repeat is "Cached, no credit used", 0 credits turns the button into **Buy credits** and opens the dialog; the `cryptiq_sid` cookie is host-only on the frontend origin |
+| `guards.spec.ts` | a typed or pasted seed phrase or private key is cleared and **nothing is sent** (requests are recorded); an address with a bad checksum shows the friendly message in English and Hindi; garbage is explained inline |
+| `voice.spec.ts` | `/api/transcribe` answers 503 `voice_unavailable`, the UI switches to the browser's speech recognition (stubbed in the test) and the confirmed address is checked |
+| `i18n.spec.ts` | the Hindi toggle changes every main page, `<html lang>` follows, it survives a reload, and English comes back |
+| `a11y.spec.ts` | axe (WCAG 2.0/2.1 A and AA plus best practices) reports no critical or serious violations on `/check` (idle and with a result), `/about` and `/benchmark` |
+| `mobile.spec.ts` | at 390 px: no horizontal scroll, touch-sized controls (at least 44 px), a check completes |
+| `navigation-and-pages.spec.ts` | the side dock, every page renders without console errors or horizontal scroll, the 404, "Not measured yet" on the benchmark |
+| `mock-*.spec.ts` | mock-backend scenarios (payments simulation, demo chips); they run only with `E2E_MOCKS=1` |
+
+Notes: the fixture has **no WARN wallet** (WARN is covered by unit tests and the mock backend). Every test uses wallets nobody
+else touches (`DEMO-w00100` ... see `tests/e2e/helpers.ts`) because the backend caches identical checks process-wide.
+
+**Lighthouse** is not part of this suite. Run it against a production build, for example:
+`npm run build && npx next start -p 3200` and in another terminal
+`CHROME_PATH=$(node -e "console.log(require('@playwright/test').chromium.executablePath())") npx lighthouse http://127.0.0.1:3200/check --only-categories=accessibility --chrome-flags="--headless=new --no-sandbox"`.
 
 ## Folder map
 

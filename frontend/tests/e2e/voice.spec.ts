@@ -44,7 +44,7 @@ test("voice_unavailable (503) falls back to the browser's speech recognition and
   // friendly message + the voice chip says browser; no confirm box, no check was started
   await expect(page.getByText(/switched to your browser's speech recognition/i)).toBeVisible();
   await expect(page.getByText("Voice: browser")).toBeVisible();
-  await expect(page.getByText(/we heard/i)).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /confirm what we heard/i })).toHaveCount(0);
   expect(await page.evaluate(() => (window as unknown as { __speech: { started: number } }).__speech.started)).toBe(0);
 
   // 2) second press: the BROWSER recognises the address; the person must confirm it before a credit is used
@@ -52,7 +52,7 @@ test("voice_unavailable (503) falls back to the browser's speech recognition and
   await page.mouse.down();
   await expect(page.getByText(/0:0[1-9]/)).toBeVisible();
   await page.mouse.up();
-  await expect(page.getByText(/we heard/i)).toBeVisible();
+  await expect(page.getByRole("heading", { name: /confirm what we heard/i })).toBeVisible();
   await expect(page.getByText(heard).first()).toBeVisible();
   expect(await page.evaluate(() => (window as unknown as { __speech: { started: number } }).__speech.started)).toBe(1);
   await expect(creditPill(page)).toHaveAccessibleName(/\b3\b/); // nothing charged before the confirmation

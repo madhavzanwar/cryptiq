@@ -30,8 +30,15 @@ export function watchErrors(page: Page): () => string[] {
 }
 
 export async function noHorizontalScroll(page: Page) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  expect(overflow, "horizontal overflow in px").toBeLessThanOrEqual(1);
+  const { overflow, culprits } = await page.evaluate(() => {
+    const width = window.innerWidth;
+    const wide = [...document.querySelectorAll<HTMLElement>("body *")]
+      .filter((el) => el.getBoundingClientRect().right > width + 1 && getComputedStyle(el).position !== "fixed")
+      .slice(0, 6)
+      .map((el) => `${el.tagName.toLowerCase()}${el.className && typeof el.className === "string" ? "." + el.className.split(" ").slice(0, 3).join(".") : ""} (right=${Math.round(el.getBoundingClientRect().right)})`);
+    return { overflow: document.documentElement.scrollWidth - width, culprits: wide };
+  });
+  expect(overflow, `horizontal overflow in px; wider than the viewport: ${culprits.join(" | ")}`).toBeLessThanOrEqual(1);
 }
 
 export const creditPill = (page: Page) => page.getByRole("button", { name: /credits? left|^credits$|क्रेडिट/i }).first();

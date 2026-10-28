@@ -53,14 +53,10 @@ function useListen(result: CheckResponse, tab: Lang, requestLang: Lang) {
       return;
     }
     const text = result.explanation[tab];
-    if (useAudio && result.audioUrl) {
-      const audio = new Audio(buildApiUrl(result.audioUrl));
-      audioRef.current = audio;
-      audio.ontimeupdate = () => setProgress(audio.duration > 0 ? audio.currentTime / audio.duration : 0);
-      audio.onended = () => stop();
-      audio.onerror = () => stop();
-      void audio.play().then(() => setState("playing"), () => stop());
-    } else if (isSpeechSynthesisSupported()) {
+    /** Browser speech synthesis: used when there is no MP3, or when the MP3 cannot be played. */
+    const speak = () => {
+      if (!isSpeechSynthesisSupported()) return stop();
+      audioRef.current = null;
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = speechLang(tab);
@@ -69,6 +65,22 @@ function useListen(result: CheckResponse, tab: Lang, requestLang: Lang) {
       u.onerror = () => stop();
       window.speechSynthesis.speak(u);
       setState("playing");
+    };
+    if (useAudio && result.audioUrl) {
+      const audio = new Audio(buildApiUrl(result.audioUrl));
+      audioRef.current = audio;
+      let fellBack = false;
+      const fallBack = () => {
+        if (fellBack) return;
+        fellBack = true;
+        speak();
+      };
+      audio.ontimeupdate = () => setProgress(audio.duration > 0 ? audio.currentTime / audio.duration : 0);
+      audio.onended = () => stop();
+      audio.onerror = fallBack;
+      void audio.play().then(() => setState("playing"), fallBack);
+    } else {
+      speak();
     }
   }, [result.audioUrl, result.explanation, state, stop, tab, useAudio]);
 
