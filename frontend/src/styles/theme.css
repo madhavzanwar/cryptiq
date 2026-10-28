@@ -1,0 +1,50 @@
+/* Tailwind v4 theme mapped onto tokens.css. Import after tokens.css:
+   @import "./tokens.css"; @import "./theme.css"; */
+@theme inline {
+  --color-lavender-paper: var(--color-lavender-paper);
+  --color-pure-white: var(--color-pure-white);
+  --color-ash-gray: var(--color-ash-gray);
+  --color-onyx: var(--color-onyx);
+  --color-graphite: var(--color-graphite);
+  --color-fog: var(--color-fog);
+  --color-violet: var(--color-violet);
+  --color-deep-iris: var(--color-deep-iris);
+  --color-hot-magenta: var(--color-hot-magenta);
+  --color-sapphire: var(--color-sapphire);
+  --color-mint: var(--color-mint);
+  --color-allow: var(--status-allow-solid);
+  --color-allow-tint: var(--status-allow-tint);
+  --color-allow-ink: var(--status-allow-ink);
+  --color-warn: var(--status-warn-solid);
+  --color-warn-tint: var(--status-warn-tint);
+  --color-warn-ink: var(--status-warn-ink);
+  --color-block: var(--status-block-solid);
+  --color-block-tint: var(--status-block-tint);
+  --color-block-ink: var(--status-block-ink);
+  --color-unknown: var(--status-unknown-solid);
+  --color-unknown-tint: var(--status-unknown-tint);
+  --color-unknown-ink: var(--status-unknown-ink);
+
+  --font-sans: var(--font-inter);
+  --font-hindi: var(--font-devanagari);
+  --font-mono: var(--font-ibm-plex-mono);
+
+  --text-caption: 14px;
+  --text-body-sm: 16px;
+  --text-body: 18px;
+  --text-subheading: 24px;
+  --text-heading-sm: 30px;
+  --text-heading: 36px;
+  --text-heading-lg: 48px;
+  --text-display: 64px;
+
+  --radius-button: 4px;
+  --radius-tag: 8px;
+  --radius-card: 16px;
+  --radius-illustration: 32px;
+  --radius-pill: 9999px;
+
+  --breakpoint-sm: 640px;
+  --breakpoint-lg: 1024px;
+  --container-page: 1200px;
+}
