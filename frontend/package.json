@@ -12,7 +12,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "test:e2e:mock": "E2E_MOCKS=1 playwright test",
+    "test:e2e:repeat": "playwright test && playwright test && playwright test"
   },
   "dependencies": {
     "@ethereum-attestation-service/eas-sdk": "^2.10.0",
@@ -33,6 +35,7 @@
     "zustand": "^5.0.16"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
     "@noble/hashes": "^1.8.0",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/turbopack": "^4",
