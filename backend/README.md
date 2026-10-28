@@ -59,6 +59,7 @@ data/raw/AddrAddr_edgelist.csv
 
 | Command | What it does |
 |---|---|
+| `make download` | `SRC=hf` (default) or `SRC=gdrive`: fetch the files into `data/raw/` and verify they are real (not Git-LFS pointers; sizes; row counts against the published 822,942 wallets / 1,268,260 feature rows / 2,868,964 edges). `make verify-data` re-checks without downloading. Needs the optional `data` group (`uv sync --group data`) |
 | `make explore` | checks the schema and writes `artifacts/data_summary.json` (columns, label encoding, duplicates, self-loops, degree stats) |
 | `make data` | `explore` + builds `data/processed/*.parquet` (wallets, edges, time-based splits, graph features) + downloads the OFAC list |
 | `make fixture` | builds a **synthetic** fake dataset with `DEMO-` addresses under `data/fixture/` for offline work (set `DATA_DIR=./data/fixture`, `DEMO_MODE=true`) |

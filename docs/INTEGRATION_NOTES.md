@@ -113,3 +113,71 @@ module.exports = { async rewrites() {
   the base; add only the missing pieces: `credentials: "include"`, the additive response fields, error
   codes with EN/HI messages, cookie-aware SSE via fetch, `reportHash` verification), `README.md`,
   `.gitignore`, `docs/api-contract.md`, `docs/CREDITS.md` (docs keep the union).
+
+## 9. Live run, step 1: real Elliptic++ data (branch `backend/live-run`)
+
+**Status: NOT DONE. The real data could not be downloaded from this environment.** No real metric,
+split size, model card or demo-wallet verdict exists yet; nothing below is a result on real data.
+
+### What blocked it (verified, not assumed)
+- `huggingface.co` and `drive.google.com`: the environment's network policy denies the connection (the
+  proxy answers HTTP 403 to CONNECT; seen again in this session). `github.com` pages are denied too.
+  The Git-LFS route also fails (the proxy serves no LFS objects for third-party repos).
+- No computer folder was attached to this session, so the download could not be done on the owner's machine.
+- To unblock: in the environment settings (cloud environment menu in the session title bar, then Edit,
+  Network access), allow `huggingface.co` (and its CDN, e.g. `cdn-lfs.huggingface.co` and
+  `*.hf.co`) or `drive.google.com` and `*.googleusercontent.com`, or choose a broader access level. Or run
+  the same commands on a laptop.
+
+### What was prepared so the next run is one command
+- `make download` (`scripts/download_data.py`): Hugging Face (`huggingface_hub`) or Google Drive (`gdown`);
+  afterwards it verifies: Git-LFS pointers (exit 1), files smaller than 1 MB (exit 1), missing files
+  (exit 1), and row counts versus the published figures (a mismatch is printed and exits 2; it is never
+  hidden). `make verify-data` checks without downloading. 5 unit tests.
+- By default only `wallets_features_classes_combined.csv` and `AddrAddr_edgelist.csv` are fetched: the
+  combined file already contains the features and the class, and the pipeline supports it.
+- Then, in order: `make explore` (read `artifacts/data_summary.json` before anything else: column names,
+  label encoding, time steps, duplicates, hubs), `make data`, then `make train` (which also runs
+  `export_demo_wallets`).
+
+### Real-volume stress test (SYNTHETIC content at the exact published size)
+`scripts/scale_check.py` generates random data with the published counts (822,942 wallets; 1,268,260
+feature rows; 2,868,964 edges; 14,266 / 251,088 / 557,588 illicit / licit / unknown; heavy-degree hubs;
+self-loops and duplicate edges) in the Hugging Face layout and runs each stage in its own process on this
+environment (4 CPUs, 16 GB RAM). **Only time and memory are measurements; model metrics from random data
+are meaningless and are not reported.**
+
+| Stage | Wall time | Peak RSS |
+|---|---|---|
+| explore (read, schema check, summary) | 31.8 s | 3,118 MB |
+| build (parquet, splits, graph features incl. PageRank, components) | 39.9 s | 3,305 MB |
+| train (baseline + graph model, 4-point grid each) | 53.3 s | 1,070 MB |
+| serve (load scorer, then 500 scorings) | load 1.35 s; score median 15.2 ms, p95 19.7 ms | 1,053 MB |
+
+Conclusion for the real run: the pipeline fits comfortably in 16 GB, so **no chunked loading and no
+subsampling is needed at this size** (the generated combined CSV is 1.36 GB; the authors' Git-LFS pointer lists about 609 MB for the real
+combined file, so the real read will be lighter on I/O; row counts are what matter). A 2 GB Fly machine is consistent with the measured ~1.05
+GB serving footprint. These timings are for random data and will differ somewhat on the real data (for
+example XGBoost training time depends on the data), so they must be re-measured on the real run.
+
+### Decisions
+- **polars is not added.** The project uses pandas + pyarrow; the measurement above shows the pipeline is
+  fast enough (explore + build about 72 s at full size), so a new dataframe library would add risk for no
+  measured gain. (The task text said polars is "already in the project"; it is not.)
+- **shap is not added.** Per-wallet "which features mattered" already uses XGBoost
+  `predict(..., pred_contribs=True)`, which computes exact TreeSHAP values; the `shap` package would add a
+  dependency for the same numbers.
+- The leakage guarantees (a wallet's own label and validation/test labels never influence any feature;
+  neighbour-label features use training labels only) are enforced by existing tests that run the SAME
+  functions the real pipeline uses: `tests/test_processing.py::test_no_label_leakage` and
+  `tests/test_model.py::test_test_wallet_label_does_not_change_its_score`. They run on every `make test`;
+  they have not been run on real data because the real data is not available here.
+
+### Still to do on the real data (in order)
+1. Unblock the network (or run on a laptop), `make download`, confirm the counts match. Report any mismatch.
+2. `make explore`; fix any assumption the synthetic fixture got wrong (label encoding, column names, time
+   steps) and add a regression test per fix.
+3. `make data`, `make train`; record the real model card here (split sizes, illicit-class precision, recall,
+   F1, PR-AUC for baseline vs graph model). If graph features do not help, say so plainly.
+4. `artifacts/demo_wallets.json` from the TEST split (one BLOCK, one WARN, one ALLOW, one wallet truly absent
+   from the data); verify the live model reproduces each verdict.
