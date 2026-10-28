@@ -97,6 +97,26 @@ When the graph engine is not TigerGraph, the `graph` step label says which engin
 
 Charging: only `status: "ok"` costs 1 credit. `not_in_dataset`, `error` and `cached: true` are free.
 
+### Wire details clarified (no behaviour change; found while writing the TypeScript client)
+
+- **Required-but-nullable:** `riskScore`, `datasetLabel`, `hopsToNearestIllicit` are always present
+  (`null` when unknown). Unset *optional* fields are omitted from the JSON (not sent as `null`).
+- **`neighbors.hop3`** is omitted when not computed; the `reportHash` evidence always contains `"hop3": null` then.
+- **Always present** on a `CheckResponse` even though `docs/openapi.json` (generated from Python defaults)
+  does not list them as required: `chain`, `neighbors`, `graphFeatures`, `labelHits`, `topReasons`,
+  `subgraph`, `limitations`, and the three `Counts` fields.
+- **`riskScore`** is an integer 0-100 (JSON number). `GraphNode.riskScore` is a number.
+- **503 with a body:** if the graph engine fails and no replay exists, `/api/check` returns HTTP 503 with a
+  full `CheckResponse` (`status: "error"`, `error: "graph_unavailable"`). On the stream the same
+  response arrives as a normal `result` event whose `status` is `"error"`.
+- **SSE `error` event** payload: `{ "error": string, "status": number }` (used for a late `no_credits`, 402).
+- **`evidence.dataset`** is `"elliptic++"` for real data and `"synthetic_fixture"` when `isMock` is true.
+  Pick it from `isMock`, otherwise hashes of fixture responses will not verify.
+- **Further error codes** (all `{ "error": code }`): 400 `empty_audio`; 422 `audio_unreadable`,
+  `audio_conversion_timeout`; 404 `unknown_pack`, `not_found`; 403 `forbidden` (admin routes);
+  502 `payments_unavailable` (Dodo call failed; 503 when Dodo is not configured); 503 `service_not_ready`;
+  400 `sample_size_above_cap_<N>`, `token_budget_exceeded` (benchmark).
+
 ## reportHash canonicalisation
 
 `reportHash = "0x" + hex(keccak256(utf8(canonicalJson(evidence))))` where `canonicalJson` is JSON
