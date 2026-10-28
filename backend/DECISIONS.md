@@ -51,6 +51,22 @@ bottom of each heading.
   paying change to itself) and duplicates.
 - 49 time steps (about two weeks each).
 
+## Pipeline outputs
+
+- `data/processed/wallets.parquet`: one row per address: `label`, `first_step`, `last_step`,
+  `n_appearances` and the 55 features of the address's **latest** appearance (rows are exact
+  duplicates per address in the real data, so the choice rarely matters; `latest` is used to be
+  deterministic).
+- `edges.parquet` (`src`, `dst`): self-loops dropped, duplicates removed, direction kept, edges whose
+  endpoint is missing from `wallets_classes.csv` dropped (counts recorded in `manifest.json`).
+- `splits.parquet`, `graph_features.parquet`, `manifest.json` (`source` = `elliptic++` or
+  `synthetic_fixture`).
+- OFAC list: 532 lines on 2026-10-28, 531 pass mainnet checksum validation; the rejected entry is a
+  TRON-format address mislisted in the XBT file. Matching is exact on the canonical form.
+- Ransomwhere is optional and off by default (CC BY-NC 4.0). OpenSanctions downloads need an
+  account/licence acceptance, so the export is downloaded manually to `RANSOMWHERE_PATH` (one
+  address per line, or the OpenSanctions CSV with an `address`-like column).
+
 ## Split design
 
 - **Time-based split on the first time step a wallet appears in**: train = steps 1-28, validation =
