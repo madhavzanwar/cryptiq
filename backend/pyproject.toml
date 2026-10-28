@@ -15,7 +15,9 @@ dependencies = [
   "numpy>=1.26",
   "scipy>=1.11",
   "scikit-learn>=1.5",
-  "xgboost>=2.0",
+  # CPU-only wheel on Linux (the default wheel drags in ~470 MB of NVIDIA libraries); same `xgboost` module
+  "xgboost>=2.0; sys_platform != 'linux'",
+  "xgboost-cpu>=2.1; sys_platform == 'linux'",
   "networkx>=3.3",
   "pyTigerGraph>=1.6",
   "slowapi>=0.1.9",
