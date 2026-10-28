@@ -17,3 +17,6 @@ __pycache__/
 .coverage
 htmlcov/
 *.log
+
+*.tar.gz
+*.tgz

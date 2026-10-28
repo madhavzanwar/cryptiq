@@ -84,12 +84,12 @@ def _csv_header(path: Path) -> list[str]:
 def _read_columns(path: Path, wanted: list[str]) -> pd.DataFrame:
     """Read only the wanted columns that exist (missing ones are left for check_schema to report)."""
     present = set(_csv_header(path))
-    return pd.read_csv(path, engine="pyarrow", usecols=[c for c in wanted if c in present])
+    return pd.read_csv(path, usecols=[c for c in wanted if c in present])
 
 
 def _classes_from_combined(path: Path) -> pd.DataFrame:
     """One class per address (first-appearance order); conflicting classes raise, never guess."""
-    cols = pd.read_csv(path, engine="pyarrow", usecols=[ADDRESS, CLASS])
+    cols = pd.read_csv(path, usecols=[ADDRESS, CLASS])
     pairs = cols.drop_duplicates()
     del cols
     dup = pairs[ADDRESS].duplicated(keep=False)
@@ -116,13 +116,13 @@ def read_raw(raw_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if classes_path.exists():
         if not features_path.exists():
             raise FileNotFoundError(f"{features_path} not found")
-        classes = pd.read_csv(classes_path, engine="pyarrow")
+        classes = pd.read_csv(classes_path)
     elif combined_path.exists():
         classes = _classes_from_combined(combined_path)
     else:
         raise FileNotFoundError(f"neither {classes_path} nor {combined_path} found in {raw_dir}")
     feats = _read_columns(features_path if features_path.exists() else combined_path, wanted)
-    edges = pd.read_csv(raw_dir / EDGES_FILE, engine="pyarrow")
+    edges = pd.read_csv(raw_dir / EDGES_FILE)
     return feats, classes, edges
 
 

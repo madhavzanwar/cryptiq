@@ -1,7 +1,6 @@
 import { WALLETCONNECT_PROJECT_ID } from "@/lib/env";
-import { connectorsForWallets, getDefaultConfig } from "@rainbow-me/rainbowkit";
-import { coinbaseWallet, injectedWallet } from "@rainbow-me/rainbowkit/wallets";
-import { createConfig, http, type Config } from "wagmi";
+import { getDefaultConfig } from "@rainbow-me/rainbowkit";
+import { http, type Config } from "wagmi";
 import { baseSepolia } from "wagmi/chains";
 
 /**
@@ -10,31 +9,23 @@ import { baseSepolia } from "wagmi/chains";
  */
 export const CHAIN = baseSepolia;
 
-/** Without a WalletConnect (Reown) project id only browser wallets are offered. */
-export const HAS_WALLETCONNECT = WALLETCONNECT_PROJECT_ID !== "";
+const FALLBACK_PROJECT_ID = "b8f6819204c5d88f91839e5238ef2274";
+export const HAS_WALLETCONNECT = Boolean(WALLETCONNECT_PROJECT_ID || FALLBACK_PROJECT_ID);
 
 let cached: Config | undefined;
 
 export function getWagmiConfig(): Config {
   if (cached) return cached;
   const transports = { [baseSepolia.id]: http() };
-  if (HAS_WALLETCONNECT) {
-    cached = getDefaultConfig({
-      appName: "Cryptiq",
-      projectId: WALLETCONNECT_PROJECT_ID,
-      chains: [baseSepolia],
-      transports,
-      ssr: false,
-    });
-  } else {
-    const connectors = connectorsForWallets(
-      [{ groupName: "Browser wallets", wallets: [injectedWallet, coinbaseWallet] }],
-      {
-        appName: "Cryptiq",
-        projectId: "no-walletconnect-project-id",
-      },
-    );
-    cached = createConfig({ chains: [baseSepolia], connectors, transports, ssr: false });
-  }
+  const projectId = WALLETCONNECT_PROJECT_ID || FALLBACK_PROJECT_ID;
+
+  cached = getDefaultConfig({
+    appName: "Cryptiq",
+    projectId,
+    chains: [baseSepolia],
+    transports,
+    ssr: false,
+  });
+
   return cached;
 }

@@ -1,6 +1,6 @@
 # Fly.io config for the Cryptiq backend. Set `app` to your own name: fly launch --no-deploy --copy-config
-app = "cryptiq-backend-CHANGE-ME"
-primary_region = "bom"
+app = "cryptiq"
+primary_region = "sin"
 
 [build]
   dockerfile = "Dockerfile"
