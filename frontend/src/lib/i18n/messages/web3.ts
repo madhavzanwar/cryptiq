@@ -3,8 +3,10 @@ import { defineMessages } from "../define";
 export const web3 = defineMessages(
   {
     "web3.panel.title": "Keep proof on-chain",
-    "web3.panel.intro": "An attestation is a signed public record of this verdict, stored on a blockchain, that anyone can open and check.",
-    "web3.panel.warning": "Attestations are public and permanent. This uses the Base Sepolia TEST network. No real money.",
+    "web3.panel.intro":
+      "An attestation is a signed public record of this verdict, stored on a blockchain, that anyone can open and check.",
+    "web3.panel.warning":
+      "Attestations are public and permanent. This uses the Base Sepolia TEST network. No real money.",
     "web3.step.connect": "Connect wallet",
     "web3.step.network": "Switch to Base Sepolia",
     "web3.step.sign": "Sign",
@@ -16,15 +18,19 @@ export const web3 = defineMessages(
     "web3.button.switch": "Switch to Base Sepolia",
     "web3.button.connectFirst": "Connect a wallet to continue",
     "web3.badge.simulated": "Simulated",
-    "web3.simulated.note": "Mock mode: nothing was sent to a blockchain, so there is no transaction and no link.",
+    "web3.simulated.note":
+      "Mock mode: nothing was sent to a blockchain, so there is no transaction and no link.",
     "web3.simulated.done": "Simulated attestation created. No real record exists.",
-    "web3.setup.schema": "Attestations are not set up yet. The team still needs to register the EAS schema and set NEXT_PUBLIC_EAS_SCHEMA_UID.",
+    "web3.setup.schema":
+      "Attestations are not set up yet. The team still needs to register the EAS schema and set NEXT_PUBLIC_EAS_SCHEMA_UID.",
     "web3.unknown.title": "Nothing to attest",
-    "web3.unknown.body": "We don't attest results for wallets that aren't in the dataset, because there is no evidence to prove.",
+    "web3.unknown.body":
+      "We don't attest results for wallets that aren't in the dataset, because there is no evidence to prove.",
     "web3.hash.label": "Report hash",
     "web3.error.rejected": "You cancelled the request in your wallet. Nothing was sent.",
     "web3.error.wrongNetwork": "Your wallet is on a different network. Switch to Base Sepolia and try again.",
-    "web3.error.funds": "Your wallet has no Base Sepolia test ETH for the network fee. Get some from a faucet, then try again.",
+    "web3.error.funds":
+      "Your wallet has no Base Sepolia test ETH for the network fee. Get some from a faucet, then try again.",
     "web3.error.faucet": "Base Sepolia faucets",
     "web3.error.schema": "The attestation schema was not found on Base Sepolia. Please check the schema UID.",
     "web3.error.other": "The attestation failed. Please try again.",
@@ -33,7 +39,8 @@ export const web3 = defineMessages(
     "web3.success.view": "View on easscan",
     "web3.success.history": "Add to History",
     "web3.success.historyDone": "Added to History",
-    "web3.connect.noProject": "Only browser wallets are offered here. A WalletConnect project ID would add more wallets.",
+    "web3.connect.noProject":
+      "Only browser wallets are offered here. A WalletConnect project ID would add more wallets.",
     "web3.connect.wrongNetwork": "Switch to Base Sepolia",
     "web3.connect.network": "Base Sepolia",
     "web3.connect.account": "Wallet {address}",
@@ -41,8 +48,10 @@ export const web3 = defineMessages(
   },
   {
     "web3.panel.title": "सबूत ब्लॉकचेन पर रखें",
-    "web3.panel.intro": "अटेस्टेशन इस नतीजे का साइन किया हुआ सार्वजनिक रिकॉर्ड है, जो ब्लॉकचेन पर रहता है और कोई भी उसे खोलकर जाँच सकता है।",
-    "web3.panel.warning": "अटेस्टेशन सार्वजनिक और हमेशा के लिए होते हैं। यह Base Sepolia टेस्ट नेटवर्क पर है। कोई असली पैसा नहीं लगता।",
+    "web3.panel.intro":
+      "अटेस्टेशन इस नतीजे का साइन किया हुआ सार्वजनिक रिकॉर्ड है, जो ब्लॉकचेन पर रहता है और कोई भी उसे खोलकर जाँच सकता है।",
+    "web3.panel.warning":
+      "अटेस्टेशन सार्वजनिक और हमेशा के लिए होते हैं। यह Base Sepolia टेस्ट नेटवर्क पर है। कोई असली पैसा नहीं लगता।",
     "web3.step.connect": "वॉलेट जोड़ें",
     "web3.step.network": "Base Sepolia पर जाएँ",
     "web3.step.sign": "साइन करें",
@@ -56,13 +65,16 @@ export const web3 = defineMessages(
     "web3.badge.simulated": "नकली",
     "web3.simulated.note": "मॉक मोड: ब्लॉकचेन पर कुछ नहीं भेजा गया, इसलिए कोई ट्रांज़ैक्शन या लिंक नहीं है।",
     "web3.simulated.done": "नकली अटेस्टेशन बना। कोई असली रिकॉर्ड नहीं है।",
-    "web3.setup.schema": "अटेस्टेशन अभी सेट नहीं हैं। टीम को EAS स्कीमा रजिस्टर करके NEXT_PUBLIC_EAS_SCHEMA_UID सेट करना होगा।",
+    "web3.setup.schema":
+      "अटेस्टेशन अभी सेट नहीं हैं। टीम को EAS स्कीमा रजिस्टर करके NEXT_PUBLIC_EAS_SCHEMA_UID सेट करना होगा।",
     "web3.unknown.title": "अटेस्ट करने के लिए कुछ नहीं",
-    "web3.unknown.body": "जो वॉलेट डेटासेट में नहीं हैं, उनके नतीजे हम अटेस्ट नहीं करते, क्योंकि साबित करने लायक कोई सबूत नहीं है।",
+    "web3.unknown.body":
+      "जो वॉलेट डेटासेट में नहीं हैं, उनके नतीजे हम अटेस्ट नहीं करते, क्योंकि साबित करने लायक कोई सबूत नहीं है।",
     "web3.hash.label": "रिपोर्ट हैश",
     "web3.error.rejected": "आपने वॉलेट में अनुरोध रद्द कर दिया। कुछ नहीं भेजा गया।",
     "web3.error.wrongNetwork": "आपका वॉलेट दूसरे नेटवर्क पर है। Base Sepolia पर जाकर फिर कोशिश करें।",
-    "web3.error.funds": "आपके वॉलेट में नेटवर्क फ़ीस के लिए Base Sepolia टेस्ट ETH नहीं है। फ़ौसेट से लेकर फिर कोशिश करें।",
+    "web3.error.funds":
+      "आपके वॉलेट में नेटवर्क फ़ीस के लिए Base Sepolia टेस्ट ETH नहीं है। फ़ौसेट से लेकर फिर कोशिश करें।",
     "web3.error.faucet": "Base Sepolia फ़ौसेट",
     "web3.error.schema": "Base Sepolia पर यह अटेस्टेशन स्कीमा नहीं मिला। कृपया स्कीमा UID जाँचें।",
     "web3.error.other": "अटेस्टेशन नहीं बन सका। कृपया फिर से कोशिश करें।",
@@ -71,7 +83,8 @@ export const web3 = defineMessages(
     "web3.success.view": "easscan पर देखें",
     "web3.success.history": "इतिहास में जोड़ें",
     "web3.success.historyDone": "इतिहास में जुड़ गया",
-    "web3.connect.noProject": "यहाँ सिर्फ़ ब्राउज़र वॉलेट मिलते हैं। WalletConnect प्रोजेक्ट ID से और वॉलेट जुड़ सकते हैं।",
+    "web3.connect.noProject":
+      "यहाँ सिर्फ़ ब्राउज़र वॉलेट मिलते हैं। WalletConnect प्रोजेक्ट ID से और वॉलेट जुड़ सकते हैं।",
     "web3.connect.wrongNetwork": "Base Sepolia पर जाएँ",
     "web3.connect.network": "Base Sepolia",
     "web3.connect.account": "वॉलेट {address}",

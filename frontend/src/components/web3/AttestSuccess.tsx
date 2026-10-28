@@ -15,7 +15,10 @@ export function AttestSuccess({ uid, historyId }: { uid: string; historyId?: str
   const setAttestation = useHistory((s) => s.setAttestation);
   const [added, setAdded] = useState(false);
   return (
-    <div role="status" className="flex flex-col gap-[13px] rounded-card bg-allow-tint p-[18px] text-allow-ink">
+    <div
+      role="status"
+      className="flex flex-col gap-[13px] rounded-card bg-allow-tint p-[18px] text-allow-ink"
+    >
       <p className="flex items-center gap-[9px] font-semibold">
         <CircleCheck className="size-6 flex-none" aria-hidden strokeWidth={1.75} />
         {t("web3.success.title")}

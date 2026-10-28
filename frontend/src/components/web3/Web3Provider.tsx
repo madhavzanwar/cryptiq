@@ -16,7 +16,8 @@ const WalletHost = dynamic(() => import("./WalletHost"), { ssr: false });
 export function Web3Provider({ children }: { children: ReactNode }) {
   const [load, setLoad] = useState(false);
   useEffect(() => {
-    const ric = window.requestIdleCallback as ((cb: () => void, o?: { timeout: number }) => number) | undefined;
+    const ric = window.requestIdleCallback as
+      ((cb: () => void, o?: { timeout: number }) => number) | undefined;
     if (ric) {
       const id = ric(() => setLoad(true), { timeout: 1200 });
       return () => window.cancelIdleCallback?.(id);

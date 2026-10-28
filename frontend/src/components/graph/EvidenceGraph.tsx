@@ -26,7 +26,17 @@ const ForceGraphCanvas = dynamic(() => import("./ForceGraphCanvas"), {
 
 type Depth = 1 | 2 | 3;
 
-function IconButton({ label, onClick, pressed, children }: { label: string; onClick: () => void; pressed?: boolean; children: ReactNode }) {
+function IconButton({
+  label,
+  onClick,
+  pressed,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  pressed?: boolean;
+  children: ReactNode;
+}) {
   return (
     <button
       type="button"
@@ -90,10 +100,15 @@ function Panel({ result }: { result: CheckResponse }) {
     else void panelRef.current?.requestFullscreen?.();
   };
 
-  const depthOptions = ([1, 2, 3] as const).filter((d) => d <= available).map((d) => ({ value: String(d), label: t("graph.depth.n", { n: d }) }));
+  const depthOptions = ([1, 2, 3] as const)
+    .filter((d) => d <= available)
+    .map((d) => ({ value: String(d), label: t("graph.depth.n", { n: d }) }));
 
   return (
-    <div ref={panelRef} className={cn("flex flex-col gap-[18px] bg-pure-white", fullscreen && "h-dvh p-[26px]")}>
+    <div
+      ref={panelRef}
+      className={cn("flex flex-col gap-[18px] bg-pure-white", fullscreen && "h-dvh p-[26px]")}
+    >
       <div className="flex flex-wrap items-center justify-between gap-[13px]">
         <h3 className="sub">{t("graph.title")}</h3>
         <div className="flex flex-wrap items-center gap-[9px]">
@@ -117,15 +132,30 @@ function Panel({ result }: { result: CheckResponse }) {
           <IconButton label={t("graph.reset")} onClick={() => controller.current?.reset()}>
             <RotateCcw className="size-5" aria-hidden />
           </IconButton>
-          <IconButton label={fullscreen ? t("graph.fullscreen.exit") : t("graph.fullscreen")} onClick={toggleFullscreen}>
-            {fullscreen ? <Minimize2 className="size-5" aria-hidden /> : <Maximize2 className="size-5" aria-hidden />}
+          <IconButton
+            label={fullscreen ? t("graph.fullscreen.exit") : t("graph.fullscreen")}
+            onClick={toggleFullscreen}
+          >
+            {fullscreen ? (
+              <Minimize2 className="size-5" aria-hidden />
+            ) : (
+              <Maximize2 className="size-5" aria-hidden />
+            )}
           </IconButton>
           {!reduced && (
-            <IconButton label={paused ? t("graph.play") : t("graph.pause")} pressed={paused} onClick={() => setPaused((p) => !p)}>
+            <IconButton
+              label={paused ? t("graph.play") : t("graph.pause")}
+              pressed={paused}
+              onClick={() => setPaused((p) => !p)}
+            >
               {paused ? <Play className="size-5" aria-hidden /> : <Pause className="size-5" aria-hidden />}
             </IconButton>
           )}
-          <IconButton label={t("graph.highlight")} pressed={highlight} onClick={() => setHighlight((h) => !h)}>
+          <IconButton
+            label={t("graph.highlight")}
+            pressed={highlight}
+            onClick={() => setHighlight((h) => !h)}
+          >
             <Route className="size-5" aria-hidden />
           </IconButton>
         </div>
@@ -179,10 +209,21 @@ function Panel({ result }: { result: CheckResponse }) {
         <GraphLegend />
         <ul className="flex flex-wrap gap-x-[18px] gap-y-[4px] text-small text-ash-gray">
           {hopCountRows(result.neighbors).map((r) => (
-            <li key={r.hop}>{t("graph.counts.hop", { n: r.hop, illicit: r.counts.illicit, licit: r.counts.licit, unknown: r.counts.unknown })}</li>
+            <li key={r.hop}>
+              {t("graph.counts.hop", {
+                n: r.hop,
+                illicit: r.counts.illicit,
+                licit: r.counts.licit,
+                unknown: r.counts.unknown,
+              })}
+            </li>
           ))}
         </ul>
-        {view.capped && <p className="text-small text-ash-gray">{t("graph.showing", { shown: view.nodes.length, total: view.total })}</p>}
+        {view.capped && (
+          <p className="text-small text-ash-gray">
+            {t("graph.showing", { shown: view.nodes.length, total: view.total })}
+          </p>
+        )}
       </div>
 
       <GraphList nodes={view.nodes} />
@@ -199,9 +240,7 @@ function Panel({ result }: { result: CheckResponse }) {
 export function EvidenceGraph({ result }: { result: CheckResponse }) {
   const { t } = useT();
   if (result.subgraph.nodes.length === 0) {
-    return (
-      <EmptyState title={t("graph.empty.title")}>{t("graph.empty.body")}</EmptyState>
-    );
+    return <EmptyState title={t("graph.empty.title")}>{t("graph.empty.body")}</EmptyState>;
   }
   // Remount (fresh depth, selection, path) whenever a different wallet or report is shown.
   return (

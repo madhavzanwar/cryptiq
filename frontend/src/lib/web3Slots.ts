@@ -40,5 +40,15 @@ export const walletSlots = {
   },
 };
 
-export const useWalletSlots = (): WalletSlotEntry[] => useSyncExternalStore(subscribe, () => slots, () => EMPTY);
-export const useWalletHostReady = (): boolean => useSyncExternalStore(subscribe, () => hostReady, () => false);
+export const useWalletSlots = (): WalletSlotEntry[] =>
+  useSyncExternalStore(
+    subscribe,
+    () => slots,
+    () => EMPTY,
+  );
+export const useWalletHostReady = (): boolean =>
+  useSyncExternalStore(
+    subscribe,
+    () => hostReady,
+    () => false,
+  );

@@ -24,7 +24,8 @@ describe("EvidenceGraph", () => {
 describe("GraphLegend", () => {
   it("lists subject, the three labels and the arrow, in words (never colour alone)", () => {
     render(<GraphLegend />);
-    for (const text of ["Checked wallet", "Illicit", "Licit", "Unknown", "Money direction"]) expect(screen.getByText(text)).toBeInTheDocument();
+    for (const text of ["Checked wallet", "Illicit", "Licit", "Unknown", "Money direction"])
+      expect(screen.getByText(text)).toBeInTheDocument();
   });
 });
 

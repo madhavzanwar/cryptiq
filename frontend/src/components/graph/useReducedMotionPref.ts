@@ -13,7 +13,11 @@ function subscribe(cb: () => void) {
 
 /** True when the OS asks for reduced motion or the in-app override (Settings) is on. */
 export function useReducedMotionPref(): boolean {
-  const os = useSyncExternalStore(subscribe, () => window.matchMedia(QUERY).matches, () => false);
+  const os = useSyncExternalStore(
+    subscribe,
+    () => window.matchMedia(QUERY).matches,
+    () => false,
+  );
   const override = useSettings((s) => s.reduceMotion);
   return os || override;
 }

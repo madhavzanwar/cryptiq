@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import type { DemoWallet } from "@/lib/api/types";
 import { useDemoWallets } from "@/lib/hooks/useApi";
 import { useT } from "@/lib/i18n/provider";
+import { VERDICT_META } from "@/lib/verdict";
 
 const ORDER = ["BLOCK", "WARN", "ALLOW", "UNKNOWN"] as const;
 
@@ -17,6 +18,11 @@ export function pickDemoWallets(wallets: DemoWallet[], max = 4): DemoWallet[] {
   }
   for (const w of wallets) if (picked.length < max && !picked.includes(w)) picked.push(w);
   return picked.slice(0, max);
+}
+
+/** Chip text: the API's note when it is short ("Known illicit (demo)"), otherwise "BLOCK · DEMO-w02271". */
+export function demoLabel(w: DemoWallet, verdictWord: string): string {
+  return w.note.length <= 30 ? w.note : `${verdictWord} · ${w.address}`;
 }
 
 /** "Try an example": chips from GET /api/demo-wallets (held-out test wallets). Clicking fills the field. */
@@ -46,7 +52,7 @@ export function DemoChips({ onPick, selected, disabled }: { onPick: (address: st
                     on ? "bg-carbon text-pure-white" : "bg-pure-white hover:bg-bone",
                   )}
                 >
-                  {w.note}
+                  {demoLabel(w, t(VERDICT_META[w.expected].word))}
                 </button>
               );
             })}

@@ -65,16 +65,35 @@ function readPalette(): Palette {
   };
 }
 
-const endId = (e: unknown): string => (typeof e === "object" && e !== null ? String((e as { id?: string | number }).id ?? "") : String(e ?? ""));
+const endId = (e: unknown): string =>
+  typeof e === "object" && e !== null ? String((e as { id?: string | number }).id ?? "") : String(e ?? "");
 
 export default function ForceGraphCanvas(props: ForceGraphCanvasProps) {
-  const { nodes, links, width, height, animate, paused, highlight, pathNodeIds, pathLinkKeys, selectedId, subjectLabel, controllerRef, onSelect, onHover } = props;
+  const {
+    nodes,
+    links,
+    width,
+    height,
+    animate,
+    paused,
+    highlight,
+    pathNodeIds,
+    pathLinkKeys,
+    selectedId,
+    subjectLabel,
+    controllerRef,
+    onSelect,
+    onHover,
+  } = props;
   const fg = useRef<ForceGraphMethods<N, L> | undefined>(undefined);
   const palette = useMemo(() => readPalette(), []);
   const byId = useMemo(() => new Map(nodes.map((n) => [n.id, n] as const)), [nodes]);
 
   // react-force-graph mutates what it is given (positions, resolved link ends): hand it copies.
-  const data = useMemo(() => ({ nodes: nodes.map((n) => ({ ...n })) as N[], links: links.map((l) => ({ ...l })) as L[] }), [nodes, links]);
+  const data = useMemo(
+    () => ({ nodes: nodes.map((n) => ({ ...n })) as N[], links: links.map((l) => ({ ...l })) as L[] }),
+    [nodes, links],
+  );
 
   useEffect(() => {
     controllerRef.current = {
@@ -158,7 +177,7 @@ export default function ForceGraphCanvas(props: ForceGraphCanvasProps) {
       }
       if (String(node.id) === selectedId) {
         ctx.beginPath();
-        ctx.arc(x, y, (node.isSubject ? 18 : 10), 0, 2 * Math.PI);
+        ctx.arc(x, y, node.isSubject ? 18 : 10, 0, 2 * Math.PI);
         ctx.lineWidth = 1.5 / scale;
         ctx.setLineDash([3 / scale, 2 / scale]);
         ctx.strokeStyle = palette.ink;
@@ -176,7 +195,10 @@ export default function ForceGraphCanvas(props: ForceGraphCanvasProps) {
     ctx.fill();
   }, []);
 
-  const onPath = useCallback((l: L) => pathLinkKeys.has(linkKey(endId(l.source), endId(l.target))), [pathLinkKeys]);
+  const onPath = useCallback(
+    (l: L) => pathLinkKeys.has(linkKey(endId(l.source), endId(l.target))),
+    [pathLinkKeys],
+  );
 
   const fitted = useRef<unknown>(null);
   const onEngineStop = useCallback(() => {
@@ -214,7 +236,7 @@ export default function ForceGraphCanvas(props: ForceGraphCanvasProps) {
       onNodeClick={(n) => onSelect(byId.get(String(n.id)) ?? null)}
       onBackgroundClick={() => onSelect(null)}
       onNodeHover={(n) => {
-        const found = n ? byId.get(String(n.id)) ?? null : null;
+        const found = n ? (byId.get(String(n.id)) ?? null) : null;
         const at = n && fg.current ? fg.current.graph2ScreenCoords(n.x ?? 0, n.y ?? 0) : null;
         onHover(found, at);
       }}

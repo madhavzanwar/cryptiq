@@ -39,7 +39,9 @@ describe("AttestPanel", () => {
     expect(screen.getByText("Simulated")).toBeInTheDocument();
     expect(screen.getByText(/Attestations are public and permanent/)).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Create attestation (simulated)" }));
-    await waitFor(() => expect(screen.getByText(/Simulated attestation created/)).toBeInTheDocument(), { timeout: 3000 });
+    await waitFor(() => expect(screen.getByText(/Simulated attestation created/)).toBeInTheDocument(), {
+      timeout: 3000,
+    });
     expect(screen.queryByRole("link")).toBeNull();
   });
 

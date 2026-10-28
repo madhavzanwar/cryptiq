@@ -14,7 +14,11 @@ export default function ConnectUi() {
         const connected = mounted && account && chain;
         if (!connected) {
           return (
-            <Button variant="black" onClick={openConnectModal} title={HAS_WALLETCONNECT ? undefined : t("web3.connect.noProject")}>
+            <Button
+              variant="black"
+              onClick={openConnectModal}
+              title={HAS_WALLETCONNECT ? undefined : t("web3.connect.noProject")}
+            >
               {t("action.connectWallet")}
             </Button>
           );
@@ -32,7 +36,11 @@ export default function ConnectUi() {
               <span aria-hidden className="size-[7px] rounded-full bg-carbon" />
               {t("web3.connect.network")}
             </Tag>
-            <Button variant="black" onClick={openAccountModal} aria-label={t("web3.connect.account", { address: account.displayName })}>
+            <Button
+              variant="black"
+              onClick={openAccountModal}
+              aria-label={t("web3.connect.account", { address: account.displayName })}
+            >
               <span className="mono text-body">{account.displayName}</span>
             </Button>
           </div>

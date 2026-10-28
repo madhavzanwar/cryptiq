@@ -17,7 +17,9 @@ export function ShapeIcon({ label, className }: { label: NodeLabel | "subject"; 
       )}
       {label === "illicit" && <path d="M8 1.5 14.5 8 8 14.5 1.5 8Z" className="fill-block" />}
       {label === "licit" && <circle cx="8" cy="8" r="5.5" className="fill-allow" />}
-      {label === "unknown" && <circle cx="8" cy="8" r="5" className="fill-paper-white stroke-unknown" strokeWidth="2" />}
+      {label === "unknown" && (
+        <circle cx="8" cy="8" r="5" className="fill-paper-white stroke-unknown" strokeWidth="2" />
+      )}
     </svg>
   );
 }
@@ -31,7 +33,10 @@ export function GraphLegend() {
     { label: "unknown" as const, text: t("graph.legend.unknown") },
   ];
   return (
-    <ul aria-label={t("graph.legend.title")} className="flex flex-wrap items-center gap-x-[18px] gap-y-[7px] text-small">
+    <ul
+      aria-label={t("graph.legend.title")}
+      className="flex flex-wrap items-center gap-x-[18px] gap-y-[7px] text-small"
+    >
       {items.map((i) => (
         <li key={i.label} className="inline-flex items-center gap-[7px]">
           <ShapeIcon label={i.label} />

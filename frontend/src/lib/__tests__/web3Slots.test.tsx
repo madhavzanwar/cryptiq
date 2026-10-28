@@ -10,7 +10,10 @@ describe("wallet slot registry", () => {
     act(() => walletSlots.set({ id: "a", node, content: "one" }));
     act(() => walletSlots.set({ id: "b", node, content: "two" }));
     act(() => walletSlots.set({ id: "a", node, content: "uno" }));
-    expect(result.current.map((s) => [s.id, s.content])).toEqual([["b", "two"], ["a", "uno"]]);
+    expect(result.current.map((s) => [s.id, s.content])).toEqual([
+      ["b", "two"],
+      ["a", "uno"],
+    ]);
     act(() => walletSlots.remove("a"));
     act(() => walletSlots.remove("missing"));
     expect(result.current.map((s) => s.id)).toEqual(["b"]);

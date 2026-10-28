@@ -48,7 +48,13 @@ export interface SubmitOptions {
 }
 
 /** Signs and sends the attestation, waits for the transaction and returns the attestation UID. */
-export async function submitAttestation({ signer, contract, schemaUid, recipient, result }: SubmitOptions): Promise<string> {
+export async function submitAttestation({
+  signer,
+  contract,
+  schemaUid,
+  recipient,
+  result,
+}: SubmitOptions): Promise<string> {
   const { EAS } = await import("@ethereum-attestation-service/eas-sdk");
   const fields = fieldsFor(result, await resolveReportHash(result));
   const eas = new EAS(contract);

@@ -1,13 +1,32 @@
 import { describe, expect, it } from "vitest";
 import type { GraphLink, GraphNode } from "@/lib/api/types";
 import { FIXTURES } from "@/lib/mocks";
-import { capNodes, filterByHop, hopCountRows, linkKey, maxHop, nodeShape, shortestPathToIllicit } from "../graphUtils";
+import {
+  capNodes,
+  filterByHop,
+  hopCountRows,
+  linkKey,
+  maxHop,
+  nodeShape,
+  shortestPathToIllicit,
+} from "../graphUtils";
 
-const n = (id: string, hop: number, label: GraphNode["label"] = "unknown", isSubject = false): GraphNode => ({ id, hop, label, ...(isSubject ? { isSubject } : {}) });
+const n = (id: string, hop: number, label: GraphNode["label"] = "unknown", isSubject = false): GraphNode => ({
+  id,
+  hop,
+  label,
+  ...(isSubject ? { isSubject } : {}),
+});
 const l = (source: string, target: string): GraphLink => ({ source, target });
 
 const graph = {
-  nodes: [n("S", 0, "unknown", true), n("a", 1, "licit"), n("b", 1, "unknown"), n("c", 2, "illicit"), n("d", 3, "illicit")],
+  nodes: [
+    n("S", 0, "unknown", true),
+    n("a", 1, "licit"),
+    n("b", 1, "unknown"),
+    n("c", 2, "illicit"),
+    n("d", 3, "illicit"),
+  ],
   links: [l("S", "a"), l("b", "S"), l("a", "c"), l("c", "d")],
 };
 
@@ -26,7 +45,10 @@ describe("filterByHop", () => {
     expect(g.links).toHaveLength(2);
   });
   it("handles links whose ends were already resolved to objects", () => {
-    const resolved = { nodes: graph.nodes, links: [{ source: { id: "S" }, target: { id: "a" } } as unknown as GraphLink] };
+    const resolved = {
+      nodes: graph.nodes,
+      links: [{ source: { id: "S" }, target: { id: "a" } } as unknown as GraphLink],
+    };
     expect(filterByHop(resolved, 1).links).toHaveLength(1);
   });
 });
@@ -36,7 +58,10 @@ describe("capNodes", () => {
     expect(capNodes(graph, 10)).toMatchObject({ capped: false, total: 5 });
   });
   it("keeps the subject and the nearest nodes, flagged first within a hop", () => {
-    const big = { nodes: [n("S", 0, "unknown", true), n("x1", 1, "licit"), n("x2", 1, "illicit"), n("y1", 2, "illicit")], links: [l("S", "x1"), l("S", "x2"), l("x2", "y1")] };
+    const big = {
+      nodes: [n("S", 0, "unknown", true), n("x1", 1, "licit"), n("x2", 1, "illicit"), n("y1", 2, "illicit")],
+      links: [l("S", "x1"), l("S", "x2"), l("x2", "y1")],
+    };
     const c = capNodes(big, 3);
     expect(c.capped).toBe(true);
     expect(c.total).toBe(4);
@@ -57,10 +82,20 @@ describe("shortestPathToIllicit", () => {
     expect(p?.linkKeys.has(linkKey("c", "a"))).toBe(true);
   });
   it("returns null when no illicit wallet is reachable", () => {
-    expect(shortestPathToIllicit({ nodes: [n("S", 0, "unknown", true), n("a", 1, "licit")], links: [l("S", "a")] })).toBeNull();
+    expect(
+      shortestPathToIllicit({
+        nodes: [n("S", 0, "unknown", true), n("a", 1, "licit")],
+        links: [l("S", "a")],
+      }),
+    ).toBeNull();
   });
   it("ignores an illicit subject (distance to itself is not a path)", () => {
-    expect(shortestPathToIllicit({ nodes: [n("S", 0, "illicit", true), n("a", 1, "licit")], links: [l("S", "a")] })).toBeNull();
+    expect(
+      shortestPathToIllicit({
+        nodes: [n("S", 0, "illicit", true), n("a", 1, "licit")],
+        links: [l("S", "a")],
+      }),
+    ).toBeNull();
   });
   it("returns null without a subject", () => {
     expect(shortestPathToIllicit({ nodes: [n("a", 1, "illicit")], links: [] })).toBeNull();

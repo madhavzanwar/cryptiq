@@ -19,12 +19,21 @@ export function getWagmiConfig(): Config {
   if (cached) return cached;
   const transports = { [baseSepolia.id]: http() };
   if (HAS_WALLETCONNECT) {
-    cached = getDefaultConfig({ appName: "Cryptiq", projectId: WALLETCONNECT_PROJECT_ID, chains: [baseSepolia], transports, ssr: false });
-  } else {
-    const connectors = connectorsForWallets([{ groupName: "Browser wallets", wallets: [injectedWallet, coinbaseWallet] }], {
+    cached = getDefaultConfig({
       appName: "Cryptiq",
-      projectId: "no-walletconnect-project-id",
+      projectId: WALLETCONNECT_PROJECT_ID,
+      chains: [baseSepolia],
+      transports,
+      ssr: false,
     });
+  } else {
+    const connectors = connectorsForWallets(
+      [{ groupName: "Browser wallets", wallets: [injectedWallet, coinbaseWallet] }],
+      {
+        appName: "Cryptiq",
+        projectId: "no-walletconnect-project-id",
+      },
+    );
     cached = createConfig({ chains: [baseSepolia], connectors, transports, ssr: false });
   }
   return cached;

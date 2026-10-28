@@ -59,8 +59,17 @@ export default function AttestFlow({ result, historyId }: Props) {
     setBusy(true);
     try {
       // The signing code (ethers + EAS SDK) is only downloaded now, when the person actually signs.
-      const [{ submitAttestation }, { clientToSigner }] = await Promise.all([import("@/lib/eas/attest"), import("@/lib/eas/signer")]);
-      const newUid = await submitAttestation({ signer: clientToSigner(walletClient), contract: EAS_CONTRACT, schemaUid: EAS_SCHEMA_UID, recipient: address, result });
+      const [{ submitAttestation }, { clientToSigner }] = await Promise.all([
+        import("@/lib/eas/attest"),
+        import("@/lib/eas/signer"),
+      ]);
+      const newUid = await submitAttestation({
+        signer: clientToSigner(walletClient),
+        contract: EAS_CONTRACT,
+        schemaUid: EAS_SCHEMA_UID,
+        recipient: address,
+        result,
+      });
       setUid(newUid);
     } catch (e) {
       fail(e);
@@ -85,7 +94,14 @@ export default function AttestFlow({ result, historyId }: Props) {
       );
     } else {
       action = (
-        <Button variant="black" size="lg" className="self-start" loading={busy} disabled={schemaMissing || !walletClient} onClick={sign}>
+        <Button
+          variant="black"
+          size="lg"
+          className="self-start"
+          loading={busy}
+          disabled={schemaMissing || !walletClient}
+          onClick={sign}
+        >
           {busy ? t("web3.button.creating") : t("web3.button.create")}
         </Button>
       );
@@ -99,9 +115,20 @@ export default function AttestFlow({ result, historyId }: Props) {
         {uid ? t("web3.success.title") : ""}
       </p>
       {schemaMissing && <Alert tone="info">{t("web3.setup.schema")}</Alert>}
-      {!HAS_WALLETCONNECT && step === 0 && <p className="text-small text-ash-gray">{t("web3.connect.noProject")}</p>}
+      {!HAS_WALLETCONNECT && step === 0 && (
+        <p className="text-small text-ash-gray">{t("web3.connect.noProject")}</p>
+      )}
       {error && (
-        <Alert tone="error" action={error.kind === "insufficient_funds" ? <Button variant="ghost" href={FAUCET_URL} external className="border-carbon!">{t("web3.error.faucet")}</Button> : undefined}>
+        <Alert
+          tone="error"
+          action={
+            error.kind === "insufficient_funds" ? (
+              <Button variant="ghost" href={FAUCET_URL} external className="border-carbon!">
+                {t("web3.error.faucet")}
+              </Button>
+            ) : undefined
+          }
+        >
           {t(error.key)}
         </Alert>
       )}

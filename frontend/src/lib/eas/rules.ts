@@ -28,7 +28,9 @@ export function canAttest(result: CheckResponse): boolean {
 
 /** `result.reportHash` when the backend sent one; otherwise the caller must compute it (see attest.ts). */
 export function reportHashOf(result: CheckResponse): string | null {
-  return result.reportHash && /^0x[0-9a-fA-F]{64}$/.test(result.reportHash) ? result.reportHash.toLowerCase() : null;
+  return result.reportHash && /^0x[0-9a-fA-F]{64}$/.test(result.reportHash)
+    ? result.reportHash.toLowerCase()
+    : null;
 }
 
 export function fieldsFor(result: CheckResponse, reportHash: string): AttestFields {
@@ -61,16 +63,34 @@ function describe(e: unknown, depth = 0): string {
   if (typeof e === "number") return String(e);
   if (typeof e !== "object") return "";
   const o = e as Record<string, unknown>;
-  return ["code", "name", "message", "shortMessage", "reason", "details"].map((k) => describe(o[k], depth + 1)).concat(describe(o.cause, depth + 1), describe(o.info, depth + 1), describe(o.error, depth + 1)).join(" ");
+  return ["code", "name", "message", "shortMessage", "reason", "details"]
+    .map((k) => describe(o[k], depth + 1))
+    .concat(describe(o.cause, depth + 1), describe(o.info, depth + 1), describe(o.error, depth + 1))
+    .join(" ");
 }
 
 /** Maps any failure to one of five friendly cases (EN/HI text lives in the web3 messages). */
 export function classifyAttestError(e: unknown): { kind: AttestErrorKind; messageKey: MessageKey } {
   const text = describe(e);
   let kind: AttestErrorKind = "other";
-  if (/ACTION_REJECTED|UserRejectedRequest|user rejected|user denied|rejected the request|request rejected|\b4001\b/i.test(text)) kind = "rejected";
-  else if (/INSUFFICIENT_FUNDS|insufficient funds|exceeds the balance|gas required exceeds|InsufficientFunds/i.test(text)) kind = "insufficient_funds";
-  else if (/chain mismatch|wrong network|does not match the target chain|ChainMismatch|network changed|NETWORK_ERROR|unsupported chain|ChainNotConfigured/i.test(text)) kind = "wrong_network";
+  if (
+    /ACTION_REJECTED|UserRejectedRequest|user rejected|user denied|rejected the request|request rejected|\b4001\b/i.test(
+      text,
+    )
+  )
+    kind = "rejected";
+  else if (
+    /INSUFFICIENT_FUNDS|insufficient funds|exceeds the balance|gas required exceeds|InsufficientFunds/i.test(
+      text,
+    )
+  )
+    kind = "insufficient_funds";
+  else if (
+    /chain mismatch|wrong network|does not match the target chain|ChainMismatch|network changed|NETWORK_ERROR|unsupported chain|ChainNotConfigured/i.test(
+      text,
+    )
+  )
+    kind = "wrong_network";
   else if (/InvalidSchema|schema not found|unknown schema|SchemaNotFound/i.test(text)) kind = "schema";
   return { kind, messageKey: KEYS[kind] };
 }

@@ -10,8 +10,16 @@ import type { MessageKey } from "@/lib/i18n";
 import { ShapeIcon } from "./GraphLegend";
 
 const TONE: Record<GraphNode["label"], TagTone> = { illicit: "block", licit: "allow", unknown: "unknown" };
-const LABEL: Record<GraphNode["label"], MessageKey> = { illicit: "graph.legend.illicit", licit: "graph.legend.licit", unknown: "graph.legend.unknown" };
-const WHY: Record<GraphNode["label"], MessageKey> = { illicit: "graph.node.why.illicit", licit: "graph.node.why.licit", unknown: "graph.node.why.unknown" };
+const LABEL: Record<GraphNode["label"], MessageKey> = {
+  illicit: "graph.legend.illicit",
+  licit: "graph.legend.licit",
+  unknown: "graph.legend.unknown",
+};
+const WHY: Record<GraphNode["label"], MessageKey> = {
+  illicit: "graph.node.why.illicit",
+  licit: "graph.node.why.licit",
+  unknown: "graph.node.why.unknown",
+};
 
 /** Right-side details for a clicked wallet: short address, label, hop distance, why it matters. */
 export function NodeDrawer({ node, onClose }: { node: GraphNode | null; onClose: () => void }) {
@@ -21,7 +29,9 @@ export function NodeDrawer({ node, onClose }: { node: GraphNode | null; onClose:
       {node && (
         <div className="flex flex-col gap-[18px]">
           <div>
-            <p className="text-small text-ash-gray">{node.isSubject ? t("graph.node.subject") : t("graph.list.col.wallet")}</p>
+            <p className="text-small text-ash-gray">
+              {node.isSubject ? t("graph.node.subject") : t("graph.list.col.wallet")}
+            </p>
             <div className="flex items-center gap-[9px]">
               <span className="mono text-body-lg" title={node.id}>
                 {shortAddress(node.id, 8, 8)}
@@ -46,7 +56,9 @@ export function NodeDrawer({ node, onClose }: { node: GraphNode | null; onClose:
               </>
             )}
           </dl>
-          <p className="measure text-ash-gray">{node.isSubject ? t("graph.node.why.subject") : t(WHY[node.label])}</p>
+          <p className="measure text-ash-gray">
+            {node.isSubject ? t("graph.node.why.subject") : t(WHY[node.label])}
+          </p>
         </div>
       )}
     </Drawer>

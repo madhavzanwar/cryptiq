@@ -20,7 +20,7 @@ import { ConfirmTranscript } from "./ConfirmTranscript";
 import { DetailsTabs } from "./DetailsTabs";
 import { ExplanationPanel } from "./ExplanationPanel";
 import { MicButton } from "./MicButton";
-import { pickDemoWallets } from "./DemoChips";
+import { demoLabel, pickDemoWallets } from "./DemoChips";
 import { ProgressSteps } from "./ProgressSteps";
 import { VerdictCard } from "./VerdictCard";
 import { VoiceProviderChip } from "./VoiceProviderChip";
@@ -181,7 +181,7 @@ export function StageExperience() {
               <span className="rounded-tag border border-current px-[9px] py-[2px]">{i + 1}</span>
               <span className="font-semibold">{t(VERDICT_META[w.expected].word)}</span>
             </span>
-            <span className="text-body-lg">{w.note}</span>
+            <span className="text-body-lg">{demoLabel(w, t(VERDICT_META[w.expected].word))}</span>
           </button>
         ))}
       </section>

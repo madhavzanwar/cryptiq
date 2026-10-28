@@ -7,7 +7,8 @@ const BLOCK = FIXTURES["DEMO-ILLICIT-01"]!;
 
 describe("canAttest", () => {
   it("allows found wallets with ALLOW, WARN or BLOCK", () => {
-    for (const k of ["DEMO-ILLICIT-01", "DEMO-BORDERLINE-03", "DEMO-LICIT-02"]) expect(canAttest(FIXTURES[k]!)).toBe(true);
+    for (const k of ["DEMO-ILLICIT-01", "DEMO-BORDERLINE-03", "DEMO-LICIT-02"])
+      expect(canAttest(FIXTURES[k]!)).toBe(true);
   });
   it("refuses UNKNOWN / not_in_dataset and error results", () => {
     expect(canAttest(FIXTURES["DEMO-NOTFOUND-04"]!)).toBe(false);
@@ -18,7 +19,13 @@ describe("canAttest", () => {
 
 describe("fieldsFor", () => {
   it("maps the response and clamps the score into uint8 range", () => {
-    expect(fieldsFor(BLOCK, "0x" + "ab".repeat(32))).toEqual({ subjectAddress: "DEMO-ILLICIT-01", chain: "bitcoin", riskScore: 91, verdict: "BLOCK", reportHash: "0x" + "ab".repeat(32) });
+    expect(fieldsFor(BLOCK, "0x" + "ab".repeat(32))).toEqual({
+      subjectAddress: "DEMO-ILLICIT-01",
+      chain: "bitcoin",
+      riskScore: 91,
+      verdict: "BLOCK",
+      reportHash: "0x" + "ab".repeat(32),
+    });
     expect(fieldsFor({ ...BLOCK, riskScore: 140 }, "0x0").riskScore).toBe(100);
     expect(fieldsFor({ ...BLOCK, riskScore: -3 }, "0x0").riskScore).toBe(0);
   });
@@ -46,7 +53,9 @@ describe("encodeAttestation", () => {
     expect(decodeAttestation(data)).toEqual(f);
   });
   it("uses the documented schema string", () => {
-    expect(SCHEMA).toBe("string subjectAddress,string chain,uint8 riskScore,string verdict,bytes32 reportHash");
+    expect(SCHEMA).toBe(
+      "string subjectAddress,string chain,uint8 riskScore,string verdict,bytes32 reportHash",
+    );
   });
 });
 
@@ -55,8 +64,14 @@ describe("classifyAttestError", () => {
     [{ code: "ACTION_REJECTED", message: "user rejected action" }, "rejected"],
     [{ code: 4001, message: "User rejected the request." }, "rejected"],
     [{ name: "UserRejectedRequestError", shortMessage: "User rejected the request." }, "rejected"],
-    [{ code: "INSUFFICIENT_FUNDS", message: "insufficient funds for intrinsic transaction cost" }, "insufficient_funds"],
-    [new Error("The total cost (gas * gas fee + value) exceeds the balance of the account"), "insufficient_funds"],
+    [
+      { code: "INSUFFICIENT_FUNDS", message: "insufficient funds for intrinsic transaction cost" },
+      "insufficient_funds",
+    ],
+    [
+      new Error("The total cost (gas * gas fee + value) exceeds the balance of the account"),
+      "insufficient_funds",
+    ],
     [{ message: "chain mismatch: the current chain does not match the target chain" }, "wrong_network"],
     [{ cause: { message: "InvalidSchema()" } }, "schema"],
     [new Error("boom"), "other"],

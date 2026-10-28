@@ -8,14 +8,14 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 export type ButtonVariant = "green" | "black" | "ghost";
 
 const base =
-  "inline-flex min-h-11 select-none items-center justify-center gap-[9px] whitespace-nowrap rounded-button border border-transparent font-medium " +
+  "inline-flex min-h-11 select-none items-center justify-center gap-[9px] whitespace-nowrap rounded-button border font-medium " +
   "transition-[background-color,color,border-color,transform] duration-[120ms] ease-out active:scale-[0.97] " +
   "disabled:cursor-not-allowed disabled:bg-plaster disabled:text-slate-gray disabled:active:scale-100";
 
 const variants: Record<ButtonVariant, string> = {
   /** The single saturated green on a screen: the primary action. Carbon text (white fails AA on this green). */
-  green: "bg-acid-lime text-carbon hover:bg-carbon hover:text-pure-white",
-  black: "bg-carbon text-pure-white hover:bg-obsidian",
+  green: "border-transparent bg-acid-lime text-carbon hover:bg-carbon hover:text-pure-white",
+  black: "border-transparent bg-carbon text-pure-white hover:bg-obsidian",
   ghost: "border-carbon bg-transparent text-carbon hover:bg-carbon hover:text-pure-white",
 };
 

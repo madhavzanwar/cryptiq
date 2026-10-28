@@ -40,3 +40,12 @@ describe("pickDemoWallets", () => {
     expect(pickDemoWallets(Array.from({ length: 9 }, (_, i) => w(`x${i}`, "BLOCK")))).toHaveLength(4);
   });
 });
+
+import { demoLabel } from "../DemoChips";
+
+describe("demoLabel", () => {
+  it("keeps short notes and compacts long ones", () => {
+    expect(demoLabel({ address: "DEMO-w02271", note: "Known illicit (demo)", expected: "BLOCK" }, "BLOCK")).toBe("Known illicit (demo)");
+    expect(demoLabel({ address: "DEMO-w02271", note: "Test-split wallet labelled illicit in the synthetic fixture", expected: "BLOCK" }, "BLOCK")).toBe("BLOCK · DEMO-w02271");
+  });
+});

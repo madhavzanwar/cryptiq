@@ -4,7 +4,8 @@ export const graph = defineMessages(
   {
     "graph.title": "Evidence graph",
     "graph.loading": "Loading graph…",
-    "graph.canvas.aria": "Evidence graph showing {n} wallets around the checked wallet. A text version is in the list below.",
+    "graph.canvas.aria":
+      "Evidence graph showing {n} wallets around the checked wallet. A text version is in the list below.",
     "graph.depth.label": "Hop depth",
     "graph.depth.n": "{n}",
     "graph.zoomIn": "Zoom in",
@@ -37,15 +38,18 @@ export const graph = defineMessages(
     "graph.node.risk": "Risk score",
     "graph.node.subject": "Checked wallet",
     "graph.node.why.subject": "This is the wallet you asked about.",
-    "graph.node.why.illicit": "The dataset marks this wallet as illicit. Being close to it raises the risk signal.",
+    "graph.node.why.illicit":
+      "The dataset marks this wallet as illicit. Being close to it raises the risk signal.",
     "graph.node.why.licit": "The dataset marks this wallet as licit (known legal activity).",
-    "graph.node.why.unknown": "The dataset has no label for this wallet, so it neither raises nor lowers the signal on its own.",
+    "graph.node.why.unknown":
+      "The dataset has no label for this wallet, so it neither raises nor lowers the signal on its own.",
     "graph.node.hint": "Select a wallet in the graph to see its details.",
   },
   {
     "graph.title": "सबूत का ग्राफ",
     "graph.loading": "ग्राफ लोड हो रहा है…",
-    "graph.canvas.aria": "जाँचे गए वॉलेट के आसपास {n} वॉलेट वाला सबूत का ग्राफ। इसका टेक्स्ट रूप नीचे सूची में है।",
+    "graph.canvas.aria":
+      "जाँचे गए वॉलेट के आसपास {n} वॉलेट वाला सबूत का ग्राफ। इसका टेक्स्ट रूप नीचे सूची में है।",
     "graph.depth.label": "कितने कदम तक",
     "graph.depth.n": "{n}",
     "graph.zoomIn": "ज़ूम इन",
@@ -80,7 +84,8 @@ export const graph = defineMessages(
     "graph.node.why.subject": "यह वही वॉलेट है जिसके बारे में आपने पूछा।",
     "graph.node.why.illicit": "डेटासेट इस वॉलेट को illicit मानता है। इसके पास होना जोखिम संकेत बढ़ाता है।",
     "graph.node.why.licit": "डेटासेट इस वॉलेट को licit मानता है (जाना-पहचाना वैध इस्तेमाल)।",
-    "graph.node.why.unknown": "डेटासेट में इस वॉलेट का कोई लेबल नहीं है, इसलिए यह अकेले संकेत को न बढ़ाता है न घटाता है।",
+    "graph.node.why.unknown":
+      "डेटासेट में इस वॉलेट का कोई लेबल नहीं है, इसलिए यह अकेले संकेत को न बढ़ाता है न घटाता है।",
     "graph.node.hint": "जानकारी देखने के लिए ग्राफ में कोई वॉलेट चुनें।",
   },
 );

@@ -11,11 +11,30 @@ function useWalletTheme(): Theme {
   return useMemo(() => {
     const root = getComputedStyle(document.documentElement);
     const v = (name: string, fallback: string) => root.getPropertyValue(name).trim() || fallback;
-    const base = lightTheme({ accentColor: v("--color-carbon", "black"), accentColorForeground: v("--color-pure-white", "white"), borderRadius: "large", fontStack: "system", overlayBlur: "none" });
+    const base = lightTheme({
+      accentColor: v("--color-carbon", "black"),
+      accentColorForeground: v("--color-pure-white", "white"),
+      borderRadius: "large",
+      fontStack: "system",
+      overlayBlur: "none",
+    });
     return {
       ...base,
-      colors: { ...base.colors, modalBorder: v("--color-carbon", "black"), modalBackdrop: v("--scrim", "rgba(0,0,0,0.4)"), generalBorder: v("--color-ash-gray", "gray") },
-      shadows: { ...base.shadows, connectButton: "none", dialog: "none", profileDetailsAction: "none", selectedOption: "none", selectedWallet: "none", walletLogo: "none" },
+      colors: {
+        ...base.colors,
+        modalBorder: v("--color-carbon", "black"),
+        modalBackdrop: v("--scrim", "rgba(0,0,0,0.4)"),
+        generalBorder: v("--color-ash-gray", "gray"),
+      },
+      shadows: {
+        ...base.shadows,
+        connectButton: "none",
+        dialog: "none",
+        profileDetailsAction: "none",
+        selectedOption: "none",
+        selectedWallet: "none",
+        walletLogo: "none",
+      },
     };
   }, []);
 }
