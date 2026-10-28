@@ -39,10 +39,90 @@ GRAPH_FEATURE_COLUMNS = [
 HOPS_NONE = 3  # "3 or more / none" for hops_to_illicit_train
 
 
+FEATURES_FILE = "wallets_features.csv"
+CLASSES_FILE = "wallets_classes.csv"
+COMBINED_FILE = "wallets_features_classes_combined.csv"
+EDGES_FILE = "AddrAddr_edgelist.csv"
+LFS_MAGIC = b"version https://git-lfs"
+LFS_MAX_POINTER_BYTES = 1024  # a real pointer file is ~130 bytes
+HF_DATASET_URL = "https://huggingface.co/datasets/AI4FinTech/ellipticpp"
+
+
+class ConflictingClassesError(ValueError):
+    """An address carries more than one class code in the combined features+classes file."""
+
+
+def detect_lfs_pointers(raw_dir: Path) -> list[Path]:
+    """Files in raw_dir that are Git-LFS pointer stubs (a `git clone` without `git lfs pull`)."""
+    if not raw_dir.is_dir():
+        return []
+    found = []
+    for path in sorted(raw_dir.iterdir()):
+        if not path.is_file() or path.stat().st_size > LFS_MAX_POINTER_BYTES:
+            continue
+        with path.open("rb") as fh:
+            if fh.read(len(LFS_MAGIC)) == LFS_MAGIC:
+                found.append(path)
+    return found
+
+
+def lfs_pointer_message(pointers: list[Path]) -> str:
+    names = "\n".join(f"  - {p}" for p in pointers)
+    return (
+        "These files are Git-LFS pointer stubs, not the real data:\n"
+        f"{names}\n"
+        "Fetch the real Elliptic++ CSVs and replace them: download wallets_features.csv, "
+        "wallets_features_classes_combined.csv (or wallets_classes.csv) and AddrAddr_edgelist.csv from "
+        f"Hugging Face ({HF_DATASET_URL}) or from the Google Drive link in the README."
+    )
+
+
+def _csv_header(path: Path) -> list[str]:
+    return [str(c) for c in pd.read_csv(path, nrows=0).columns]
+
+
+def _read_columns(path: Path, wanted: list[str]) -> pd.DataFrame:
+    """Read only the wanted columns that exist (missing ones are left for check_schema to report)."""
+    present = set(_csv_header(path))
+    return pd.read_csv(path, engine="pyarrow", usecols=[c for c in wanted if c in present])
+
+
+def _classes_from_combined(path: Path) -> pd.DataFrame:
+    """One class per address (first-appearance order); conflicting classes raise, never guess."""
+    cols = pd.read_csv(path, engine="pyarrow", usecols=[ADDRESS, CLASS])
+    pairs = cols.drop_duplicates()
+    del cols
+    dup = pairs[ADDRESS].duplicated(keep=False)
+    if dup.any():
+        bad = pairs[dup].groupby(ADDRESS, sort=False)[CLASS].agg(lambda s: sorted(s.unique().tolist()))
+        examples = "; ".join(f"{a}: {c}" for a, c in list(bad.items())[:5])
+        raise ConflictingClassesError(
+            f"{path.name}: {len(bad)} address(es) have conflicting classes across rows "
+            f"(e.g. {examples}). Not guessing; fix or supply wallets_classes.csv."
+        )
+    return pairs.reset_index(drop=True)
+
+
 def read_raw(raw_dir: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    feats = pd.read_csv(raw_dir / "wallets_features.csv", engine="pyarrow")
-    classes = pd.read_csv(raw_dir / "wallets_classes.csv", engine="pyarrow")
-    edges = pd.read_csv(raw_dir / "AddrAddr_edgelist.csv", engine="pyarrow")
+    """Load (features, classes, edges).
+
+    Classes come from wallets_classes.csv if present, else are derived from
+    wallets_features_classes_combined.csv. Features come from wallets_features.csv if present, else from
+    the combined file. Only the needed columns are read so the ~600 MB files are not held twice.
+    """
+    classes_path, features_path = raw_dir / CLASSES_FILE, raw_dir / FEATURES_FILE
+    combined_path = raw_dir / COMBINED_FILE
+    wanted = [ADDRESS, TIME_STEP, *FEATURE_COLUMNS]
+    if classes_path.exists():
+        if not features_path.exists():
+            raise FileNotFoundError(f"{features_path} not found")
+        classes = pd.read_csv(classes_path, engine="pyarrow")
+    elif combined_path.exists():
+        classes = _classes_from_combined(combined_path)
+    else:
+        raise FileNotFoundError(f"neither {classes_path} nor {combined_path} found in {raw_dir}")
+    feats = _read_columns(features_path if features_path.exists() else combined_path, wanted)
+    edges = pd.read_csv(raw_dir / EDGES_FILE, engine="pyarrow")
     return feats, classes, edges
 
 

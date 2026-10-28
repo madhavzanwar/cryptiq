@@ -13,7 +13,13 @@ from pathlib import Path
 from tqdm import tqdm
 
 from app.config import get_settings
-from app.services.datasets.processing import check_schema, read_raw, summarize
+from app.services.datasets.processing import (
+    check_schema,
+    detect_lfs_pointers,
+    lfs_pointer_message,
+    read_raw,
+    summarize,
+)
 
 
 def main() -> None:
@@ -22,6 +28,9 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
     out = args.out or get_settings().artifacts_dir / "data_summary.json"
+    pointers = detect_lfs_pointers(args.raw)
+    if pointers:
+        sys.exit(lfs_pointer_message(pointers))
     with tqdm(total=2, desc="explore") as bar:
         feats, classes, edges = read_raw(args.raw)
         bar.update(1)
