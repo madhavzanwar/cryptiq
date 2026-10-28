@@ -1,6 +1,470 @@
 {
   "components": {
     "schemas": {
+      "CheckRequest": {
+        "properties": {
+          "address": {
+            "maxLength": 512,
+            "minLength": 1,
+            "title": "Address",
+            "type": "string"
+          },
+          "lang": {
+            "default": "en",
+            "enum": [
+              "en",
+              "hi"
+            ],
+            "title": "Lang",
+            "type": "string"
+          }
+        },
+        "required": [
+          "address"
+        ],
+        "title": "CheckRequest",
+        "type": "object"
+      },
+      "CheckResponse": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "audioUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audiourl"
+          },
+          "cached": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cached"
+          },
+          "chain": {
+            "const": "bitcoin",
+            "default": "bitcoin",
+            "title": "Chain",
+            "type": "string"
+          },
+          "creditsRemaining": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Creditsremaining"
+          },
+          "datasetLabel": {
+            "anyOf": [
+              {
+                "enum": [
+                  "illicit",
+                  "licit",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datasetlabel"
+          },
+          "engine": {
+            "anyOf": [
+              {
+                "enum": [
+                  "tigergraph",
+                  "networkx",
+                  "replay"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/Explanation"
+          },
+          "graphFeatures": {
+            "$ref": "#/components/schemas/GraphFeatures"
+          },
+          "hopsToNearestIllicit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hopstonearestillicit"
+          },
+          "isMock": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ismock"
+          },
+          "labelHits": {
+            "$ref": "#/components/schemas/LabelHits"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelInfo"
+          },
+          "neighbors": {
+            "$ref": "#/components/schemas/Neighbors"
+          },
+          "replay": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Replay"
+          },
+          "reportHash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reporthash"
+          },
+          "riskScore": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Riskscore"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "not_in_dataset",
+              "error"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "subgraph": {
+            "$ref": "#/components/schemas/Subgraph"
+          },
+          "tigergraph": {
+            "$ref": "#/components/schemas/TigerGraphInfo"
+          },
+          "topReasons": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Topreasons",
+            "type": "array"
+          },
+          "truncated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Truncated"
+          },
+          "verdict": {
+            "enum": [
+              "ALLOW",
+              "WARN",
+              "BLOCK",
+              "UNKNOWN"
+            ],
+            "title": "Verdict",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "address",
+          "verdict",
+          "riskScore",
+          "datasetLabel",
+          "hopsToNearestIllicit",
+          "tigergraph",
+          "model",
+          "explanation"
+        ],
+        "title": "CheckResponse",
+        "type": "object"
+      },
+      "Counts": {
+        "properties": {
+          "illicit": {
+            "default": 0,
+            "title": "Illicit",
+            "type": "integer"
+          },
+          "licit": {
+            "default": 0,
+            "title": "Licit",
+            "type": "integer"
+          },
+          "unknown": {
+            "default": 0,
+            "title": "Unknown",
+            "type": "integer"
+          }
+        },
+        "title": "Counts",
+        "type": "object"
+      },
+      "DemoWallet": {
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "expected": {
+            "enum": [
+              "ALLOW",
+              "WARN",
+              "BLOCK",
+              "UNKNOWN"
+            ],
+            "title": "Expected",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          }
+        },
+        "required": [
+          "address",
+          "note",
+          "expected"
+        ],
+        "title": "DemoWallet",
+        "type": "object"
+      },
+      "DemoWalletsResponse": {
+        "properties": {
+          "wallets": {
+            "items": {
+              "$ref": "#/components/schemas/DemoWallet"
+            },
+            "title": "Wallets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "wallets"
+        ],
+        "title": "DemoWalletsResponse",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "title": "Error",
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "Explanation": {
+        "properties": {
+          "en": {
+            "title": "En",
+            "type": "string"
+          },
+          "hi": {
+            "title": "Hi",
+            "type": "string"
+          }
+        },
+        "required": [
+          "en",
+          "hi"
+        ],
+        "title": "Explanation",
+        "type": "object"
+      },
+      "GraphFeatures": {
+        "properties": {
+          "componentSize": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Componentsize"
+          },
+          "pagerank": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pagerank"
+          }
+        },
+        "title": "GraphFeatures",
+        "type": "object"
+      },
+      "GraphLink": {
+        "properties": {
+          "amountBtc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amountbtc"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "target": {
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "target"
+        ],
+        "title": "GraphLink",
+        "type": "object"
+      },
+      "GraphNode": {
+        "properties": {
+          "hop": {
+            "title": "Hop",
+            "type": "integer"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "isSubject": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issubject"
+          },
+          "label": {
+            "enum": [
+              "illicit",
+              "licit",
+              "unknown"
+            ],
+            "title": "Label",
+            "type": "string"
+          },
+          "riskScore": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Riskscore"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "hop"
+        ],
+        "title": "GraphNode",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
       "HealthResponse": {
         "properties": {
           "dataSource": {
@@ -89,6 +553,157 @@
         ],
         "title": "HealthResponse",
         "type": "object"
+      },
+      "LabelHits": {
+        "properties": {
+          "ofac": {
+            "default": false,
+            "title": "Ofac",
+            "type": "boolean"
+          },
+          "ransomwhere": {
+            "default": false,
+            "title": "Ransomwhere",
+            "type": "boolean"
+          }
+        },
+        "title": "LabelHits",
+        "type": "object"
+      },
+      "ModelInfo": {
+        "properties": {
+          "illicitF1Test": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Illicitf1Test"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ModelInfo",
+        "type": "object"
+      },
+      "Neighbors": {
+        "properties": {
+          "hop1": {
+            "$ref": "#/components/schemas/Counts"
+          },
+          "hop2": {
+            "$ref": "#/components/schemas/Counts"
+          },
+          "hop3": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Counts"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "Neighbors",
+        "type": "object"
+      },
+      "Subgraph": {
+        "properties": {
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/GraphLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/GraphNode"
+            },
+            "title": "Nodes",
+            "type": "array"
+          }
+        },
+        "title": "Subgraph",
+        "type": "object"
+      },
+      "TigerGraphInfo": {
+        "properties": {
+          "gsql": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gsql"
+          },
+          "ms": {
+            "title": "Ms",
+            "type": "number"
+          },
+          "queryName": {
+            "title": "Queryname",
+            "type": "string"
+          }
+        },
+        "required": [
+          "queryName",
+          "ms"
+        ],
+        "title": "TigerGraphInfo",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
       }
     }
   },
@@ -98,6 +713,179 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/check": {
+      "post": {
+        "operationId": "check_api_check_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "invalid_address | secret_input"
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "no_credits"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "rate_limited"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResponse"
+                }
+              }
+            },
+            "description": "status=error (graph_unavailable | model_not_trained)"
+          }
+        },
+        "summary": "Check"
+      }
+    },
+    "/api/check/stream": {
+      "post": {
+        "operationId": "check_stream_api_check_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "text/event-stream"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "invalid_address | secret_input"
+          },
+          "402": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "no_credits"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "rate_limited"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckResponse"
+                }
+              }
+            },
+            "description": "status=error (graph_unavailable | model_not_trained)"
+          }
+        },
+        "summary": "Check Stream"
+      }
+    },
+    "/api/demo-wallets": {
+      "get": {
+        "description": "Held-out test-split wallets picked by scripts/export_demo_wallets.py (empty until trained).",
+        "operationId": "demo_wallets_api_demo_wallets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoWalletsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Demo Wallets"
+      }
+    },
     "/api/health": {
       "get": {
         "operationId": "health_api_health_get",

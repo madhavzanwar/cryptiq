@@ -6,7 +6,7 @@ contract marks a field optional), so the JSON matches the TypeScript interfaces.
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -218,3 +218,25 @@ class HealthResponse(CamelModel):
     model_loaded: bool | None = None
     llm_configured: bool | None = None
     data_source: str | None = None
+
+
+def to_wire(m: BaseModel) -> dict[str, Any]:
+    """camelCase JSON that keeps required-but-null fields (e.g. riskScore: null) and omits unset
+    optional ones (e.g. no `cached` key), matching the TypeScript interfaces exactly."""
+    out: dict[str, Any] = {}
+    for name, field in type(m).model_fields.items():
+        v = getattr(m, name)
+        if v is None and not field.is_required():
+            continue
+        out[field.alias or name] = _wire_value(v)
+    return out
+
+
+def _wire_value(v: Any) -> Any:
+    if isinstance(v, BaseModel):
+        return to_wire(v)
+    if isinstance(v, list):
+        return [_wire_value(x) for x in v]
+    if isinstance(v, dict):
+        return {k: _wire_value(x) for k, x in v.items()}
+    return v

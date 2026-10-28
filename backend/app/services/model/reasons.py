@@ -70,6 +70,7 @@ class ReasonInput:
     pagerank_p99: float | None
     verdict: str
     contributions: list[tuple[str, float]]
+    dataset_name: str = "Elliptic++"
 
 
 _LABEL_HI = {"illicit": "अवैध (illicit)", "licit": "वैध (licit)", "unknown": "अज्ञात (unknown)"}
@@ -84,12 +85,12 @@ def build_reasons(r: ReasonInput, max_model_reasons: int = 3) -> list[tuple[str,
         out.append(("Appears in the Ransomwhere ransomware address list",
                     "Ransomwhere रैनसमवेयर पता सूची में शामिल है"))
     if not r.in_dataset:
-        out.append(("Not in the Elliptic++ research dataset, so there is no graph evidence",
-                    "यह Elliptic++ शोध डेटासेट में नहीं है, इसलिए ग्राफ़ का कोई सबूत नहीं है"))
+        out.append((f"Not in the {r.dataset_name} research dataset, so there is no graph evidence",
+                    f"यह {r.dataset_name} शोध डेटासेट में नहीं है, इसलिए ग्राफ़ का कोई सबूत नहीं है"))
         return out
     if r.dataset_label in ("illicit", "licit"):
-        out.append((f"Labelled {r.dataset_label} in the Elliptic++ research dataset",
-                    f"Elliptic++ शोध डेटासेट में इसे {_LABEL_HI[r.dataset_label]} चिह्नित किया गया है"))
+        out.append((f"Labelled {r.dataset_label} in the {r.dataset_name} research dataset",
+                    f"{r.dataset_name} शोध डेटासेट में इसे {_LABEL_HI[r.dataset_label]} चिह्नित किया गया है"))
     if r.hop1_illicit > 0:
         noun = "wallet" if r.hop1_illicit == 1 else "wallets"
         out.append((f"{r.hop1_illicit} flagged {noun} within 1 hop",

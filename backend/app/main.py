@@ -16,20 +16,15 @@ from app.errors import install_error_handlers
 from app.logging_setup import configure_logging, log
 from app.middleware import RequestContextMiddleware
 from app.ratelimit import limiter
-from app.routers import health
+from app.routers import check, demo, health
+from app.services.pipeline import build_pipeline
 from app.state import AppState
 
 
 def build_state(settings: Settings) -> AppState:
     db = Database(settings.database_url)
     db.create_all()
-    state = AppState(settings=settings, db=db)
-    try:
-        from app.services.pipeline import build_pipeline
-    except ImportError:  # pipeline lands in a later phase
-        return state
-    state.pipeline = build_pipeline(settings, db)
-    return state
+    return AppState(settings=settings, db=db, pipeline=build_pipeline(settings, db))
 
 
 def create_app(settings: Settings | None = None, state: AppState | None = None) -> FastAPI:
@@ -66,13 +61,8 @@ def create_app(settings: Settings | None = None, state: AppState | None = None) 
         allow_headers=["content-type", "x-request-id", "x-admin-token"],
         expose_headers=["x-request-id"],
     )
-    app.include_router(health.router)
-    for name in ("demo", "check", "transcribe", "credits", "crypto", "benchmark", "webhooks", "audio"):
-        try:
-            module = __import__(f"app.routers.{name}", fromlist=["router"])
-        except ModuleNotFoundError:
-            continue
-        app.include_router(module.router)
+    for r in (health.router, demo.router, check.router):
+        app.include_router(r)
     return app
 
 

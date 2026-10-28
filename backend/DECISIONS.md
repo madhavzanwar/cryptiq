@@ -126,6 +126,31 @@ bottom of each heading.
 - `model.joblib` is a local trusted artifact produced by `scripts/train.py`; never load one from an
   untrusted source (pickle).
 
+## Check pipeline
+
+- Order: secret guard -> checksum -> credit gate (402 if balance is 0, as the brief orders it, even
+  for a request that would have been a free cache hit) -> cache -> engine -> score -> verdict ->
+  reasons -> explanation -> persist + charge -> respond.
+- Charging: only `status: "ok"` responses that are not cache hits, deducted in the same
+  `BEGIN IMMEDIATE` transaction as the `check_log` row, after the response exists. If the last
+  credit was spent by a concurrent request meanwhile, the request gets 402 (SSE: `event: error`
+  `{error: "no_credits", status: 402}`). The persist step is shielded from client cancellation.
+- Replays (`DEMO_REPLAY=true` or engine failure with `REPLAY_FALLBACK=true`) are recorded real
+  responses for an in-dataset wallet with `status: "ok"`, so they are charged like a live answer.
+  They are always labelled (`engine: "replay"`, `replay: true`, a limitation line with the
+  recording time).
+- Engine failure without a replay -> HTTP 503 with a `CheckResponse` (`status: "error"`,
+  `error: "graph_unavailable"`), never charged. The body has an `error` key, so it also matches the
+  generic `{error}` shape.
+- Not found in the graph: `tigergraph.queryName` is `<engine>.lookup` and `ms` is the existence
+  lookup time (no k-hop query ran).
+- Wire format: required-but-nullable fields (`riskScore`, `datasetLabel`, `hopsToNearestIllicit`)
+  are always present; unset optional fields are omitted (`to_wire`).
+- Cache: in-process TTL cache keyed by address + lang (single worker). The cached body excludes
+  `creditsRemaining`; a hit returns `cached: true` with the current balance.
+- On the synthetic fixture every text says "synthetic fixture" instead of "Elliptic++" and
+  `isMock: true` is set.
+
 ## TigerGraph
 
 - pyTigerGraph **2.0.5** (installed version; connection args read from its source):

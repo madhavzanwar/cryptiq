@@ -68,3 +68,36 @@ make train     # trains baseline + graph models, writes artifacts/model.joblib, 
 `artifacts/model_card.json` holds every reported number (test split, illicit class), the split, the
 feature lists, thresholds (chosen on validation), library versions and dataset counts. Nothing in the
 API hard-codes a metric.
+
+## API
+
+Full contract: `../docs/api-contract.md` (OpenAPI: `../docs/openapi.json`, live docs at `/api/docs`).
+Use a cookie jar so the session (and credits) persist:
+
+```bash
+curl -s localhost:8000/api/health
+curl -s localhost:8000/api/demo-wallets
+curl -s -c jar -b jar -X POST localhost:8000/api/check -H 'content-type: application/json' \
+  -d '{"address":"<address from demo-wallets>","lang":"en"}'
+curl -N -c jar -b jar -X POST localhost:8000/api/check/stream -H 'content-type: application/json' \
+  -d '{"address":"<address>","lang":"hi"}'
+```
+
+### Run on the synthetic fixture (no real data needed)
+
+```bash
+make fixture
+DATA_DIR=./data/fixture ARTIFACTS_DIR=./data/fixture/artifacts DEMO_MODE=true GRAPH_ENGINE=networkx \
+  uv run python -m scripts.train
+DATA_DIR=./data/fixture ARTIFACTS_DIR=./data/fixture/artifacts DEMO_MODE=true GRAPH_ENGINE=networkx \
+  uv run python -m scripts.export_demo_wallets
+DATA_DIR=./data/fixture ARTIFACTS_DIR=./data/fixture/artifacts DEMO_MODE=true GRAPH_ENGINE=networkx make run
+```
+
+Responses then carry `isMock: true` and "synthetic fixture" wording; never show them as real results.
+
+### Demo safety
+
+`make record-replays` stores REAL responses for the demo wallets (from the live engine) in
+`artifacts/replay/`. `DEMO_REPLAY=true` serves them directly; `REPLAY_FALLBACK=true` (default) serves
+them only when the graph engine fails. Replays are always labelled `engine: "replay"`, `replay: true`.
