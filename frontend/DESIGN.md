@@ -21,7 +21,7 @@ Cryptiq uses a stark-white-canvas minimalism interrupted by playful chromatic co
 | Slate Gray | `#6e726e` | `--color-slate-gray` | Helper text, low-emphasis borders, tertiary metadata |
 | Paper White | `#f9faf9` | `--color-paper-white` | Page canvas, primary background, FAQ item surfaces |
 | Pure White | `#ffffff` | `--color-pure-white` | Card surfaces, input fields, elevated content panels |
-| Bone | `#ecefec` | `--color-bone` | Nav pill background, FAQ accordion rows, soft card surfaces, muted chips |
+| Bone | `#ecefec` | `--color-bone` | Side dock menu panel, FAQ accordion rows, soft card surfaces, muted chips |
 | Plaster | `#eeeeee` | `--color-plaster` | Input field backgrounds, subtle disabled surfaces |
 
 ## Tokens — Typography
@@ -102,10 +102,10 @@ Vivid green (#05c92f) pill with Carbon (#0f0f0f) text (white on this green is on
 
 Solid black (#0f0f0f) pill, 35px radius, white text at 14px weight 500, 14px vertical / 18px horizontal padding, label 'Connect wallet'. Sits in the top-right of the header. Lighter weight than the green pill — use as a supporting action when green is already present on the page.
 
-### Ghost Nav Pill
-**Role:** Navigation container with secondary links
+### Side Dock (toggle navigation)
+**Role:** Primary navigation, collapsed by default
 
-Bone-colored (#ecefec) rounded container, ~9px radius, 18px vertical / 18px+ horizontal padding, holding the Check | Benchmark | Credits | About links separated by thin vertical dividers in #0f0f0f. Links are 13–14px Inter Tight 500 in #0f0f0f.
+Navigation lives on the left edge, vertically centred, as a single 53px launcher button (Carbon fill, white bitcoin glyph, 35px radius). Pressing it opens a vertical Bone (#ecefec) menu with four items: **Check, Benchmark, Credits, About**, each at least 44px tall with a 20px line icon and a 13–14px/500 label. The panel grows out of the launcher (transform-origin left), items stagger in at 60ms steps with a 12px slide and fade, and the glyph turns a quarter-turn from bitcoin to a close cross. The active item is Carbon with white text. Closes on Esc, outside click or selection, and focus returns to the launcher; arrow keys move between items. Reduced motion: fade only. The top bar keeps only the logo (left) and the language toggle, credit pill and Connect wallet (right).
 
 ### Confetti Accent Card
 **Role:** Decorative feature cards with chromatic fills
@@ -158,7 +158,7 @@ Circular button, 1px #0f0f0f border, ~24px diameter, containing a thin plus glyp
 |-------|------|-------|---------|
 | 0 | Canvas | `#f9faf9` | Page background — warm off-white that softens the stark contrast of pure white |
 | 1 | Card | `#ffffff` | Content cards, feature panels, and elevated content blocks |
-| 2 | Bone Surface | `#ecefec` | Nav pill, FAQ accordion rows, muted interactive surfaces |
+| 2 | Bone Surface | `#ecefec` | Side dock menu, FAQ accordion rows, muted interactive surfaces |
 | 3 | Input | `#eeeeee` | Form field backgrounds, disabled states |
 
 ## Elevation
@@ -171,7 +171,7 @@ Product screenshots presented inside framed UI containers with scattered chromat
 
 ## Layout
 
-Full-width sections with max-width ~1200px centered content. Hero is centered: eyebrow text → massive display headline → green CTA pill, all stacked vertically with generous vertical breathing room. Feature sections alternate between left-text/right-visual and centered compositions. FAQ section is left-aligned with a centered eyebrow above the display heading. Navigation is a top bar with logo left, nav pill centered, nav button right. Vertical rhythm uses 80px section gaps; cards within sections use 26px padding. The overall feel is spacious but compact in type — wide whitespace surrounding dense, tightly-led text blocks.
+Full-width sections with max-width ~1200px centered content. Hero is centered: eyebrow text → massive display headline → green CTA pill, all stacked vertically with generous vertical breathing room. Feature sections alternate between left-text/right-visual and centered compositions. FAQ section is left-aligned with a centered eyebrow above the display heading. Navigation is a slim top bar (logo left; language toggle, credit pill and Connect wallet right) plus a collapsed side dock on the left edge that opens the four sections. Vertical rhythm uses 80px section gaps; cards within sections use 26px padding. The overall feel is spacious but compact in type — wide whitespace surrounding dense, tightly-led text blocks.
 
 ## Agent Prompt Guide
 
@@ -192,7 +192,7 @@ Full-width sections with max-width ~1200px centered content. Hero is centered: e
 
 3. **FAQ Accordion Row**: #ecefec fill, 17.5px radius, 26px vertical padding. Question text in Inter Tight 500, 18px, #0f0f0f. Right-aligned circular plus toggle: 1px #0f0f0f border, 24px diameter, thin plus glyph.
 
-4. **Ghost Nav Pill**: #ecefec background, 9px radius, 7px 18px padding. Four links ('Check', 'Benchmark', 'Credits', 'About') at 13px weight 500, #0f0f0f, separated by 1px vertical dividers in #0f0f0f.
+4. **Side Dock**: 53px Carbon launcher, 35px radius, white bitcoin glyph, fixed left and vertically centred. On press a #ecefec panel (9px radius, 1px #0f0f0f border, 9px padding) opens with four 44px rows ('Check', 'Benchmark', 'Credits', 'About'), 20px line icons, labels 14px weight 500; items stagger in 60ms apart; active row #0f0f0f with white text.
 
 5. **Display FAQ Heading**: Section eyebrow 'Any questions?' in 18px weight 500, #0f0f0f, centered. Below: 'FAQ' in Inter Tight 600, 153px, line-height 0.80, #0f0f0f, left-aligned.
 
