@@ -176,7 +176,13 @@ make audit          # pip-audit
 make smoke          # hits every endpoint of a running server, prints PASS/FAIL and measured latency
 ```
 
-For a latency run, raise the per-IP limit for the smoke client: `RATE_LIMIT_CHECK=1000/minute`.
+The smoke test checks every demo wallet and then times repeated checks, so start the **server** with
+enough credits and a higher per-IP limit, e.g.:
+
+```bash
+STARTING_CREDITS=100 RATE_LIMIT_CHECK=1000/minute make run-fixture   # terminal 1
+make smoke                                                           # terminal 2
+```
 
 ## Running with real data (the full path)
 
