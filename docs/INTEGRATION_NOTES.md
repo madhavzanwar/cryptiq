@@ -116,8 +116,8 @@ module.exports = { async rewrites() {
 
 ## 9. Live run, step 1: real Elliptic++ data (branch `backend/live-run`)
 
-**Status: NOT DONE. The real data could not be downloaded from this environment.** No real metric,
-split size, model card or demo-wallet verdict exists yet; nothing below is a result on real data.
+**Status: SUPERSEDED by section 12 (network access was opened; the real data was downloaded and used).**
+The text below is the historical record of why it was blocked earlier.
 
 ### What blocked it (verified, not assumed)
 - `huggingface.co` and `drive.google.com`: the environment's network policy denies the connection (the
@@ -281,3 +281,94 @@ No paid resource was created. Details and the free procedure: `docs/DEPLOY_NOTES
 Create the Hugging Face Space and private artifact repo (steps in `docs/DEPLOY_NOTES.md` 3.1 to 3.2), set the
 Dodo webhook URL, then run `scripts/smoke.py` against the deployed URL. The deployed smoke test, the webhook
 setting and the cost confirmation are therefore **not done**; the cost of this route is $0 by design.
+
+## 12. Real Elliptic++ data, real model (run on this environment: 4 CPUs, 16 GB RAM)
+
+Network access was opened; everything below was **run for real**, no mocks.
+
+### Download and verification (`make download`)
+Source: Hugging Face mirror `AI4FinTech/ellipticpp`. Files: `wallets_features_classes_combined.csv`
+(609,000,048 bytes, 1,268,260 rows) and `AddrAddr_edgelist.csv` (200,631,481 bytes, 2,868,964 rows). No Git-LFS
+pointers; **both row counts match the published figures exactly**; the byte sizes match the sizes in the
+authors' own LFS pointers. No mismatch to report.
+
+### `make explore` findings (23.1 s, 2,439 MB peak): every assumption held, nothing needed fixing
+| Item | Real value |
+|---|---|
+| Label encoding | 1 = illicit 14,266; 2 = licit 251,088; 3 = unknown 557,588 (822,942 unique addresses, one class each) |
+| Feature rows / columns | 1,268,260 rows; `address`, `Time step`, 55 features; time steps 1 to 49 |
+| Duplicates | 347,569 exact duplicate feature rows; max 1,471 rows for one address |
+| Features constant within an address | yes (0 rows differ), so "latest appearance" is exact |
+| Edges | no time column; 45,981 self-loops; 84,620 duplicate edges; 6,326 reciprocal edges |
+| Degree | max 37,841; median 2; p99 74; 256 wallets above degree 1,000 |
+| Integrity | every edge endpoint exists in the class table |
+
+### `make data` (34.1 s, 3,337 MB peak)
+Edges after removing self-loops and duplicates: 2,775,637. Graph: **2 weakly connected components**, the largest
+holds 822,935 of 822,942 wallets. Time-based split (first time step 1-28 / 29-34 / 35-49):
+
+| Split | Wallets | Illicit | Licit | Unknown |
+|---|---|---|---|---|
+| train | 458,733 | 7,230 | 142,300 | 309,203 |
+| val | 72,107 | 2,147 | 21,226 | 48,734 |
+| test | 292,102 | 4,889 | 87,562 | 199,651 |
+
+OFAC list: 532 lines, 531 pass checksum validation.
+
+### `make train` (29.4 s, 1,026 MB peak): real model card, test split, illicit class (4,889 illicit of 92,451 labelled)
+Serving model (chosen on VALIDATION PR-AUC only): `with_graph_features` (val PR-AUC 0.7382 vs baseline 0.6172).
+Serving thresholds chosen on validation: WARN 10, BLOCK 71.
+
+| | Baseline (55 features) | With graph features (64) |
+|---|---|---|
+| PR-AUC (threshold-free) | 0.3394 | **0.4342** |
+| At the model's WARN threshold (baseline 21, graph 10): precision / recall / F1 | 0.2352 / 0.4772 / **0.3151** | 0.1325 / 0.6889 / 0.2223 |
+| Confusion at WARN (tp / fp / fn / tn) | 2,333 / 7,588 / 2,556 / 79,974 | 3,368 / 22,049 / 1,521 / 65,513 |
+| At the model's BLOCK threshold (baseline 73, graph 71): precision / recall / F1 | 0.6848 / 0.0951 / 0.1670 | 0.4930 / 0.4377 / **0.4637** |
+| Confusion at BLOCK | 465 / 214 / 4,424 / 87,348 | 2,140 / 2,201 / 2,749 / 85,361 |
+
+### What these numbers say, plainly (nothing was tuned on the test split)
+1. **Graph features do NOT win on every measure.** They improve ranking quality (test PR-AUC 0.4342 vs 0.3394)
+   and are far better at the BLOCK level (F1 0.4637 vs 0.1670; recall 0.4377 vs 0.0951), but at the WARN
+   threshold the graph model has the **lower** F1 (0.2223 vs 0.3151). `graphFeaturesImprovedTestF1` is `false`
+   by the defined metric (F1 at the WARN threshold). The benchmark page must show F1 and PR-AUC side by side
+   (`prAuc` was added to the API for this).
+2. **Temporal drift breaks the validation-chosen WARN threshold.** Validation PR-AUC falls to test PR-AUC
+   (baseline 0.6172 to 0.3394; graph 0.7382 to 0.4342), and the graph model's WARN threshold of 10 (the policy
+   floor) flags **22,049 of 87,562 licit test wallets (25.2%)**, against 7,588 (8.7%) for the baseline. At BLOCK
+   the licit false-positive rate is 2.5% (graph) vs 0.2% (baseline). This is consistent with the published
+   concern that graph models degrade under temporal distribution shift. Not fixed: any change chosen by looking
+   at the test split would be test-set tuning. Options for the owner to decide: raise the WARN floor as a policy
+   choice, show WARN as "weak signal", or re-split in time and re-validate.
+3. **Data age.** Wallets in this dataset were active roughly 2016 to 2018 (inferred from block heights in the
+   dataset's own notebooks; not confirmed from the paper), so almost any wallet a user checks today will be
+   UNKNOWN. Live value is mostly the OFAC list plus dataset hits. State this on stage.
+4. Explanation wording: a model attribution such as "known-licit wallets two steps away raised the risk" is
+   faithful to the model but reads as contradictory; kept as is and listed as a known issue.
+
+### Leakage, verified on the REAL graph (`tests/test_leakage_real.py`, skipped when the data is absent)
+(a) Setting every validation and test label to "illicit" changes no feature of any wallet. (b) Flipping the
+labels of 200 independent training wallets (pairwise at least 3 hops apart) leaves their own features
+unchanged, while other wallets' features do change (so the check is not vacuous). **Mutation-tested:** injecting
+an own-label leak, and injecting a val/test-label leak, each makes the test fail; both were reverted.
+
+### Demo wallets (`artifacts/demo_wallets.json`, local only, test split, real addresses)
+3 BLOCK (dataset label illicit), 3 ALLOW (licit), 1 WARN (borderline; unlabelled in the dataset), 1 UNKNOWN
+(`bc1p0xlx...` has 0 occurrences in both raw files, grep-verified). All 8 checksum-valid. The live API
+(NetworkX engine, real data) reproduced every expected verdict (smoke test 11/11 PASS). The addresses are real
+public Bitcoin addresses carrying a research-dataset label; present them as "labelled illicit in the Elliptic++
+research dataset", never as an accusation.
+
+### Serving measurements on the real data
+| Item | Result |
+|---|---|
+| Scorer only (what a TigerGraph-backed deployment needs): load / peak RSS | 1.1 s / 1,006 MB; score median 14.4 ms, p95 20.3 ms |
+| Full API with the NetworkX engine (graph in memory): startup / RSS | 28 s / 2,605 MB |
+| `/api/check`, 80 calls, NetworkX engine, templates (no LLM), cache off | median 36 ms, p95 60 ms |
+
+Sizing: a 2 GB machine is enough only for a TigerGraph-backed (or replay-only) deployment; the NetworkX engine
+needs about 2.6 GB. TigerGraph query time, LLM time and anything over the network were **not measured**.
+
+### Still not done at this point
+TigerGraph (no cluster or secret), live LLM / Sarvam / Wispr / Dodo / testnet calls (no keys), benchmark (needs an
+LLM key), replays against a live engine, deployment.

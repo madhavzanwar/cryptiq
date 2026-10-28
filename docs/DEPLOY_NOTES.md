@@ -129,6 +129,7 @@ testing: `dodo wh listen http://localhost:8000/api/webhooks/dodo` or a free `clo
 - A sleeping free Space takes time to wake and then re-downloads the artifacts (time **not measured**). Open the
   health URL a few minutes before the demo, or ping it periodically with a free uptime monitor.
 - Single uvicorn worker (SQLite and the in-process cache).
+- **Memory on real data (measured):** scorer only about 1.0 GB; the NetworkX engine about 2.6 GB. Do not use a 2 GB machine with `GRAPH_ENGINE=networkx`.
 
 ### 3.6 Zero-cloud fallback: your laptop plus a free tunnel
 
