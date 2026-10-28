@@ -53,9 +53,11 @@ def test_validation_errors_do_not_echo_input(client: TestClient) -> None:
     ({"cookie_samesite": "none", "cookie_secure": False}, "COOKIE_SECURE"),
     ({"cors_origins": "*"}, "CORS_ORIGINS"),
 ])
-def test_prod_refuses_unsafe_settings(kw: dict[str, Any], msg: str) -> None:
+def test_prod_refuses_unsafe_settings(kw: dict[str, Any], msg: str, tmp_path: Path) -> None:
+    ofac = tmp_path / "ofac.txt"  # prod also requires the OFAC list; never depend on a local data/ folder
+    ofac.write_text("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa\n")
     base = dict(_env_file=None, app_env="prod", session_secret="s3cret-value", log_salt="salt-value",
-                cors_origins="https://app.example", cookie_samesite="lax")
+                cors_origins="https://app.example", cookie_samesite="lax", ofac_list_path=ofac)
     with pytest.raises(RuntimeError, match=msg):
         check_production_settings(Settings(**{**base, **kw}))
     check_production_settings(Settings(**base))  # the base itself is fine
