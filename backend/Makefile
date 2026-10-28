@@ -4,11 +4,19 @@ RAW ?= data/raw
 
 
 .PHONY: run-fixture
+
+.PHONY: download verify-data
 .PHONY: setup data fixture labels explore train demo-wallets load-graph install-queries verify-graph \
         run test test-tg lint typecheck openapi record-replays benchmark smoke audit
 
 setup:            ## install deps into .venv
 	uv sync
+
+download:         ## fetch Elliptic++ into data/raw (SRC=hf|gdrive) and verify it is real data (not LFS pointers)
+	uv run --group data python -m scripts.download_data --source $(or $(SRC),hf)
+
+verify-data:      ## check data/raw: LFS pointers, sizes, row counts vs the published figures
+	$(PY) -m scripts.download_data --verify-only
 
 explore:          ## inspect raw Elliptic++ CSVs -> artifacts/data_summary.json
 	$(PY) -m scripts.explore_data --raw $(RAW)
