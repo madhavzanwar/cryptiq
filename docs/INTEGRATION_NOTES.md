@@ -184,7 +184,7 @@ example XGBoost training time depends on the data), so they must be re-measured 
 
 ## 10. Live run, steps 2 to 4 (TigerGraph, external integrations, replays, benchmark)
 
-**Status: NONE of these were run. Nothing below is a result; every row says "not tested" for a stated reason.**
+**Status when this section was written: NONE of these were run (no network, no keys). Superseded in part by section 13, which has the results of the first live run; rows below that section 13 contradicts are out of date.**
 
 ### Preconditions checked (not assumed)
 - `backend/.env` does not exist, and no `TG_*`, `LLM_*`, `SARVAM_*`, `WISPR_*`, `DODO_*`, `BTC_*` or
@@ -372,3 +372,44 @@ needs about 2.6 GB. TigerGraph query time, LLM time and anything over the networ
 ### Still not done at this point
 TigerGraph (no cluster or secret), live LLM / Sarvam / Wispr / Dodo / testnet calls (no keys), benchmark (needs an
 LLM key), replays against a live engine, deployment.
+
+
+## 13. First live run (network open; keys: Groq only; TigerGraph not available)
+
+Everything below was measured on this environment (4 CPUs, 16 GB RAM) on 2026-10-28. Nothing is estimated. Secrets were
+supplied through the environment and are not in the repository.
+
+### PASS / FAIL table
+
+| Check | Result | Measured detail |
+|---|---|---|
+| Esplora explorer client vs real networks | **PASS** | `find_payment` run against live data: mempool.space signet (tip 328,405) and testnet4 (tip 157,927) matched a real recent tx by txid with 4 confirmations; a wrong amount returned no match. Blockstream testnet (tip 5,222,301) also parsed, but the picked address had several txs of the same amount (298 sats) and the newest was returned: the design relies on the random 1..999 sat offset plus the `created_at` filter, not on the amount alone |
+| Docker build with ffmpeg (`INSTALL_FFMPEG=true`) | **PASS** | built in 1 m 10 s; image **1.58 GB** (952 MB without ffmpeg). Sandbox-only change: apt switched to HTTPS because the sandbox proxy rejects plain HTTP (405); the repository Dockerfile is unchanged |
+| Audio conversion inside the image | **PASS** | the app's own `to_wav_16k_mono`: 3 s WebM/Opus (28,789 B) to 16 kHz mono WAV (96,078 B); `max_seconds=1` gives `audio_too_long`; garbage gives `audio_unreadable` |
+| Replays recorded on real data | **PASS (engine: networkx)** | 8 wallets x EN/HI = 16 files (BLOCK x3, ALLOW x3, WARN, UNKNOWN). Recorded from the NetworkX engine, NOT TigerGraph; each file says `engine: networkx`. Template explanations (no LLM at the time) |
+| Offline replay (`DEMO_REPLAY=true`, engine host unreachable, data dir empty, model not loaded) | **PASS** | 16/16 `/api/check` answers served with `engine: "replay"`; the `ms` shown is the recorded time (first call 653.68 ms), not a live one |
+| LLM through `openai_compatible` + provider-reported usage | **PASS** | Groq, model `qwen/qwen3.8-27b`, JSON mode on. Four verdicts, one call each (EN and HI together): BLOCK 526 in / 328 out tokens, 1,283 ms; ALLOW 530 / 312, 2,308 ms; WARN 514 / 255, 1,183 ms; UNKNOWN 436 / 213, 1,262 ms. Tokens are provider-reported |
+| Groundedness validator | **PASS** | UNKNOWN: the Hindi text was rejected twice (`missing insufficient-evidence statement`), so only Hindi fell back to the template while English came from the LLM. An earlier run rejected an ALLOW text that mentioned sanctions without an OFAC hit |
+| Template fallback | **PASS** | dead endpoint: template for both languages, 2.3 s total. Free-tier HTTP 429 (several calls inside one minute) also fell back to templates, never an error |
+| Free-tier limit that matters | measured | Groq response headers reported 1,000 requests and 8,000 tokens as the limits (window not read). One check spends about 0.5 to 0.9 k tokens, so a burst of checks hits 429 and gets templates |
+| Weak local model, for the record | measured | Qwen2.5-1.5B Q4 on CPU: output was not JSON (8/8 attempts unparseable) until `LLM_JSON_MODE=true`; its Hindi looped to the token limit; 15 to 48 s per call, far above the 8 s deadline, so it fell back to templates in production settings |
+| Benchmark N=10, local Qwen2.5-1.5B Q4 (CPU) | measured, **not a quality result** | `raw_dump`: 9,251 mean input tokens, median 60,617 ms, 50.0 % accurate (it answered illicit for 10/10 wallets, so 50 % is the sample's base rate); `graph_evidence`: 198.9 tokens, median 6,607 ms, 20.0 % accurate; unparseable 0 in both. Same model, same wallets. Only the token and latency gap is informative |
+| Benchmark N=25 | **not measured** | the local run was killed at 24 % when a stray `pkill` ended the shell. Not rerun |
+| Benchmark on Groq free tier | **not run** | the raw dumps average 9,251 tokens (up to 19,820 measured on N=10) and the free limit is 8,000 tokens per minute, so the raw method cannot be sent. Shrinking the raw dump would change the experiment; a provider with a larger limit is needed |
+| TigerGraph Community Edition (local Docker, v4.2.5) | **FAIL (environment)** | schema created on the engine; data upsert failed with `SYS-0001` because GSE could not start: `System hard limit of file descriptors is 20000. The expected is no less than 65535`. The sandbox cannot raise it, and it was not bypassed. GSQL queries therefore remain **never compiled**; no TigerGraph counts, comparison or latency |
+| TigerGraph Savanna | not tested | needs an account (credits only, no free instance per its FAQ) |
+| Sarvam STT / TTS | not tested | host reachable (403 without a key), no key |
+| Wispr | not tested | host reachable, no key. Nothing in the app claims Wispr |
+| Dodo test checkout, webhook exactly-once, bad signature | not tested live | host reachable (403 on `/`), no key. Signature and idempotency remain unit-tested only |
+| Bitcoin testnet invoice end to end | not tested | explorer proven above; no receive address or test coins |
+| Base Sepolia / EAS | not tested | RPC and easscan reachable; no wallet or schema |
+
+### Code changes made because of this run
+- `LLM_JSON_MODE` (default off): sends `response_format=json_object` to OpenAI-style providers. Needed for weak models;
+  unit-tested (`test_json_mode_is_opt_in_and_sent_only_when_enabled`).
+- `scripts/check_llm.py` (`make`-less, run with `uv run python -m scripts.check_llm [--deadline 8] [--pause 30]`): the live
+  LLM proof above; writes `artifacts/llm_check.json` (git-ignored).
+
+### Still open
+TigerGraph (needs Savanna or a machine where the Community Edition can start), Sarvam, Dodo, Wispr, testnet invoice,
+Base Sepolia attestation, a provider with a large enough token limit for the benchmark, benchmark N=25, deployment.

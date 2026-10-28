@@ -6,6 +6,7 @@ client at a dead endpoint to show the template fallback. Writes artifacts/llm_ch
 
 Usage: LLM_PROVIDER=... LLM_MODEL=... LLM_API_KEY=... [LLM_BASE_URL=...] uv run python -m scripts.check_llm
        [--deadline 8]   (the production explain deadline in seconds is 8; raise it only for slow local models)
+       [--pause 20]     (free tiers rate-limit by tokens per minute; a 429 falls back to the template)
 """
 
 from __future__ import annotations
@@ -55,6 +56,7 @@ class Probe(LLMExplainer):
 async def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--deadline", type=float, default=8.0)
+    ap.add_argument("--pause", type=float, default=0.0, help="seconds to wait between wallets (free-tier rate limits)")
     args = ap.parse_args()
     s = get_settings()
     llm = build_llm(s)
@@ -69,6 +71,8 @@ async def main() -> None:
     seen: set[str] = set()
     rows: list[dict[str, Any]] = []
     for w in wallets:
+        if rows or seen:
+            await asyncio.sleep(args.pause)
         n_before = len(rec.calls)
         t0 = time.perf_counter()
         resp = await pipe.compute(w["address"], "en")
