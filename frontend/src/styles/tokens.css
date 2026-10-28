@@ -1,0 +1,101 @@
+/* Cryptiq design tokens. Source of truth: ../../DESIGN.md. No hard-coded colors or sizes in components. */
+:root {
+  /* Colors */
+  --color-acid-lime: #05c92f;
+  --color-sticker-yellow: #fcea59;
+  --color-cotton-pink: #ffd0e2;
+  --color-powder-blue: #a7cbf6;
+  --color-obsidian: #000000;
+  --color-carbon: #0f0f0f;
+  --color-ash-gray: #5a585a;
+  --color-slate-gray: #6e726e;
+  --color-paper-white: #f9faf9;
+  --color-pure-white: #ffffff;
+  --color-bone: #ecefec;
+  --color-plaster: #eeeeee;
+
+  /* Verdict / status (Cryptiq additions) */
+  --status-allow-tint: #e6f3ea;
+  --status-allow-ink: #25623d;
+  --status-allow-solid: #4b9a6a;
+  --status-warn-tint: #fbf1c9;
+  --status-warn-ink: #6e5200;
+  --status-block-tint: #fbe9e7;
+  --status-block-ink: #8f2f2a;
+  --status-block-solid: #c8574f;
+  --status-unknown-tint: #ecefec;
+  --status-unknown-ink: #5a585a;
+  --status-unknown-solid: #6e726e;
+
+  /* Typography */
+  --font-inter-tight: 'Inter Tight', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-devanagari: 'Noto Sans Devanagari', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  --text-caption: 11px;       --leading-caption: 1.5;
+  --text-small: 13px;         --leading-small: 1.5;
+  --text-body: 14px;          --leading-body: 1.5;
+  --text-body-lg: 18px;       --leading-body-lg: 1.5;
+  --text-subheading: 25px;    --leading-subheading: 1.13;
+  --text-heading-sm: 35px;    --leading-heading-sm: 1.06;
+  --text-heading: 53px;       --leading-heading: 1.02;
+  --text-heading-lg: 84px;    --leading-heading-lg: 0.9;
+  --text-display: 153px;      --leading-display: 0.8;
+  --text-display-xl: 176px;   --leading-display-xl: 0.77;
+
+  /* Spacing */
+  --spacing-4: 4px;   --spacing-7: 7px;   --spacing-9: 9px;   --spacing-11: 11px;
+  --spacing-13: 13px; --spacing-18: 18px; --spacing-26: 26px; --spacing-31: 31px;
+  --spacing-35: 35px; --spacing-42: 42px; --spacing-44: 44px; --spacing-53: 53px;
+  --spacing-55: 55px; --spacing-70: 70px; --spacing-105: 105px; --spacing-149: 149px;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --page-gutter: 18px;
+  --grid-columns: 4;
+  --grid-gap: 18px;
+  --section-gap: 53px;
+  --card-padding: 26px;
+  --element-gap: 18px;
+  --nav-height: 70px;
+  --tap-target: 44px;
+
+  /* Radius */
+  --radius-nav: 9px;
+  --radius-tags: 14px;
+  --radius-cards: 17.5px;
+  --radius-inputs: 35px;
+  --radius-buttons: 35px;
+  --radius-largeelements: 53px;
+
+  /* Motion (see ../../MOTION.md) */
+  --duration-fast: 120ms;
+  --duration-default: 200ms;
+  --duration-slow: 320ms;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --motion-distance-sm: 4px;
+  --motion-distance-md: 9px;
+  --motion-distance-lg: 18px;
+
+  /* Surfaces */
+  --surface-canvas: #f9faf9;
+  --surface-card: #ffffff;
+  --surface-bone-surface: #ecefec;
+  --surface-input: #eeeeee;
+}
+
+@media (min-width: 640px) {
+  :root { --page-gutter: 26px; --grid-columns: 8; --grid-gap: 26px; --section-gap: 80px; }
+}
+@media (min-width: 1024px) {
+  :root { --page-gutter: 35px; --grid-columns: 12; --grid-gap: 35px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --duration-fast: 0ms; --duration-default: 0ms; --duration-slow: 100ms; --motion-distance-sm: 0px; --motion-distance-md: 0px; --motion-distance-lg: 0px; }
+}

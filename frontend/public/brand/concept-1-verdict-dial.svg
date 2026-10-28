@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="52" height="52" role="img" aria-label="Verdict dial">
+  <rect x="0" y="8" width="56" height="56" rx="18" fill="#0f0f0f"/>
+  <style>.needle{transform:rotate(25deg);transform-origin:28px 44px}</style>
+  <path d="M10.04 42.74 A18 18 0 0 1 17.93 29.08" fill="none" stroke="#4b9a6a" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M20.11 27.82 A18 18 0 0 1 35.89 27.82" fill="none" stroke="#e0b93a" stroke-width="6.5" stroke-linecap="round"/>
+  <path d="M38.07 29.08 A18 18 0 0 1 45.96 42.74" fill="none" stroke="#c8574f" stroke-width="6.5" stroke-linecap="round"/>
+  <g class="needle"><line x1="28" y1="44" x2="28" y2="31" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round"/></g>
+  <circle cx="28" cy="44" r="5" fill="#ffffff"/>
+  <circle cx="28" cy="44" r="1.9" fill="#0f0f0f"/>
+  <circle cx="57" cy="7" r="6" fill="#fcea59" stroke="#0f0f0f" stroke-width="1.5"/>
+</svg>

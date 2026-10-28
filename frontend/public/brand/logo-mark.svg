@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="52" height="52" role="img" aria-label="Hop path">
+  <style>
+    .hop{stroke-dasharray:42;stroke-dashoffset:0;animation:draw 620ms cubic-bezier(0,0,.2,1) both}
+    .n{transform-box:fill-box;transform-origin:center;animation:pop 320ms cubic-bezier(.2,0,0,1.4) both}
+    .n1{animation-delay:0ms}.n2{animation-delay:170ms}.n3{animation-delay:340ms}
+    .flag{transform-box:fill-box;transform-origin:center;animation:pop 360ms cubic-bezier(.2,0,0,1.6) 560ms both}
+    @keyframes draw{from{stroke-dashoffset:42}to{stroke-dashoffset:0}}
+    @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    @media (prefers-reduced-motion:reduce){.hop,.n,.flag{animation:none}}
+  </style>
+  <rect x="0" y="8" width="56" height="56" rx="18" fill="#0f0f0f"/>
+  <circle cx="28" cy="36" r="20.5" fill="none" stroke="#6e726e" stroke-width="2.4"/>
+  <polyline class="hop" points="16,43 25,31 33,39 41,26" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle class="n n1" cx="16" cy="43" r="3.3" fill="#ffffff"/>
+  <circle class="n n2" cx="25" cy="31" r="3.3" fill="#ffffff"/>
+  <circle class="n n3" cx="33" cy="39" r="3.3" fill="#ffffff"/>
+  <g class="flag"><circle cx="41" cy="26" r="6" fill="#0f0f0f" stroke="#ffffff" stroke-width="2"/><circle cx="41" cy="26" r="3.6" fill="#ffd0e2"/></g>
+  <circle cx="57" cy="7" r="6" fill="#fcea59" stroke="#0f0f0f" stroke-width="1.5"/>
+</svg>
