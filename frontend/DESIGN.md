@@ -204,13 +204,13 @@ Product-specific rules that the source reference did not cover. They reuse the p
 White on `#05c92f` measures 2.2:1 (fails WCAG AA). The CTA pill and any other green-filled control use **Carbon `#0f0f0f` text** (8.6:1). The green value itself is unchanged.
 
 ### Verdict and status colors
-Verdicts reuse the confetti language: quiet pastel chip, dark ink, icon, word. Color is never the only cue. These are the only colors added to the system.
+Verdicts use deliberately muted, desaturated tones (sage, butter, rose) so they read as calm status rather than alarms: quiet pastel chip, dark ink, icon, word. Color is never the only cue. These are the only colors added to the system.
 
 | Verdict | Tint (chip bg) | Ink (text/icon) | Solid (graph, meter fill) | Icon | Contrast ink/tint |
 |---------|----------------|-----------------|---------------------------|------|-------------------|
-| ALLOW | `#dcf7e1` | `#0a6b20` | `#138a2e` | check-circle | 5.9:1 |
-| WARN | Sticker Yellow `#fcea59` | `#0f0f0f` | `#fcea59` (meter fill, outlined `#0f0f0f`) | alert-triangle | 15.6:1 |
-| BLOCK | `#ffd9d6` | `#a3171f` | `#d92d20` | shield-x | 6.0:1 |
+| ALLOW | `#e6f3ea` | `#25623d` | `#4b9a6a` | check-circle | 6.4:1 |
+| WARN | `#fbf1c9` | `#6e5200` | `#e0b93a` (meter fill, outlined `#0f0f0f`) | alert-triangle | 6.5:1 |
+| BLOCK | `#fbe9e7` | `#8f2f2a` | `#c8574f` | shield-x | 6.9:1 |
 | UNKNOWN | Bone `#ecefec` | Ash Gray `#5a585a` | Slate Gray `#6e726e` | help-circle | 6.1:1 |
 
 Wording: ALLOW = "No strong risk signals found in the dataset" (never "safe"); WARN = "Some risk signals found"; BLOCK = "Strong risk signals found"; UNKNOWN = "Not in our dataset, so we can't say".
@@ -239,9 +239,9 @@ Focus-visible: 2px solid `#0f0f0f` outline, 2px offset (a border, not a glow). M
 The green appears once per screen as the primary action. On the check page that is the **mic button** (the product's headline action); "Check wallet" becomes a Black Nav Button style (Carbon fill, white text). On other pages it is the Green CTA Pill.
 
 ### Additional components
-- **Text Input / Address Field:** Plaster `#eeeeee` fill, 1px Carbon border, 35px radius, 53px height, 26px horizontal padding, address in `--font-mono`. Hover: border Obsidian; focus: 2px Carbon outline; error: border `#d92d20` + message in BLOCK ink with icon; disabled: Bone, Slate Gray text. Label above at 14px/500, 9px gap; helper text 13px Ash Gray.
+- **Text Input / Address Field:** Plaster `#eeeeee` fill, 1px Carbon border, 35px radius, 53px height, 26px horizontal padding, address in `--font-mono`. Hover: border Obsidian; focus: 2px Carbon outline; error: border `#c8574f` + message in BLOCK ink with icon; disabled: Bone, Slate Gray text. Label above at 14px/500, 9px gap; helper text 13px Ash Gray.
 - **Segmented Control (language, hop depth, coin):** Pure White, 1px Carbon border, 35px radius, 44px tall segments; selected segment Carbon fill with white text.
-- **Mic Button:** 105px circle (88px mobile), Acid Lime fill, Carbon mic icon (2px stroke), 1px Carbon border. Idle: a 2px Carbon ring pulses outward every 2s. Hover: ring offset 4px. Recording: fill `#d92d20`, white waveform bars, timer below, "Release to send". Transcribing: Bone fill with spinner. Error/unsupported: Plaster fill, Slate Gray icon, message and retry link below.
+- **Mic Button:** 105px circle (88px mobile), Acid Lime fill, Carbon mic icon (2px stroke), 1px Carbon border. Idle: a 2px Carbon ring pulses outward every 2s. Hover: ring offset 4px. Recording: fill `#c8574f`, white waveform bars, timer below, "Release to send". Transcribing: Bone fill with spinner. Error/unsupported: Plaster fill, Slate Gray icon, message and retry link below.
 - **Chip / Tag:** 14px radius, 7px 13px padding, 13px/500. Neutral: Bone. Demo-wallet chips: Pure White with 1px Carbon border; selected: Carbon fill. Verdict chips use the tint/ink table above with an icon.
 - **Verdict Card:** Pure White, 1px Carbon border, 17.5px radius, 26px padding. Order: verdict chip (icon + word in Inter Tight 600 at 53px, on the tint, 17.5px radius) → one wording line (18px) → risk meter → address row (mono, truncated middle, copy) → chip row (dataset label, nearest flagged wallet, OFAC, Ransomwhere) → TigerGraph badge → reasons list → two honesty lines in 13px Ash Gray ("Risk signal, not an accusation." and "Based on a research dataset of Bitcoin activity (Elliptic++), not the live blockchain.").
 - **Risk Meter:** 13px tall, 35px radius, Plaster track, verdict-solid fill with a 1px Carbon outline, ticks at 30 and 70, numeric score at 35px/600, `role="meter"`. Not in dataset: "n/a" and an empty track.
@@ -250,7 +250,7 @@ The green appears once per screen as the primary action. On the check page that 
 - **Evidence Graph Panel:** Pure White card; inner canvas Paper White with 1px Slate Gray border and 17.5px radius; controls row above (segmented hop selector, zoom, fullscreen, pause, highlight path); legend below (shape + color + label); "Graph as a list" table collapsed beneath.
 - **Tabs:** 18px/500, Ash Gray inactive, Obsidian active with a 2px Obsidian underline; row has a 1px Carbon bottom rule.
 - **Data Table:** Pure White, 1px Carbon border, 17.5px radius, header row Bone with 13px/500 Ash Gray text, 18px cell padding, 1px Bone row dividers, numbers right-aligned with tabular figures; below 640px rows become stacked cards.
-- **Alert / Inline Message:** 17.5px radius, 18px 26px padding, no border, tint background, ink text, 24px icon. Variants: info (Powder Blue), success (ALLOW), warning (Sticker Yellow), error and seed-phrase danger (BLOCK).
+- **Alert / Inline Message:** 17.5px radius, 18px 26px padding, no border, tint background, ink text, 24px icon. Variants: info (Powder Blue), success (ALLOW), warning (WARN tint), error and seed-phrase danger (BLOCK).
 - **Toast:** Pure White, 1px Carbon border, 17.5px radius, bottom-center, 4s, `aria-live="polite"`.
 - **Modal / Drawer / Bottom Sheet:** Obsidian scrim at 40% (no blur), Pure White surface, 1px Carbon border, 17.5px radius, 26px padding, 44px close button, focus trapped. Drawers 480px wide.
 - **Credit Pill:** Pure White, 1px Carbon border, 35px radius, 44px tall, coin icon + count; low credits (0–1): BLOCK tint with "Top up". The count ticks down with a short vertical slide.
@@ -350,14 +350,14 @@ A black sticker: Carbon rounded square (14px radius at 48px) holding a white shi
   /* Cryptiq additions */
   --font-devanagari: 'Noto Sans Devanagari', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --status-allow-tint: #dcf7e1;
-  --status-allow-ink: #0a6b20;
-  --status-allow-solid: #138a2e;
-  --status-warn-tint: #fcea59;
-  --status-warn-ink: #0f0f0f;
-  --status-block-tint: #ffd9d6;
-  --status-block-ink: #a3171f;
-  --status-block-solid: #d92d20;
+  --status-allow-tint: #e6f3ea;
+  --status-allow-ink: #25623d;
+  --status-allow-solid: #4b9a6a;
+  --status-warn-tint: #fbf1c9;
+  --status-warn-ink: #6e5200;
+  --status-block-tint: #fbe9e7;
+  --status-block-ink: #8f2f2a;
+  --status-block-solid: #c8574f;
   --status-unknown-tint: #ecefec;
   --status-unknown-ink: #5a585a;
   --status-unknown-solid: #6e726e;
@@ -440,13 +440,13 @@ A black sticker: Carbon rounded square (14px radius at 48px) holding a white shi
   /* Cryptiq additions */
   --font-devanagari: 'Noto Sans Devanagari', 'Inter Tight', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --color-allow-tint: #dcf7e1;
-  --color-allow-ink: #0a6b20;
-  --color-allow: #138a2e;
-  --color-warn-tint: #fcea59;
-  --color-block-tint: #ffd9d6;
-  --color-block-ink: #a3171f;
-  --color-block: #d92d20;
+  --color-allow-tint: #e6f3ea;
+  --color-allow-ink: #25623d;
+  --color-allow: #4b9a6a;
+  --color-warn-tint: #fbf1c9;
+  --color-block-tint: #fbe9e7;
+  --color-block-ink: #8f2f2a;
+  --color-block: #c8574f;
   --color-unknown-solid: #6e726e;
   --breakpoint-sm: 640px;
   --breakpoint-lg: 1024px;

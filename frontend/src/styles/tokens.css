@@ -15,14 +15,14 @@
   --color-plaster: #eeeeee;
 
   /* Verdict / status (Cryptiq additions) */
-  --status-allow-tint: #dcf7e1;
-  --status-allow-ink: #0a6b20;
-  --status-allow-solid: #138a2e;
-  --status-warn-tint: #fcea59;
-  --status-warn-ink: #0f0f0f;
-  --status-block-tint: #ffd9d6;
-  --status-block-ink: #a3171f;
-  --status-block-solid: #d92d20;
+  --status-allow-tint: #e6f3ea;
+  --status-allow-ink: #25623d;
+  --status-allow-solid: #4b9a6a;
+  --status-warn-tint: #fbf1c9;
+  --status-warn-ink: #6e5200;
+  --status-block-tint: #fbe9e7;
+  --status-block-ink: #8f2f2a;
+  --status-block-solid: #c8574f;
   --status-unknown-tint: #ecefec;
   --status-unknown-ink: #5a585a;
   --status-unknown-solid: #6e726e;
