@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600&family=IBM+Plex+Mono:wght@500&family=Noto+Sans+Devanagari:wght@500;600&display=swap">
 <link rel="stylesheet" href="src/styles/tokens.css">
 <link rel="stylesheet" href="src/styles/motion.css">
+<link rel="stylesheet" href="src/styles/nav.css">
 <style>
 *{box-sizing:border-box;margin:0}
 html{scroll-behavior:auto}
@@ -32,14 +33,18 @@ a{color:inherit}
 
 .nav{position:absolute;inset:44px 0 auto 0;height:70px;z-index:6}
 .nav .in{max-width:var(--page-max-width);margin:0 auto;padding:0 var(--page-gutter);height:100%;display:flex;align-items:center;gap:var(--spacing-18)}
-.brand{display:flex;align-items:center;gap:var(--spacing-9);text-decoration:none;font-weight:600;font-size:var(--text-subheading)}
-.brand img{width:40px;height:40px}
-.pill{display:none;margin:0 auto;background:var(--color-bone);border-radius:var(--radius-nav);padding:var(--spacing-7) var(--spacing-18);list-style:none}
-.pill li{display:flex;align-items:center}
-.pill li+li::before{content:"";width:1px;height:18px;background:var(--color-carbon);margin:0 var(--spacing-18)}
-.pill a{text-decoration:none;font-size:var(--text-body);min-height:var(--tap-target);display:inline-flex;align-items:center}
-@media(min-width:1024px){.pill{display:flex}}
-.nav .right{margin-left:auto}
+.brand{display:flex;align-items:center;text-decoration:none}
+.brand img{width:44px;height:44px}
+.nav .right{margin-left:auto;display:flex;align-items:center;gap:var(--spacing-9)}
+.nav .hide-m{display:none}
+@media(min-width:640px){.nav .hide-m{display:inline-flex}}
+.seg{display:inline-flex;border:1px solid var(--color-carbon);border-radius:var(--radius-inputs);overflow:hidden;background:var(--color-pure-white)}
+.seg button{min-height:var(--tap-target);min-width:var(--tap-target);padding:0 var(--spacing-18);border:0;background:transparent;font:500 var(--text-body) var(--font-inter-tight);color:var(--color-carbon);cursor:pointer;transition:background-color var(--duration-fast) var(--ease-out),color var(--duration-fast) var(--ease-out)}
+.seg button[aria-pressed=true]{background:var(--color-carbon);color:var(--color-pure-white)}
+.seg button:hover:not([aria-pressed=true]){background:var(--color-bone)}
+.credit{display:inline-flex;align-items:center;gap:var(--spacing-9);min-height:var(--tap-target);padding:0 var(--spacing-18);border:1px solid var(--color-carbon);background:var(--color-pure-white);border-radius:var(--radius-inputs);font-size:var(--text-body)}
+.credit svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.75}
+@media(max-width:639px){.seg button{padding:0 var(--spacing-11)}.credit{padding:0 var(--spacing-13)}}
 .btn-black{display:inline-flex;align-items:center;min-height:var(--tap-target);background:var(--color-carbon);color:#fff;border-radius:var(--radius-buttons);padding:var(--spacing-13) var(--spacing-18);font:500 var(--text-body)/1 var(--font-inter-tight);text-decoration:none;border:0;cursor:pointer}
 .btn-black:hover{background:var(--color-obsidian)}
 .btn{transition:background-color var(--duration-fast) var(--ease-out),color var(--duration-fast) var(--ease-out),transform 90ms var(--ease-out)}
@@ -117,7 +122,7 @@ a{color:inherit}
 .rtext .row{display:flex;gap:var(--spacing-9);flex-wrap:wrap}
 .rt{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 var(--spacing-11);border-radius:var(--radius-tags);font-size:var(--text-small);background:var(--color-pure-white);border:1px solid var(--color-carbon)}
 .rt.y{background:var(--color-sticker-yellow);border-color:transparent}.rt.pk{background:var(--color-cotton-pink);border-color:transparent}.rt.bl{background:var(--color-powder-blue);border-color:transparent}
-@media(max-width:899px){
+@media(max-width:1179px){
   .stage{--dh:min(38svh,330px)}
   .lcard{left:7vw;width:calc(min(86vw,330px) - (min(86vw,330px) - 190px)*var(--c));height:calc(150px - (150px - 40px)*var(--c))}
   .lc-full{min-width:min(86vw,330px);padding:var(--spacing-18) var(--spacing-26)}
@@ -136,7 +141,7 @@ a{color:inherit}
 .wrow{position:absolute;left:0;top:0;display:flex;align-items:center;gap:var(--spacing-13);height:56px;font-size:clamp(20px,2.3vw,30px);white-space:nowrap;will-change:transform,opacity}
 .wrow .ic{width:30px;height:30px;display:grid;place-items:center;flex:none}
 .wrow .vt{font-size:var(--text-small);border-radius:var(--radius-tags);padding:var(--spacing-4) var(--spacing-11);font-family:var(--font-inter-tight)}
-@media(max-width:899px){.wl{top:30%;width:86vw}.wl h2{font-size:34px}.wl p{display:none}.search{margin-top:var(--spacing-13)}.wheel{left:7vw;top:68%;width:86vw}.wrow{font-size:20px}}
+@media(max-width:1179px){.wl{top:30%;width:86vw}.wl h2{font-size:34px}.wl p{display:none}.search{margin-top:var(--spacing-13)}.wheel{left:7vw;top:68%;width:86vw}.wrow{font-size:20px}}
 
 /* statement */
 .statement{left:0;right:0;top:calc(114px + (100svh - 114px)*.45);transform:translateY(-50%);z-index:3}
@@ -160,7 +165,7 @@ a{color:inherit}
 .tog .tr::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;border:1px solid var(--color-carbon);transition:transform var(--duration-default) var(--ease-emphasized)}
 .tog.on .tr{background:var(--color-carbon)}.tog.on .tr::after{transform:translateX(24px)}
 .tile{width:56px;height:56px}
-@media(max-width:899px){.ecard{flex-direction:column;align-items:flex-start;padding:var(--spacing-26);min-height:0}.cluster{align-self:flex-end;width:120px}}
+@media(max-width:1179px){.ecard{flex-direction:column;align-items:flex-start;padding:var(--spacing-26);min-height:0}.cluster{align-self:flex-end;width:120px}}
 
 footer{background:var(--color-pure-white);border-top:1px solid var(--color-carbon);padding:var(--spacing-70) var(--page-gutter);text-align:center}
 footer p{font-size:var(--text-small);color:var(--color-ash-gray);max-width:60ch;margin:0 auto}
@@ -178,11 +183,12 @@ footer p{font-size:var(--text-small);color:var(--color-ash-gray);max-width:60ch;
 
   <header class="nav" id="nav">
     <div class="in">
-      <a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a>
-      <ul class="pill" id="navpill">
-        <li><a href="#check">Check</a></li><li><a href="#benchmark">Benchmark</a></li><li><a href="#credits">Credits</a></li><li><a href="#about">About</a></li>
-      </ul>
-      <div class="right"><a class="btn-black btn" href="#">Connect wallet</a></div>
+      <a class="brand" href="#" aria-label="Cryptiq home"><img src="public/brand/logo-mark.svg" alt="Cryptiq home"></a>
+      <div class="right">
+        <div class="seg" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
+        <span class="credit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 12h6"/></svg><span class="n">12</span></span>
+        <a class="btn-black btn hide-m" href="#">Connect wallet</a>
+      </div>
     </div>
   </header>
 
@@ -282,7 +288,20 @@ footer p{font-size:var(--text-small);color:var(--color-ash-gray);max-width:60ch;
 </section>
 
 <footer id="limits"><h2 style="font-size:var(--text-heading-sm);margin-bottom:var(--spacing-18)">Honest limits</h2><p>Risk signal, not an accusation. Based on a research dataset of Bitcoin activity (Elliptic++), not the live blockchain. Everything on this page is example data.</p></footer>
+<nav class="dock" id="dock" aria-label="Main">
+  <button class="dock-launch" id="dockLaunch" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="dockMenu">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><g class="g-btc"><path d="M8 5.5h5.2a2.75 2.75 0 0 1 0 5.5H8m0 0h5.8a2.75 2.75 0 0 1 0 5.5H8M8 5.5v11M10.5 3.5v2M13.5 3.5v2M10.5 16.5v2M13.5 16.5v2"/></g><g class="g-x"><path d="M6 6l12 12M18 6L6 18"/></g></svg>
+    <span class="dock-tip">Menu</span>
+  </button>
+  <ul class="dock-menu" id="dockMenu" aria-hidden="true" inert>
+    <li><a href="#check" data-p="0.30" aria-current="page"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Check</a></li>
+    <li><a href="#benchmark" data-p="0.50"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Benchmark</a></li>
+    <li><a href="#credits" data-p="0.93"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10.5h5M9.5 13.5h5"/></svg>Credits</a></li>
+    <li><a href="#limits"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></svg>About</a></li>
+  </ul>
+</nav>
 <div class="dev" id="dev"></div>
 <script src="src/motion/story.js"></script>
+<script src="src/motion/nav.js"></script>
 </body>
 </html>

@@ -53,18 +53,11 @@ a{color:inherit}
 /* nav */
 .nav{background:var(--surface-canvas);height:var(--nav-height);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--color-carbon)}
 .nav .container{display:flex;align-items:center;gap:var(--spacing-18);height:100%}
-.brand{display:flex;align-items:center;gap:var(--spacing-9);text-decoration:none;font-weight:600;font-size:var(--text-subheading);letter-spacing:normal}
+.brand{display:flex;align-items:center;text-decoration:none}
 .brand img{width:44px;height:44px}
-.pill{display:none;margin:0 auto;background:var(--color-bone);border-radius:var(--radius-nav);padding:var(--spacing-7) var(--spacing-18);list-style:none}
-.pill li{display:flex;align-items:center}
-.pill li+li::before{content:"";width:1px;height:18px;background:var(--color-carbon);margin:0 var(--spacing-18)}
-.pill a{text-decoration:none;font-size:var(--text-body);min-height:var(--tap-target);display:inline-flex;align-items:center}
-.pill a:hover,.pill a[aria-current]{text-decoration:underline;text-underline-offset:7px;text-decoration-thickness:2px}
-@media(min-width:1024px){.pill{display:flex}}
 .nav .right{margin-left:auto;display:flex;align-items:center;gap:var(--spacing-9)}
 .nav .hide-m{display:none}
 @media(min-width:640px){.nav .hide-m{display:inline-flex}}
-@media(min-width:1024px){.nav .right{margin-left:0}}
 
 /* cards & chips */
 .card{background:var(--surface-card);border:1px solid var(--color-carbon);border-radius:var(--radius-cards);padding:var(--card-padding)}
@@ -154,26 +147,35 @@ td{padding:var(--spacing-18);border-top:1px solid var(--color-bone);font-size:va
 footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-white);padding:var(--spacing-70) 0}
 </style>
 <link rel="stylesheet" href="src/styles/motion.css">
+<link rel="stylesheet" href="src/styles/nav.css">
 </head>
 <body>
 <div class="ribbon">MOCK DATA</div>
 
 <header class="nav">
   <div class="container">
-    <a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a>
-    <ul class="pill">
-      <li><a href="#check" aria-current="page">Check</a></li>
-      <li><a href="#benchmark">Benchmark</a></li>
-      <li><a href="#credits">Credits</a></li>
-      <li><a href="#about">About</a></li>
-    </ul>
+    <a class="brand" href="#" aria-label="Cryptiq home"><img src="public/brand/logo-mark.svg" alt="Cryptiq home"></a>
     <div class="right">
-      <div class="seg hide-m" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
+      <div class="seg" role="group" aria-label="Language"><button aria-pressed="true">EN</button><button aria-pressed="false" lang="hi">हिं</button></div>
       <span class="credit"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9 12h6"/></svg><span class="n">12</span></span>
       <a class="btn btn-black hide-m" href="#">Connect wallet</a>
     </div>
   </div>
 </header>
+
+<nav class="dock" id="dock" aria-label="Main">
+  <button class="dock-launch" id="dockLaunch" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="dockMenu">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><g class="g-btc"><path d="M8 5.5h5.2a2.75 2.75 0 0 1 0 5.5H8m0 0h5.8a2.75 2.75 0 0 1 0 5.5H8M8 5.5v11M10.5 3.5v2M13.5 3.5v2M10.5 16.5v2M13.5 16.5v2"/></g><g class="g-x"><path d="M6 6l12 12M18 6L6 18"/></g></svg>
+    <span class="dock-tip">Menu</span>
+  </button>
+  <ul class="dock-menu" id="dockMenu" aria-hidden="true" inert>
+    <li><a href="#check" aria-current="page"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Check</a></li>
+    <li><a href="#benchmark"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Benchmark</a></li>
+    <li><a href="#credits"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M9.5 10.5h5M9.5 13.5h5"/></svg>Credits</a></li>
+    <li><a href="#about"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></svg>About</a></li>
+  </ul>
+</nav>
+
 
 <section class="section center">
   <div class="container stack" style="--x:0">
@@ -311,12 +313,13 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
 
 <footer>
   <div class="container grid">
-    <div class="s4 t8 d4 stack"><a class="brand" href="#"><img src="public/brand/logo-mark.svg" alt="">cryptiq</a><p class="muted small">Say a wallet. Get ALLOW, WARN or BLOCK. See why on a graph. Keep proof on-chain.</p></div>
+    <div class="s4 t8 d4 stack"><a class="brand" href="#" aria-label="Cryptiq home"><img src="public/brand/logo-mark.svg" alt="Cryptiq home"></a><p class="muted small">Say a wallet. Get ALLOW, WARN or BLOCK. See why on a graph. Keep proof on-chain.</p></div>
     <div class="s4 t4 d4 stack"><b>Built with</b><p class="muted small">TigerGraph · Dodo Payments · Cake Wallet (payment links) · Base Sepolia + EAS</p></div>
     <div class="s4 t4 d4 stack"><b>Thanks</b><p class="muted small">AI Grants India · Socket Security · Edge City</p></div>
     <p class="help s4 t8 d12" style="border-top:1px solid var(--color-carbon);padding-top:var(--spacing-26)">Risk signal, not an accusation. Research dataset, not the live blockchain.</p>
   </div>
 </footer>
 <script src="src/motion/reveal.js"></script>
+<script src="src/motion/nav.js"></script>
 </body>
 </html>

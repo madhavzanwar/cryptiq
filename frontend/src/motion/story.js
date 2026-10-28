@@ -12,7 +12,7 @@
   const eOB = (t) => { const c1 = 1.5, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
 
   const track = $('story'), stage = $('stage');
-  const el = Object.fromEntries(['hero', 'hint', 'navpill', 'cta', 'lbl', 'device', 's0', 's1', 's2', 's3', 's2in', 'tile', 'stickers', 'typed', 'dmic', 'tap', 'score', 'mfill', 'attest',
+  const el = Object.fromEntries(['hero', 'hint', 'cta', 'lbl', 'device', 's0', 's1', 's2', 's3', 's2in', 'tile', 'stickers', 'typed', 'dmic', 'tap', 'score', 'mfill', 'attest',
     'lcA', 'lcB', 'lcC', 'rtA', 'rtB', 'rtC', 'wheelscene', 'wl', 'search', 'wheel', 'statement', 'slabel', 'sh', 'blob', 'ec1', 'ec2', 'togs', 'dev'].map((id) => [id, $(id)]));
 
   // ---- DOM generation: stickers and wheel rows ----
@@ -71,7 +71,7 @@
   // ---- layout measurements ----
   let vh = 0, vw = 0, dh = 0, dw = 0, mobile = false, devTop = 0, ctaHeroY = 0, ctaBottomY = 0, lblW = 0, s2Max = 0, micX = 0, micY = 0;
   function layout() {
-    vh = stage.clientHeight; vw = stage.clientWidth; mobile = vw < 900;
+    vh = stage.clientHeight; vw = stage.clientWidth; mobile = vw < 1180;
     dh = el.device.offsetHeight; dw = el.device.offsetWidth;
     devTop = vh * 0.54 - dh / 2;
     el.hero.style.transform = 'translateY(-50%)'; el.hero.style.filter = '';
@@ -100,7 +100,6 @@
     const h = p < 0.5 ? 1 - heroOut : heroBack;
     put(el.hero, h, 0, -vh * 0.12 * (1 - h), 0.94 + 0.06 * h, 0, (1 - h) * 10, 'Y');
     put(el.hint, 1 - eIO(seg(p, 0, 0.025)), 0, 0, 1, 0, 0, 'X');
-    el.navpill.style.opacity = h.toFixed(3); el.navpill.style.visibility = h < 0.01 ? 'hidden' : 'visible';
 
     // CTA: full pill in the hero, compact pill docked at the bottom
     const dock = p < 0.5 ? eIO(seg(p, 0.04, 0.12)) : 1 - eIO(seg(p, 0.96, 0.995));
