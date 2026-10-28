@@ -49,6 +49,17 @@
             "title": "Name",
             "type": "string"
           },
+          "prAuc": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prauc"
+          },
           "precision": {
             "title": "Precision",
             "type": "number"

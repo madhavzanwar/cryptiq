@@ -58,7 +58,7 @@ async def benchmark(state: AppState = Depends(get_state)) -> BenchmarkResponse:
         for name, m in card["models"].items():
             t = m["test"]
             models.append(BenchmarkModelRow(name=name, illicit_f1=t["illicitF1"], precision=t["precision"],
-                                            recall=t["recall"]))
+                                            recall=t["recall"], pr_auc=t.get("prAuc")))
     # a row whose provider reported no token usage is left out (never shown as 0): "not measured"
     rows = [BenchmarkRow(method=r["method"], input_tokens=r["inputTokens"], latency_ms=r["latencyMs"],
                          accuracy_pct=r["accuracyPct"])

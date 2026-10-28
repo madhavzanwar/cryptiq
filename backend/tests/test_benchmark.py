@@ -108,6 +108,7 @@ def test_get_benchmark_hides_fixture_numbers(settings: Any, trained: tuple[Path,
     body = c.get("/api/benchmark").json()
     assert body["status"] == "ok" and body["rows"] == [] and body["sampleSize"] == 0
     assert {m["name"] for m in body["models"]} == {"baseline", "with_graph_features"}
+    assert all("prAuc" in m for m in body["models"])  # the threshold-free metric is shown beside F1
 
 
 def test_run_endpoint(settings: Any, trained: tuple[Path, Path], tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

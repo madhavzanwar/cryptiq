@@ -184,6 +184,9 @@ class BenchmarkModelRow(CamelModel):
     illicit_f1: float
     precision: float
     recall: float
+    # additive: threshold-free PR-AUC on the same test split. F1/precision/recall are at the WARN threshold
+    # (predicted illicit = WARN or BLOCK); a model can rank better (PR-AUC) yet score a lower F1 at that threshold.
+    pr_auc: float | None = None
 
 
 class BenchmarkResponse(CamelModel):

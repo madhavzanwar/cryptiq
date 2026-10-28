@@ -120,6 +120,9 @@ Charging: only `status: "ok"` costs 1 credit. `not_in_dataset`, `error` and `cac
 - **Identical concurrent checks** (same session, same address and language) are single-flighted: the
   first is charged, the others are served from the cache with `cached: true` and no charge.
 - **429 `too_many_open_invoices`** (max 5 unpaid crypto invoices per session).
+- **`/api/benchmark` model rows** also carry optional `prAuc` (threshold-free). `illicitF1` / `precision` /
+  `recall` are measured at the WARN threshold (predicted illicit = WARN or BLOCK), so a model can have the higher
+  `prAuc` and the lower `illicitF1`; show both.
 - **Further error codes** (all `{ "error": code }`): 400 `empty_audio`; 422 `audio_unreadable`,
   `audio_conversion_timeout`; 404 `unknown_pack`, `not_found`; 403 `forbidden` (admin routes);
   502 `payments_unavailable` (Dodo call failed; 503 when Dodo is not configured); 503 `service_not_ready`;
