@@ -1,15 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="52" height="52" role="img" aria-label="Verdict dial">
-  <rect x="0" y="8" width="56" height="56" rx="18" fill="#0f0f0f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="52" height="52" role="img" aria-label="Hop path">
   <style>
-    .needle{transform:rotate(25deg);transform-origin:28px 44px;animation:swing 900ms cubic-bezier(0,0,.2,1) both}
-    @keyframes swing{0%{transform:rotate(-72deg)}55%{transform:rotate(34deg)}78%{transform:rotate(21deg)}100%{transform:rotate(25deg)}}
-    @media (prefers-reduced-motion:reduce){.needle{animation:none}}
+    .hop{stroke-dasharray:42;stroke-dashoffset:0;animation:draw 620ms cubic-bezier(0,0,.2,1) both}
+    .n{transform-box:fill-box;transform-origin:center;animation:pop 320ms cubic-bezier(.2,0,0,1.4) both}
+    .n1{animation-delay:0ms}.n2{animation-delay:170ms}.n3{animation-delay:340ms}
+    .flag{transform-box:fill-box;transform-origin:center;animation:pop 360ms cubic-bezier(.2,0,0,1.6) 560ms both}
+    @keyframes draw{from{stroke-dashoffset:42}to{stroke-dashoffset:0}}
+    @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+    @media (prefers-reduced-motion:reduce){.hop,.n,.flag{animation:none}}
   </style>
-  <path d="M10.04 42.74 A18 18 0 0 1 17.93 29.08" fill="none" stroke="#4b9a6a" stroke-width="6.5" stroke-linecap="round"/>
-  <path d="M20.11 27.82 A18 18 0 0 1 35.89 27.82" fill="none" stroke="#e0b93a" stroke-width="6.5" stroke-linecap="round"/>
-  <path d="M38.07 29.08 A18 18 0 0 1 45.96 42.74" fill="none" stroke="#c8574f" stroke-width="6.5" stroke-linecap="round"/>
-  <g class="needle"><line x1="28" y1="44" x2="28" y2="31" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round"/></g>
-  <circle cx="28" cy="44" r="5" fill="#ffffff"/>
-  <circle cx="28" cy="44" r="1.9" fill="#0f0f0f"/>
+  <rect x="0" y="8" width="56" height="56" rx="18" fill="#0f0f0f"/>
+  <circle cx="28" cy="36" r="20.5" fill="none" stroke="#6e726e" stroke-width="2.4"/>
+  <polyline class="hop" points="16,43 25,31 33,39 41,26" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle class="n n1" cx="16" cy="43" r="3.3" fill="#ffffff"/>
+  <circle class="n n2" cx="25" cy="31" r="3.3" fill="#ffffff"/>
+  <circle class="n n3" cx="33" cy="39" r="3.3" fill="#ffffff"/>
+  <g class="flag"><circle cx="41" cy="26" r="6" fill="#0f0f0f" stroke="#ffffff" stroke-width="2"/><circle cx="41" cy="26" r="3.6" fill="#ffd0e2"/></g>
   <circle cx="57" cy="7" r="6" fill="#fcea59" stroke="#0f0f0f" stroke-width="1.5"/>
 </svg>

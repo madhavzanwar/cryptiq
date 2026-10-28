@@ -47,12 +47,12 @@ footer{border-top:1px solid var(--color-carbon);background:var(--color-pure-whit
 
 <main class="container cards" id="cards"></main>
 
-<footer><div class="container">Files: public/brand/concept-*.svg (options) and public/brand/logo-mark.svg (the chosen mark, with a built-in one-shot needle swing).</div></footer>
+<footer><div class="container">Files: public/brand/concept-*.svg (options) and public/brand/logo-mark.svg (the chosen mark, Hop Path, with a built-in one-shot draw-in).</div></footer>
 
 <script>
 const C=[
- {f:'concept-1-verdict-dial.svg',n:'1 · Verdict Dial',w:'A gauge of three arcs (sage, butter, rose) with a needle: ALLOW, WARN, BLOCK at a glance. It is the product’s answer, and it stays readable at 24px.',pick:true},
- {f:'concept-2-hop-path.svg',n:'2 · Hop Path',w:'A ring with a three-hop node path that ends in a pink flagged node: the graph evidence idea in one gesture.'},
+ {f:'concept-1-verdict-dial.svg',n:'1 · Verdict Dial',w:'A gauge of three arcs (sage, butter, rose) with a needle: ALLOW, WARN, BLOCK at a glance. It is the product’s answer, and it stays readable at 24px.'},
+ {f:'concept-2-hop-path.svg',n:'2 · Hop Path',w:'A ring with a three-hop node path that ends in a pink flagged node: the graph evidence idea in one gesture.',pick:true},
  {f:'concept-3-watcher-eye.svg',n:'3 · Watcher Eye',w:'An almond eye whose iris is a tiny node graph with a yellow pupil: looking before you pay.'},
  {f:'concept-4-sonar-shield.svg',n:'4 · Sonar Shield',w:'A shield filled with radar and sound arcs from one node: voice in, protection out.'},
  {f:'concept-5-sticker-orbit.svg',n:'5 · Sticker Orbit',w:'A core node with confetti-coloured dots orbiting a dashed ring, one pink and flagged: wallets around a wallet.'},
@@ -61,7 +61,7 @@ const sizes=[120,40,24], bgs=[['p-paper','Paper White'],['p-bone','Bone'],['p-ca
 const root=document.getElementById('cards');
 const panels=(src)=>bgs.map(([c,l])=>`<div class="panel ${c}">${sizes.map(s=>`<figure><img src="${src}" width="${s}" height="${s}" alt=""><small>${s}px</small></figure>`).join('')}</div>`).join('');
 root.innerHTML=
- `<section class="card rec" id="final"><div class="head"><h2>Chosen mark</h2><span class="tag pick">In use</span><button class="replay" id="replay">Replay swing</button></div><p class="why">Verdict Dial with the needle swing that plays once when the mark loads. The animation lives inside the SVG, so it also plays when the file is used in an img tag.</p><div class="panels" id="finalPanels">${panels('public/brand/logo-mark.svg')}</div></section>`+
+ `<section class="card rec" id="final"><div class="head"><h2>Chosen mark</h2><span class="tag pick">In use</span><button class="replay" id="replay">Replay</button></div><p class="why">Hop Path: a three-hop route ends on a pink flagged wallet. On load the path draws hop by hop and the flagged node pops in, once. The animation lives inside the SVG, so it also plays when the file is used in an img tag.</p><div class="panels" id="finalPanels">${panels('public/brand/logo-mark.svg')}</div></section>`+
  C.map(c=>`<section class="card ${c.pick?'rec':''}"><div class="head"><h2>${c.n}</h2>${c.pick?'<span class="tag pick">Recommended</span>':''}</div><p class="why">${c.w}</p><div class="panels">${panels('public/brand/'+c.f)}</div></section>`).join('');
 document.getElementById('replay').addEventListener('click',()=>{const t=Date.now();document.querySelectorAll('#finalPanels img').forEach(i=>{i.src='public/brand/logo-mark.svg?t='+t;});});
 </script>
