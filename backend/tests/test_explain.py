@@ -149,3 +149,26 @@ async def test_llm_client_errors_are_typed() -> None:
     a._client = httpx.AsyncClient(base_url="http://x", transport=httpx.MockTransport(lambda r: httpx.Response(500)))
     with pytest.raises(UpstreamError):
         await a.complete("s", "u")
+
+
+async def test_openai_compatible_base_url_with_a_path_is_joined_correctly() -> None:
+    """Free-tier providers (Groq, Gemini, OpenRouter) expose OpenAI-compatible APIs under a base path."""
+    from app.config import Settings
+    from app.services.explain.llm import build_llm
+
+    seen: list[str] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        seen.append(str(req.url))
+        assert req.headers["authorization"] == "Bearer k-test"
+        return httpx.Response(200, json={"choices": [{"message": {"content": "ok"}}],
+                                         "usage": {"prompt_tokens": 5, "completion_tokens": 1}})
+
+    s = Settings(_env_file=None, llm_provider="openai_compatible", llm_model="some-free-model",
+                 llm_api_key="k-test", llm_base_url="https://llm.test/openai/v1")
+    llm = build_llm(s)
+    assert llm is not None and llm.provider == "openai_compatible"
+    llm._client = httpx.AsyncClient(base_url="https://llm.test/openai/v1", transport=httpx.MockTransport(handler))  # type: ignore[attr-defined]
+    res = await llm.complete("s", "u")
+    assert seen == ["https://llm.test/openai/v1/chat/completions"]
+    assert (res.text, res.input_tokens) == ("ok", 5)
