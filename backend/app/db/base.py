@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from sqlalchemy import Engine, create_engine, event
+from sqlalchemy import Engine, create_engine, event, inspect
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 
@@ -55,6 +55,21 @@ class Database:
         from app.db import models  # noqa: F401  (register tables)
 
         Base.metadata.create_all(self.engine)
+        self._add_missing_nullable_columns()
+
+    def _add_missing_nullable_columns(self) -> None:
+        """Tiny additive migration: create_all never alters existing tables, so a database created by
+        an older version would miss newer nullable columns. Only nullable additions are handled."""
+        with self.engine.begin() as conn:
+            insp = inspect(conn)  # same connection: a second one would wait on our BEGIN IMMEDIATE
+            for table in Base.metadata.sorted_tables:
+                if not insp.has_table(table.name):
+                    continue
+                existing = {c["name"] for c in insp.get_columns(table.name)}
+                for col in table.columns:
+                    if col.name not in existing and col.nullable:
+                        ddl = col.type.compile(dialect=self.engine.dialect)
+                        conn.exec_driver_sql(f'ALTER TABLE "{table.name}" ADD COLUMN "{col.name}" {ddl}')
 
     @contextmanager
     def session(self) -> Iterator[Session]:

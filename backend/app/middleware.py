@@ -34,6 +34,10 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         start = time.perf_counter()
         try:
             response = await call_next(request)
+        except Exception as exc:
+            # handled here (not re-raised to the server) so uvicorn keeps the keep-alive connection open
+            log.error("unhandled_error", path=request.url.path, exc_type=type(exc).__name__)
+            response = JSONResponse(status_code=500, content={"error": "internal_error"})
         finally:
             structlog.contextvars.unbind_contextvars("request_id")
         if is_new:

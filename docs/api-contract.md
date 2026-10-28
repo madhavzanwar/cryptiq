@@ -91,6 +91,7 @@ When the graph engine is not TigerGraph, the `graph` step label says which engin
 | 2026-10-28 | Session cookie `cryptiq_sid` (httpOnly, SameSite from env, `Secure` when SameSite=None). New sessions start with `STARTING_CREDITS` (default 3). Send requests with credentials. |
 | 2026-10-28 | `/api/crypto-invoice` response `provider?: "explorer" \| "demo"` (`demo` = Monero, no automatic confirmation) |
 | 2026-10-28 | `/api/health` optional diagnostics: `engine`, `engineOk`, `modelLoaded`, `llmConfigured`, `dataSource` |
+| 2026-10-28 | HTTP **413** `{ "error": "request_too_large" }` (body over 6 MB) / `audio_too_large` / `audio_too_long`; **415** `unsupported_audio_type`; **500** `{ "error": "internal_error" }`; **409** `try_again` (crypto invoice amount clash) / `benchmark_running`; **503** `crypto_unavailable`, `payments_unavailable`, `llm_unavailable`, `model_not_trained`; **422** `invalid request: <fields>` |
 | 2026-10-28 | `audioUrl` is a path under `/api/audio/{file}.mp3` on the backend origin |
 | 2026-10-28 | `isMock: true` is set when the backend runs on the synthetic fixture dataset (`DEMO-…` addresses), never on Elliptic++ data |
 

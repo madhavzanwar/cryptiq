@@ -2,6 +2,8 @@
 PY := uv run python
 RAW ?= data/raw
 
+
+.PHONY: run-fixture
 .PHONY: setup data fixture labels explore train demo-wallets load-graph install-queries verify-graph \
         run test test-tg lint typecheck openapi record-replays benchmark smoke audit
 
@@ -15,9 +17,17 @@ data: explore     ## raw CSVs -> data/processed/*.parquet (+ splits, graph featu
 	$(PY) -m scripts.build_processed --raw $(RAW)
 	$(PY) -m scripts.fetch_labels
 
-fixture:          ## synthetic fake dataset (DEMO- addresses) for offline dev; sets DATA_DIR=data/fixture
+FIXTURE_ENV := DATA_DIR=./data/fixture ARTIFACTS_DIR=./data/fixture/artifacts DEMO_MODE=true GRAPH_ENGINE=networkx \
+               DATABASE_URL=sqlite:///./data/fixture/dev.sqlite
+
+fixture:          ## SYNTHETIC fake dataset (DEMO- addresses) + trained model, for offline dev only
 	$(PY) -m scripts.make_fixture --out data/fixture/raw
 	$(PY) -m scripts.build_processed --raw data/fixture/raw --out data/fixture/processed --source synthetic_fixture
+	$(FIXTURE_ENV) $(PY) -m scripts.train
+	$(FIXTURE_ENV) $(PY) -m scripts.export_demo_wallets
+
+run-fixture:      ## run the API on the synthetic fixture (responses carry isMock: true)
+	$(FIXTURE_ENV) uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 train:            ## train baseline + graph model, calibrate, choose thresholds, write model card
 	$(PY) -m scripts.train

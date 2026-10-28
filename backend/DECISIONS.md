@@ -270,6 +270,43 @@ bottom of each heading.
 - Hub safety: per-hop frontier cap `MAX_FRONTIER` (5000) and the query timeout. On truncation the
   response sets `truncated: true` and adds a limitation line.
 
+## Hardening
+
+- Middleware order (outer -> inner): streaming body limit + security headers (pure ASGI; also stops
+  chunked uploads with no Content-Length, 413) -> CORS (explicit allow-list, credentials, never `*`)
+  -> request id / session cookie / unhandled-error guard -> slowapi rate limits (30/min check,
+  10/min transcribe, 3/hour benchmark run; per IP).
+- Unhandled exceptions are turned into `500 {"error": "internal_error"}` **inside** the app. Found
+  during the smoke test: letting them reach uvicorn (Starlette's default re-raise) closed keep-alive
+  connections, so the client's next request failed with "connection reset". Covered by a test.
+- `APP_ENV=prod` refuses to start with placeholder `SESSION_SECRET` / `LOG_SALT`, `SameSite=None`
+  without `Secure`, or an empty CORS list. `DEMO_MODE` in prod only logs a warning (a fixture-only
+  demo deploy is labelled `isMock` anyway). OpenAPI docs UI is disabled in prod.
+- Additive SQLite migration at startup: missing **nullable** columns are added with
+  `ALTER TABLE ADD COLUMN` (found when an older local database lacked `sessions.dodo_customer_id`).
+- Every outbound call has a timeout: TigerGraph (client deadline + GSQL-TIMEOUT), LLM
+  (`LLM_TIMEOUT_S`), Sarvam/Wispr (`VOICE_TIMEOUT_S`), Dodo (10 s), explorer (8 s), ffmpeg (15 s).
+- Logs never contain full addresses (salted HMAC), request bodies, transcripts or secrets.
+  Validation errors list field names only.
+- `pip-audit` (2026-10-28): no known vulnerabilities in the locked dependencies.
+- `.dockerignore` keeps `.env*`, `data/`, `artifacts/` and tests out of the image.
+- The Dockerfile was **not built** in the sandbox (no Docker daemon); build it locally before deploying.
+
+## Measured numbers (only what was actually measured)
+
+- On the **synthetic fixture** (2,400 fake wallets, NetworkX engine, template explanations, no LLM,
+  cache disabled, local machine): `scripts/smoke.py --runs 10` measured `/api/check` median 22 ms,
+  p95 28 ms over 80 requests. **Not representative** of TigerGraph + LLM on the real graph; re-run
+  `make smoke` against the real deployment and record the result here.
+- Model metrics, graph counts and benchmark results on Elliptic++: **not measured yet** (the data
+  could not be downloaded in the build sandbox).
+
+## Deployment
+
+- Host: Fly.io (Docker, volume for `data/` + `artifacts/`, automatic HTTPS, no auto-stop so the demo
+  has no cold start). 1 GB machine because the scorer's feature table for 823k wallets is
+  ~210 MB in float32. See `DEPLOY.md`.
+
 ## Contract additions
 
 See `docs/api-contract.md` -> "Backend additions".
