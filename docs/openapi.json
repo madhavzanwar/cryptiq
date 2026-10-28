@@ -1,6 +1,196 @@
 {
   "components": {
     "schemas": {
+      "BenchmarkJobStatus": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "status": {
+            "enum": [
+              "running",
+              "done",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "progress"
+        ],
+        "title": "BenchmarkJobStatus",
+        "type": "object"
+      },
+      "BenchmarkModelRow": {
+        "properties": {
+          "illicitF1": {
+            "title": "Illicitf1",
+            "type": "number"
+          },
+          "name": {
+            "enum": [
+              "baseline",
+              "with_graph_features"
+            ],
+            "title": "Name",
+            "type": "string"
+          },
+          "precision": {
+            "title": "Precision",
+            "type": "number"
+          },
+          "recall": {
+            "title": "Recall",
+            "type": "number"
+          }
+        },
+        "required": [
+          "name",
+          "illicitF1",
+          "precision",
+          "recall"
+        ],
+        "title": "BenchmarkModelRow",
+        "type": "object"
+      },
+      "BenchmarkResponse": {
+        "properties": {
+          "measuredAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Measuredat"
+          },
+          "models": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/BenchmarkModelRow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Models"
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/BenchmarkRow"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rows"
+          },
+          "sampleSize": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Samplesize"
+          },
+          "status": {
+            "enum": [
+              "not_measured",
+              "ok"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "BenchmarkResponse",
+        "type": "object"
+      },
+      "BenchmarkRow": {
+        "properties": {
+          "accuracyPct": {
+            "title": "Accuracypct",
+            "type": "number"
+          },
+          "inputTokens": {
+            "title": "Inputtokens",
+            "type": "number"
+          },
+          "latencyMs": {
+            "title": "Latencyms",
+            "type": "number"
+          },
+          "method": {
+            "enum": [
+              "raw_dump",
+              "graph_evidence"
+            ],
+            "title": "Method",
+            "type": "string"
+          }
+        },
+        "required": [
+          "method",
+          "inputTokens",
+          "latencyMs",
+          "accuracyPct"
+        ],
+        "title": "BenchmarkRow",
+        "type": "object"
+      },
+      "BenchmarkRunRequest": {
+        "properties": {
+          "sampleSize": {
+            "default": 25,
+            "minimum": 2.0,
+            "title": "Samplesize",
+            "type": "integer"
+          }
+        },
+        "title": "BenchmarkRunRequest",
+        "type": "object"
+      },
+      "BenchmarkRunResponse": {
+        "properties": {
+          "jobId": {
+            "title": "Jobid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "title": "BenchmarkRunResponse",
+        "type": "object"
+      },
       "Body_transcribe_api_transcribe_post": {
         "properties": {
           "audio": {
@@ -973,6 +1163,142 @@
           }
         },
         "summary": "Audio"
+      }
+    },
+    "/api/benchmark": {
+      "get": {
+        "description": "Only numbers measured on the real Elliptic++ data are returned; otherwise not_measured.",
+        "operationId": "benchmark_api_benchmark_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Benchmark"
+      }
+    },
+    "/api/benchmark/job/{job_id}": {
+      "get": {
+        "operationId": "job_status_api_benchmark_job__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkJobStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Status"
+      }
+    },
+    "/api/benchmark/run": {
+      "post": {
+        "operationId": "run_api_benchmark_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BenchmarkRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BenchmarkRunResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Bad Request"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Run"
       }
     },
     "/api/check": {

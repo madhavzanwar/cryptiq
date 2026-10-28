@@ -115,3 +115,12 @@ them only when the graph engine fails. Replays are always labelled `engine: "rep
 ```bash
 curl -X POST https://<backend>/api/admin/crypto-invoice/<invoiceId>/mark-paid -H "x-admin-token: $ADMIN_TOKEN"
 ```
+
+## Benchmark
+
+```bash
+make benchmark        # needs LLM_* env and a trained model; writes artifacts/benchmark_results.json
+```
+
+Or `POST /api/benchmark/run {"sampleSize": 25}` then poll `GET /api/benchmark/job/{jobId}`.
+`GET /api/benchmark` stays `not_measured` until real (Elliptic++) results exist.

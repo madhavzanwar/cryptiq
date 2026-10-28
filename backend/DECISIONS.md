@@ -224,6 +224,26 @@ bottom of each heading.
 - Invoices are only visible to the session that created them (others get 404).
 - The app never sees private keys: receive addresses are public, wallets stay with their owners.
 
+## Benchmark
+
+- Sample: N (cap 50, default 25) labelled wallets from the **test split**, stratified half illicit /
+  half licit (as far as available), fixed seed 1234 (recorded in the results file).
+- Same LLM, same instructions, two inputs: `raw_dump` (55 raw feature values + up to 300 raw 1-2 hop
+  edges with each endpoint's dataset label) vs `graph_evidence` (compact JSON from the graph engine:
+  per-hop label counts, hops to nearest illicit, PageRank, component size, degrees). **Both hide the
+  wallet's own label, the model score and the verdict**, otherwise the LLM would copy the answer.
+- Correctness mapping: predicted illicit = WARN or BLOCK, predicted licit = ALLOW, truth = dataset
+  label. Aggregates: mean provider-reported input tokens, median end-to-end latency (input building,
+  including the graph query, plus the LLM call), accuracy %. Unparseable answers count as wrong and
+  are reported (`unparseable`).
+- Cost guard: refuse above the sample cap; estimate tokens (chars/4, used only for the guard, never
+  reported) for both methods before any LLM call and refuse above `BENCHMARK_MAX_TOKENS`; one job at a
+  time (409); `POST /api/benchmark/run` is rate-limited to 3/hour per IP.
+- `GET /api/benchmark` returns numbers only from files whose `dataSource` is `elliptic++`; fixture
+  results and fixture model cards are never shown (`not_measured`). If the model card is real but
+  the benchmark has not run, it returns `status: "ok"` with `rows: []`, `sampleSize: 0`, the `models`
+  table, and `measuredAt` = the model training time.
+
 ## TigerGraph
 
 - pyTigerGraph **2.0.5** (installed version; connection args read from its source):

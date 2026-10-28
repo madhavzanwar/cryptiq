@@ -10,7 +10,14 @@ import pandas as pd
 import pytest
 from fastapi.testclient import TestClient
 
-from app.services.bench.runner import BenchConfig, BudgetExceeded, graph_evidence, raw_dump, run_benchmark, sample_wallets
+from app.services.bench.runner import (
+    BenchConfig,
+    BudgetExceeded,
+    graph_evidence,
+    raw_dump,
+    run_benchmark,
+    sample_wallets,
+)
 from app.services.explain.llm import LLMResult
 from app.services.graph.networkx_engine import NetworkXEngine
 from app.services.model.scorer import Scorer
