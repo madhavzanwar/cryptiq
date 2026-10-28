@@ -99,12 +99,15 @@ class AnthropicLLM(_HttpLLM):
 
 class OpenAILLM(_HttpLLM):
     provider = "openai"
+    json_mode = False  # send response_format=json_object (opt-in: some compatible servers reject the field)
 
     def _request(self, system: str, user: str, max_tokens: int, temperature: float
                  ) -> tuple[str, dict[str, str], dict[str, Any]]:
         headers = {"authorization": f"Bearer {self._key}"}
         body = {"model": self.model, "max_tokens": max_tokens, "temperature": temperature,
                 "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]}
+        if self.json_mode:
+            body["response_format"] = {"type": "json_object"}
         return "/chat/completions", headers, body
 
     def _parse(self, data: dict[str, Any]) -> tuple[str, int | None, int | None]:
@@ -121,10 +124,13 @@ def build_llm(settings: Settings) -> LLMClient | None:
         return AnthropicLLM(settings.llm_model, key, settings.llm_base_url or "https://api.anthropic.com",
                             settings.llm_timeout_s)
     if settings.llm_provider == "openai":
-        return OpenAILLM(settings.llm_model, key, settings.llm_base_url or "https://api.openai.com/v1",
-                         settings.llm_timeout_s)
+        oa = OpenAILLM(settings.llm_model, key, settings.llm_base_url or "https://api.openai.com/v1",
+                       settings.llm_timeout_s)
+        oa.json_mode = settings.llm_json_mode
+        return oa
     if not settings.llm_base_url:
         raise RuntimeError("LLM_PROVIDER=openai_compatible needs LLM_BASE_URL")
     client = OpenAILLM(settings.llm_model, key, settings.llm_base_url, settings.llm_timeout_s)
     client.provider = "openai_compatible"
+    client.json_mode = settings.llm_json_mode
     return client

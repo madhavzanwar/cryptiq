@@ -68,6 +68,7 @@ class Settings(BaseSettings):
     llm_api_key: SecretStr = SecretStr("")
     llm_base_url: str = ""
     llm_timeout_s: float = 12.0
+    llm_json_mode: bool = False  # OpenAI-style providers only: ask for response_format=json_object
     benchmark_max_tokens: int = 500_000
     benchmark_max_sample: int = 50
 

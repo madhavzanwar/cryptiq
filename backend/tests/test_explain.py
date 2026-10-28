@@ -172,3 +172,25 @@ async def test_openai_compatible_base_url_with_a_path_is_joined_correctly() -> N
     res = await llm.complete("s", "u")
     assert seen == ["https://llm.test/openai/v1/chat/completions"]
     assert (res.text, res.input_tokens) == ("ok", 5)
+
+
+async def test_json_mode_is_opt_in_and_sent_only_when_enabled() -> None:
+    from app.config import Settings
+    from app.services.explain.llm import build_llm
+
+    bodies: list[dict[str, object]] = []
+
+    def handler(req: httpx.Request) -> httpx.Response:
+        import json as _json
+        bodies.append(_json.loads(req.content))
+        return httpx.Response(200, json={"choices": [{"message": {"content": "{}"}}], "usage": {}})
+
+    for flag in (False, True):
+        s = Settings(_env_file=None, llm_provider="openai_compatible", llm_model="m", llm_api_key="k",
+                     llm_base_url="https://llm.test/v1", llm_json_mode=flag)
+        llm = build_llm(s)
+        assert llm is not None
+        llm._client = httpx.AsyncClient(base_url="https://llm.test/v1", transport=httpx.MockTransport(handler))  # type: ignore[attr-defined]
+        await llm.complete("s", "u")
+    assert "response_format" not in bodies[0]
+    assert bodies[1]["response_format"] == {"type": "json_object"}
